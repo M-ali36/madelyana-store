@@ -1,12 +1,16 @@
 "use client";
+
 import React from "react";
 import { HiOutlineShoppingBag } from "react-icons/hi";
 import { useAppContext } from "@/components/context/AppContext";
 import Image from "next/image";
 import Link from "next/link";
+import useCurrency from "@/components/hooks/useCurrency";
 
 export default function MiniCart() {
   const { cart, setCart, navState, setNavState } = useAppContext();
+
+  const { format } = useCurrency();
 
   // Toggle mini cart
   const toggleCart = () => {
@@ -23,7 +27,7 @@ export default function MiniCart() {
     setCart(
       cart.map((item) =>
         item.variantId === variantId
-          ? { ...item, qty: Math.max(1, item.qty + value) }
+          ? { ...item, qty: Math.max(1, Math.min(item.qty + value, item.maxQty)) }
           : item
       )
     );
@@ -72,6 +76,7 @@ export default function MiniCart() {
               key={item.variantId}
               className="flex items-start gap-4 border-b pb-3"
             >
+              {/* IMAGE */}
               <Image
                 src={item.image}
                 width={64}
@@ -84,30 +89,45 @@ export default function MiniCart() {
                 {/* TITLE */}
                 <h3 className="text-sm font-medium">{item.title}</h3>
 
-                {/* VARIANT INFO */}
+                {/* DYNAMIC VARIANT ATTRIBUTES */}
                 <div className="text-xs text-gray-600 mt-1 space-y-1">
-                  
-                  {/* Color */}
-                  <div className="flex items-center gap-2">
-                    <span>Color:</span>
-                    <span
-                      className="w-4 h-4 rounded-full border"
-                      style={{ backgroundColor: item.selectedColor?.toLowerCase() }}
-                    />
-                    <span className="capitalize">{item.selectedColor}</span>
-                  </div>
+                  {Object.entries(item.selectedAttributes || {}).map(
+                    ([key, value]) => {
+                      if (!value) return null;
 
-                  {/* Size */}
-                  <div className="flex items-center gap-2">
-                    <span>Size:</span>
-                    <span className="px-2 py-0.5 bg-gray-100 rounded border text-gray-800">
-                      {item.selectedSize}
-                    </span>
-                  </div>
+                      const isColor =
+                        key.toLowerCase() === "color" ||
+                        key.toLowerCase() === "colour";
+
+                      return (
+                        <div key={key} className="flex items-center gap-2">
+                          <span className="capitalize">{key}:</span>
+
+                          {isColor ? (
+                            <>
+                              <span
+                                className="w-4 h-4 rounded-full border"
+                                style={{
+                                  backgroundColor: value.toLowerCase(),
+                                }}
+                              />
+                              <span className="capitalize">{value}</span>
+                            </>
+                          ) : (
+                            <span className="px-2 py-0.5 bg-gray-100 rounded border text-gray-800 capitalize">
+                              {value}
+                            </span>
+                          )}
+                        </div>
+                      );
+                    }
+                  )}
                 </div>
 
                 {/* PRICE */}
-                <p className="text-gray-600 text-xs mt-1">${item.price} each</p>
+                <p className="text-gray-600 text-xs mt-1">
+                  {format(item.price)} per one
+                </p>
 
                 {/* QUANTITY CONTROLS */}
                 <div className="flex items-center gap-2 mt-2">
@@ -122,18 +142,18 @@ export default function MiniCart() {
 
                   <button
                     className={`border px-2 rounded ${
-                        item.qty >= item.maxQty ? "opacity-50 cursor-not-allowed" : ""
+                      item.qty >= item.maxQty
+                        ? "opacity-50 cursor-not-allowed"
+                        : ""
                     }`}
-                    onClick={() => {
-                        if (item.qty < item.maxQty) {
-                        changeQty(item.variantId, 1);
-                        }
-                    }}
+                    onClick={() =>
+                      item.qty < item.maxQty &&
+                      changeQty(item.variantId, 1)
+                    }
                     disabled={item.qty >= item.maxQty}
-                    >
+                  >
                     +
-                    </button>
-
+                  </button>
                 </div>
               </div>
 
@@ -151,11 +171,10 @@ export default function MiniCart() {
         {/* FOOTER */}
         {cart.length > 0 && (
           <div className="p-4 border-t space-y-3">
-
             {/* SUBTOTAL */}
             <div className="flex justify-between mb-3">
               <span className="font-semibold">Subtotal:</span>
-              <span className="font-semibold">${subtotal.toFixed(2)}</span>
+              <span className="font-semibold">{format(subtotal.toFixed(2))}</span>
             </div>
 
             {/* VIEW CART BUTTON */}

@@ -4,30 +4,29 @@ import { useEffect, useRef, useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebaseClient";
 import { fetchContentfulProductsWithImages } from "@/lib/contentfulClient";
-import ProductCardWithVariants from "@/components/products/ProductCardWithVariants";
 
-export default function ProductCarousel() {
+import ProductCardWithVariants from "@/components/products/ProductCardWithVariants";
+import ProductSkeletonGrid from "@/components/products/ProductCardWithVariants/ProductCard/ProductSkeletonGrid";
+
+export default function ProductCarousel({ skeletonCount = 4 }) {
   const sliderRef = useRef(null);
 
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
   // -------------------------------------------------------
-  // Load real products (Firebase + Contentful merged)
+  // Load products
   // -------------------------------------------------------
   const loadProducts = async () => {
     try {
-      // 1. Get Firebase dynamic products
       const snap = await getDocs(collection(db, "products_dynamic"));
       const dynamicList = snap.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
       }));
 
-      // 2. Get Contentful static products (with images)
       const contentful = await fetchContentfulProductsWithImages();
 
-      // 3. Merge them using slug
       const merged = dynamicList
         .map((item) => {
           const staticInfo = contentful.find(
@@ -39,9 +38,12 @@ export default function ProductCarousel() {
           return {
             id: item.id,
             title: staticInfo.title,
-            image: staticInfo.images?.[0] || "/placeholder.png",
-            price: Number(item.price) || 0,
             slug: staticInfo.slug,
+            price: Number(item.price) || 0,
+            images:
+              staticInfo.images?.length > 0
+                ? staticInfo.images
+                : [{ url: "/placeholder.png", tag: null }],
             variants: item.variants || [],
           };
         })
@@ -60,7 +62,7 @@ export default function ProductCarousel() {
   }, []);
 
   // -------------------------------------------------------
-  // Carousel scroll controls
+  // Carousel scroll
   // -------------------------------------------------------
   const slideLeft = () => {
     sliderRef.current?.scrollBy({ left: -250, behavior: "smooth" });
@@ -76,25 +78,35 @@ export default function ProductCarousel() {
         <h2 className="text-xl font-semibold">Latest Products</h2>
 
         <div className="flex gap-2">
-          <button onClick={slideLeft} className="p-2 rounded bg-gray-200 hover:bg-gray-300">
+          <button
+            onClick={slideLeft}
+            className="p-2 rounded bg-gray-200 hover:bg-gray-300"
+          >
             ◀
           </button>
-          <button onClick={slideRight} className="p-2 rounded bg-gray-200 hover:bg-gray-300">
+          <button
+            onClick={slideRight}
+            className="p-2 rounded bg-gray-200 hover:bg-gray-300"
+          >
             ▶
           </button>
         </div>
       </div>
 
-      {loading && <p className="text-gray-500">Loading products…</p>}
+      {/* Skeleton Loader */}
+      {loading && <ProductSkeletonGrid count={skeletonCount} />}
 
-      <div
-        ref={sliderRef}
-        className="flex gap-6 overflow-x-auto scroll-smooth no-scrollbar pb-4"
-      >
-        {products.map((product) => (
-          <ProductCardWithVariants key={product.id} product={product} />
-        ))}
-      </div>
+      {/* Product List */}
+      {!loading && (
+        <div
+          ref={sliderRef}
+          className="flex gap-6 overflow-x-auto scroll-smooth no-scrollbar pb-4"
+        >
+          {products.map((product) => (
+            <ProductCardWithVariants key={product.id} product={product} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

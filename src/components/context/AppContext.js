@@ -70,6 +70,18 @@ export function AppProvider({ children }) {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // -----------------------------------------
+  // ⭐ NEW: Currency System
+  // -----------------------------------------
+  const [currency, setCurrency] = useState("USD");
+
+  // Define base exchange rates (static or fetched from API)
+  const currencyRates = {
+    USD: 1,      // base
+    AED: 3.67,   // 1 USD = 3.67 AED
+    EGP: 50.00,  // example → adjust manually
+  };
+
 
   // ----------------------------------------
   // CONTEXT VALUE
@@ -80,6 +92,9 @@ export function AppProvider({ children }) {
     wishlist,
     navState,
     scrollPosition,
+    currency,
+    setCurrency,
+    currencyRates,
 
     setUser,
     setCart,

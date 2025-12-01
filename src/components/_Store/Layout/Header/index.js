@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 import Logo from '@/svgs/Logo';
 import Navigation from './Navigation';
 import MiniCart from './MiniCart';
+import MiniWishlist from './MiniWishlist';
+import CurrencySwitcher from './CurrencySwitcher';
 
 const Header = props => {
     return (
@@ -18,6 +20,8 @@ const Header = props => {
                     </div>
                     <div className="col-span-2 flex gap-4 items-center justify-end">
                         <MiniCart />
+                        <MiniWishlist />
+                        <CurrencySwitcher />
                     </div>
                 </div>
             </div>

@@ -1,3 +1,6 @@
+/**
+ * BASIC product fetch (no images resolved)
+ */
 export async function fetchContentfulProducts() {
   const space = process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID;
   const accessToken = process.env.NEXT_PUBLIC_CONTENTFUL_DELIVERY_TOKEN;
@@ -12,11 +15,14 @@ export async function fetchContentfulProducts() {
   );
 
   const data = await res.json();
-
-  // Map into clean objects
-  return data.items.map((item) => (item.fields));
+  return data.items.map((item) => item.fields);
 }
 
+
+
+/**
+ * FULL product fetch with image tag resolution
+ */
 export async function fetchContentfulProductsWithImages() {
   const space = process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID;
   const accessToken = process.env.NEXT_PUBLIC_CONTENTFUL_DELIVERY_TOKEN;
@@ -32,26 +38,46 @@ export async function fetchContentfulProductsWithImages() {
 
   const data = await res.json();
 
-  // Build an asset map for resolving URLs
+  // ------------------------------
+  // BUILD ASSET MAP (url + tags)
+  // ------------------------------
   const assetMap = {};
   data.includes?.Asset?.forEach((asset) => {
     const id = asset.sys.id;
+
     const url = asset.fields.file.url.startsWith("//")
       ? "https:" + asset.fields.file.url
       : asset.fields.file.url;
 
-    assetMap[id] = url;
+    // Read tag name: imageMain, imageRed, imageBlack, etc.
+    const tag =
+      asset.metadata?.tags?.[0]?.sys?.id || null;
+
+    assetMap[id] = {
+      url,
+      tag,
+    };
   });
 
-  // Transform entries into clean product objects
+  // ------------------------------
+  // TRANSFORM PRODUCTS
+  // ------------------------------
   return data.items.map((item) => {
     const f = item.fields;
 
-    // Resolve productImages asset links
+    // Map images: [{url, tag}]
     const images =
-      f.productImages?.map((img) => assetMap[img.sys.id]) || [];
+      f.productImages?.map((imgRef) => {
+        const asset = assetMap[imgRef.sys.id];
+        if (!asset) return null;
+        return {
+          url: asset.url,
+          tag: asset.tag, // "imageMain", "imageRed", etc.
+        };
+      }).filter(Boolean) || [];
 
     return {
+      id: item.sys.id,
       title: f.title,
       slug: f.slug,
       description: f.description || null,
@@ -63,8 +89,8 @@ export async function fetchContentfulProductsWithImages() {
       category: f.category || null,
       seo: f.seo || null,
 
-      // REAL images resolved here
-      images: images.filter(Boolean),
+      // NEW IMAGE FORMAT
+      images,
     };
   });
 }
