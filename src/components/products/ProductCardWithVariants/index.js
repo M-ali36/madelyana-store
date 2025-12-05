@@ -1,6 +1,10 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useAppContext } from "@/components/context/AppContext";
+import { db } from "@/lib/firebaseClient";
+import { collection, query, where, getDocs } from "firebase/firestore";
+
 import ProductCardImage from "./ProductCard/ProductCardImage";
 import ProductAttributeSelector from "./ProductCard/ProductAttributeSelector";
 import ProductWishlistButton from "./ProductCard/ProductWishlistButton";
@@ -9,8 +13,80 @@ import { useProductVariantEngine } from "./ProductCard/useProductVariantEngine";
 import useCurrency from "@/components/hooks/useCurrency";
 
 export default function ProductCardWithVariants({ product }) {
-  const { wishlist, setWishlist, cart, setCart } = useAppContext();
+  // -----------------------------------------
+  // 1️⃣ Local merged product state
+  // -----------------------------------------
+  const [mergedProduct, setMergedProduct] = useState(product);
+  const [loading, setLoading] = useState(true);
 
+  const { wishlist, setWishlist, cart, setCart } = useAppContext();
+  const { format } = useCurrency();
+
+  // -----------------------------------------
+  // 2️⃣ Fetch Firebase dynamic data
+  // -----------------------------------------
+  useEffect(() => {
+    async function loadFirebaseDynamic() {
+      try {
+        const q = query(
+          collection(db, "products_dynamic"),
+          where("contentfulSlug", "==", product.slug)
+        );
+
+        const snap = await getDocs(q);
+
+        if (!snap.empty) {
+          const dynamicData = snap.docs[0].data();
+
+          setMergedProduct((prev) => ({
+            ...prev,
+            price: Number(dynamicData.price) || prev.price || 0,
+            variants: dynamicData.variants || [],
+          }));
+        } else {
+          // fallback if no dynamic entry
+          setMergedProduct((prev) => ({
+            ...prev,
+            price: prev.price || 0,
+            variants: prev.variants || [],
+          }));
+        }
+      } catch (e) {
+        console.error("Firebase product load error:", e);
+        setMergedProduct(product);
+      }
+
+      setLoading(false);
+    }
+
+    loadFirebaseDynamic();
+  }, [product]);
+
+  // -----------------------------------------
+  // 3️⃣ Handle wishlist state
+  // -----------------------------------------
+  const isInWishlist = wishlist.some((w) => w.id === mergedProduct.id);
+
+  const toggleWishlist = () => {
+    if (isInWishlist) {
+      setWishlist(wishlist.filter((w) => w.id !== mergedProduct.id));
+    } else {
+      setWishlist([
+        ...wishlist,
+        {
+          id: mergedProduct.id,
+          title: mergedProduct.title,
+          image: mergedProduct.images[0]?.url,
+          price: mergedProduct.price,
+          slug: mergedProduct.slug,
+        },
+      ]);
+    }
+  };
+
+  // -----------------------------------------
+  // 4️⃣ Variant Engine (now using merged product)
+  // -----------------------------------------
   const {
     hasVariants,
     variants,
@@ -21,67 +97,77 @@ export default function ProductCardWithVariants({ product }) {
     selectedVariant,
     variantStock,
     canAddToCart,
-  } = useProductVariantEngine(product);
+  } = useProductVariantEngine(mergedProduct);
 
-  const { format } = useCurrency();
+  // -----------------------------------------
+  // 5️⃣ Get Selected Image (same logic as before)
+  // -----------------------------------------
+  const getSelectedImageFromCard = () => {
+    const imgs = mergedProduct.images || [];
 
-  const isInWishlist = wishlist.some((w) => w.id === product.id);
+    const mainImage =
+      imgs.find((i) => i.tag === "imageMain")?.url ||
+      imgs[0]?.url ||
+      "/placeholder.webp";
 
-  const toggleWishlist = () => {
-    if (isInWishlist) {
-      setWishlist(wishlist.filter((w) => w.id !== product.id));
-    } else {
-      setWishlist([
-        ...wishlist,
-        {
-          id: product.id,
-          title: product.title,
-          image: product.images[0]?.url,
-          price: product.price,
-          slug: product.slug,
-        },
-      ]);
-    }
+    const colorKey = Object.keys(selected).find(
+      (key) => key.toLowerCase() === "color"
+    );
+
+    const selectedColor = colorKey ? selected[colorKey] : null;
+
+    const colorImage =
+      selectedColor &&
+      imgs.find(
+        (i) =>
+          i.tag?.toLowerCase() ===
+          `image${selectedColor.toLowerCase()}`
+      )?.url;
+
+    return colorImage || mainImage;
   };
 
-  // -------------------------------------
-  // ADD TO CART HANDLER
-  // -------------------------------------
+  // -----------------------------------------
+  // 6️⃣ ADD TO CART (unchanged except using mergedProduct)
+  // -----------------------------------------
   const addToCart = () => {
     if (!canAddToCart) return;
 
-    // No variants → simple product
+    const selectedImage = getSelectedImageFromCard();
+
+    // SIMPLE PRODUCTS
     if (!hasVariants) {
-      const variantId = `${product.id}-default`;
+      const variantId = `${mergedProduct.id}-default`;
 
       const existing = cart.find((i) => i.variantId === variantId);
 
       if (existing) {
         setCart(
           cart.map((i) =>
-            i.variantId === variantId
-              ? { ...i, qty: i.qty + 1 }
-              : i
+            i.variantId === variantId ? { ...i, qty: i.qty + 1 } : i
           )
         );
-      } else {
-        setCart([
-          ...cart,
-          {
-            ...product,
-            qty: 1,
-            maxQty: 99,
-            variantId,
-            selectedAttributes: {},
-          },
-        ]);
+        return;
       }
+
+      setCart([
+        ...cart,
+        {
+          ...mergedProduct,
+          image: selectedImage,
+          qty: 1,
+          maxQty: 99,
+          variantId,
+          selectedAttributes: {},
+        },
+      ]);
+
       return;
     }
 
-    // Variant product
+    // VARIANT PRODUCTS
     const variantId =
-      product.id +
+      mergedProduct.id +
       "-" +
       attributeKeys.map((k) => selected[k]).join("-");
 
@@ -91,9 +177,7 @@ export default function ProductCardWithVariants({ product }) {
       if (existing.qty < variantStock) {
         setCart(
           cart.map((i) =>
-            i.variantId === variantId
-              ? { ...i, qty: i.qty + 1 }
-              : i
+            i.variantId === variantId ? { ...i, qty: i.qty + 1 } : i
           )
         );
       }
@@ -101,7 +185,8 @@ export default function ProductCardWithVariants({ product }) {
       setCart([
         ...cart,
         {
-          ...product,
+          ...mergedProduct,
+          image: selectedImage,
           qty: 1,
           maxQty: variantStock,
           selectedAttributes: { ...selected },
@@ -111,20 +196,25 @@ export default function ProductCardWithVariants({ product }) {
     }
   };
 
+  // -----------------------------------------
+  // 7️⃣ UI Rendering
+  // -----------------------------------------
+  if (loading) return null; // or show skeleton by prop
+
   return (
     <div className="min-w-[240px] bg-white rounded-xl shadow hover:shadow-md transition p-4">
-      
+
       {/* Image */}
-      <ProductCardImage images={product.images} selected={selected} />
+      <ProductCardImage images={mergedProduct.images} selected={selected} />
 
       {/* Title */}
       <h3 className="font-medium text-gray-800 text-sm mb-1">
-        {product.title}
+        {mergedProduct.title}
       </h3>
 
       {/* Price */}
       <p className="text-primary font-semibold mb-3">
-        {format(product.price)}
+        {format(mergedProduct.price)}
       </p>
 
       {/* Wishlist */}
@@ -133,7 +223,7 @@ export default function ProductCardWithVariants({ product }) {
         toggleWishlist={toggleWishlist}
       />
 
-      {/* Dynamic Attribute Selectors */}
+      {/* Variants */}
       {hasVariants && (
         <ProductAttributeSelector
           attributeKeys={attributeKeys}
@@ -143,13 +233,11 @@ export default function ProductCardWithVariants({ product }) {
         />
       )}
 
-      {/* Add To Cart */}
+      {/* Add to Cart */}
       <ProductAddToCartButton
         canAddToCart={canAddToCart}
         hasVariants={hasVariants}
-        allAttributesSelected={attributeKeys.every(
-          (key) => selected[key]
-        )}
+        allAttributesSelected={attributeKeys.every((k) => selected[k])}
         variantStock={variantStock}
         addToCart={addToCart}
       />

@@ -8,19 +8,17 @@ import useCurrency from "@/components/hooks/useCurrency";
 import CartItem from "./CartItem";
 import CartSummary from "./CartSummary";
 import EmptyCart from "./EmptyCart";
-import UpsellProducts from "./UpsellProducts";
 
-import {
-  fetchContentfulProductBySlug,
-  fetchUpsellProducts
-} from "@/lib/contentfulClient"; 
-// ^ Adjust this to your actual file path if needed.
+import ProductCarouselBySlugs from "@/components/products/ProductCarouselBySlugs";
+
+import { fetchUpsellProducts } from "@/lib/contentfulClient"; 
+// Keep this — we still fetch slugs here.
 
 export default function CartPage() {
   const { cart, updateCartQty, removeFromCart } = useAppContext();
   const { format } = useCurrency();
 
-  const [upsell, setUpsell] = useState([]);
+  const [upsellSlugs, setUpsellSlugs] = useState([]);
 
   // ---------------------------------------------------------
   // SUBTOTAL
@@ -30,20 +28,25 @@ export default function CartPage() {
   }, [cart]);
 
   // ---------------------------------------------------------
-  // LOAD UPSELL PRODUCTS BASED ON CART ITEMS
+  // LOAD UPSELL PRODUCT SLUGS BASED ON CART ITEMS
   // ---------------------------------------------------------
   useEffect(() => {
     async function loadUpsells() {
       if (!cart.length) {
-        setUpsell([]);
+        setUpsellSlugs([]);
         return;
       }
 
-      const slugs = cart.map((item) => item.slug);
+      const cartSlugs = cart.map((item) => item.slug);
 
       try {
-        const upsells = await fetchUpsellProducts(slugs);
-        setUpsell(upsells);
+        // fetchUpsellProducts returns actual product entries
+        // but we only need the SLUGS for ProductCarouselBySlugs
+        const upsellItems = await fetchUpsellProducts(cartSlugs);
+
+        const slugs = upsellItems.map((p) => p.slug);
+
+        setUpsellSlugs(slugs);
       } catch (err) {
         console.error("Upsell fetch error:", err);
       }
@@ -56,7 +59,7 @@ export default function CartPage() {
   // RENDER
   // ---------------------------------------------------------
   return (
-    <div className="px-4 py-6 md:px-8 max-w-5xl mx-auto">
+    <div className="px-4 py-6 md:px-8">
       <h1 className="text-3xl font-bold mb-6">Your Cart</h1>
 
       {cart.length === 0 ? (
@@ -78,9 +81,12 @@ export default function CartPage() {
               />
             ))}
 
-            {/* UPSELL PRODUCTS */}
-            {upsell.length > 0 && (
-              <UpsellProducts products={upsell} />
+            {/* UPSELL CAROUSEL */}
+            {upsellSlugs.length > 0 && (
+              <div className="mt-8">
+                <h2 className="text-xl font-semibold mb-4">You may also like</h2>
+                <ProductCarouselBySlugs slugs={upsellSlugs} />
+              </div>
             )}
 
           </div>

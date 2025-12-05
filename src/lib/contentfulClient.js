@@ -6,16 +6,19 @@ const accessToken = process.env.NEXT_PUBLIC_CONTENTFUL_DELIVERY_TOKEN;
 
 const BASE_URL = `https://cdn.contentful.com/spaces/${space}/environments/master`;
 
+function authHeaders() {
+  return {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  };
+}
+
 // -------------------------------------------------------------
-// OLD FUNCTION #1 (KEPT AS-IS)
-// Basic product fetch without images or references
+// OLD FUNCTION #1 (Kept for backward compatibility)
 // -------------------------------------------------------------
 export async function fetchContentfulProducts() {
   const res = await fetch(
     `${BASE_URL}/entries?content_type=product`,
-    {
-      headers: { Authorization: `Bearer ${accessToken}` },
-    }
+    authHeaders()
   );
 
   const data = await res.json();
@@ -23,17 +26,15 @@ export async function fetchContentfulProducts() {
 }
 
 // -------------------------------------------------------------
-// HELPER: Build Asset Map (url + tag)
+// HELPER: Build Asset Map (id → { url, tag })
 // -------------------------------------------------------------
 function buildAssetMap(includes) {
   const assetMap = {};
 
   includes?.Asset?.forEach((asset) => {
     const id = asset.sys.id;
-
-    const url = asset.fields.file.url.startsWith("//")
-      ? "https:" + asset.fields.file.url
-      : asset.fields.file.url;
+    const rawUrl = asset.fields?.file?.url || "";
+    const url = rawUrl.startsWith("//") ? `https:${rawUrl}` : rawUrl;
 
     const tag = asset.metadata?.tags?.[0]?.sys?.id || null;
 
@@ -45,7 +46,6 @@ function buildAssetMap(includes) {
 
 // -------------------------------------------------------------
 // HELPER: Parse a Single Product Entry
-// Converts Contentful entry → your standardized static structure
 // -------------------------------------------------------------
 function parseProduct(entry, assetMap) {
   const f = entry.fields;
@@ -61,8 +61,8 @@ function parseProduct(entry, assetMap) {
     id: entry.sys.id,
     title: f.title,
     slug: f.slug,
-    description: f.description || null,
-    shortDescription: f.shortDescription || null,
+    description: f.description || "",
+    shortDescription: f.shortDescription || "",
     colors: f.colors || [],
     sizes: f.sizes || [],
     materials: f.materials || [],
@@ -71,21 +71,22 @@ function parseProduct(entry, assetMap) {
     seo: f.seo || null,
     images,
 
-    // Product references
-    relatedProducts: f.relatedProducts?.map((ref) => ({
-      id: ref.sys.id,
-      slug: null,
-    })) || [],
+    relatedProducts:
+      f.relatedProducts?.map((ref) => ({
+        id: ref.sys.id,
+        slug: null,
+      })) || [],
 
-    upsellProducts: f.upsellProducts?.map((ref) => ({
-      id: ref.sys.id,
-      slug: null,
-    })) || [],
+    upsellProducts:
+      f.upsellProducts?.map((ref) => ({
+        id: ref.sys.id,
+        slug: null,
+      })) || [],
   };
 }
 
 // -------------------------------------------------------------
-// HELPER: Fill Slugs for Upsell / Related Product References
+// HELPER: Fill slugs for referenced entries
 // -------------------------------------------------------------
 function fillReferenceSlugs(products, includesEntries) {
   const entryMap = {};
@@ -108,15 +109,12 @@ function fillReferenceSlugs(products, includesEntries) {
 }
 
 // -------------------------------------------------------------
-// OLD FUNCTION #2 (KEPT AS-IS)
-// Full product fetch with images (NO references yet)
+// OLD FUNCTION #2 (still works fine)
 // -------------------------------------------------------------
 export async function fetchContentfulProductsWithImages() {
   const res = await fetch(
     `${BASE_URL}/entries?content_type=product&include=10`,
-    {
-      headers: { Authorization: `Bearer ${accessToken}` },
-    }
+    authHeaders()
   );
 
   const data = await res.json();
@@ -124,6 +122,7 @@ export async function fetchContentfulProductsWithImages() {
 
   return data.items.map((item) => {
     const f = item.fields;
+
     const images =
       f.productImages?.map((imgRef) => {
         const asset = assetMap[imgRef.sys.id];
@@ -135,8 +134,8 @@ export async function fetchContentfulProductsWithImages() {
       id: item.sys.id,
       title: f.title,
       slug: f.slug,
-      description: f.description || null,
-      shortDescription: f.shortDescription || null,
+      description: f.description || "",
+      shortDescription: f.shortDescription || "",
       colors: f.colors || [],
       sizes: f.sizes || [],
       materials: f.materials || [],
@@ -149,16 +148,85 @@ export async function fetchContentfulProductsWithImages() {
 }
 
 // -------------------------------------------------------------
-// NEW FUNCTION #1
-// Full product fetch WITH references + image tags
-// (This is what your upsell system needs!)
+// NEW FUNCTION #1 — Full Product Fetch + References
 // -------------------------------------------------------------
 export async function fetchContentfulProductsFull() {
   const res = await fetch(
     `${BASE_URL}/entries?content_type=product&include=10`,
-    {
-      headers: { Authorization: `Bearer ${accessToken}` },
-    }
+    authHeaders()
+  );
+
+  const data = await res.json();
+  const assetMap = buildAssetMap(data.includes);
+
+  let products = data.items.map((entry) =>
+    parseProduct(entry, assetMap)
+  );
+
+  products = fillReferenceSlugs(products, data.includes?.Entry || []);
+  return products;
+}
+
+// -------------------------------------------------------------
+// NEW FUNCTION #2 — Fetch Single Product by Slug
+// -------------------------------------------------------------
+export async function fetchContentfulProductBySlug(slug) {
+  const res = await fetch(
+    `${BASE_URL}/entries?content_type=product&include=10&fields.slug=${slug}`,
+    authHeaders()
+  );
+
+  const data = await res.json();
+  if (!data.items.length) return null;
+
+  const assetMap = buildAssetMap(data.includes);
+  let product = parseProduct(data.items[0], assetMap);
+
+  product = fillReferenceSlugs([product], data.includes?.Entry || [])[0];
+
+  return product;
+}
+
+// -------------------------------------------------------------
+// NEW FUNCTION #3 — Fetch Upsell Products by Slugs
+// -------------------------------------------------------------
+export async function fetchUpsellProducts(slugs = []) {
+  if (!Array.isArray(slugs) || slugs.length === 0) return [];
+
+  const upsellSlugs = new Set();
+
+  for (const slug of slugs) {
+    const product = await fetchContentfulProductBySlug(slug);
+    if (!product) continue;
+
+    product.upsellProducts.forEach((ref) => {
+      if (ref.slug) upsellSlugs.add(ref.slug);
+    });
+  }
+
+  const finalSlugs = Array.from(upsellSlugs);
+
+  const results = [];
+  for (const slug of finalSlugs) {
+    const p = await fetchContentfulProductBySlug(slug);
+    if (p) results.push(p);
+  }
+
+  return results;
+}
+
+// -------------------------------------------------------------
+// NEW FUNCTION #4 — Correct version of fetchProductsBySlugs
+// (Uses REST API, consistent with everything above)
+// -------------------------------------------------------------
+export async function fetchProductsBySlugs(slugs = []) {
+  if (!slugs.length) return [];
+
+  const slugQuery = slugs.join(",");
+
+  const res = await fetch(
+    `${BASE_URL}/entries?content_type=product&include=10&fields.slug[in]=${slugQuery}`,
+    authHeaders()
   );
 
   const data = await res.json();
@@ -173,60 +241,66 @@ export async function fetchContentfulProductsFull() {
   return products;
 }
 
-// -------------------------------------------------------------
-// NEW FUNCTION #2
-// Fetch a single product by slug
-// (with images + upsellProducts + relatedProducts)
-// -------------------------------------------------------------
-export async function fetchContentfulProductBySlug(slug) {
+export async function fetchHomePage() {
   const res = await fetch(
-    `${BASE_URL}/entries?content_type=product&include=10&fields.slug=${slug}`,
-    {
-      headers: { Authorization: `Bearer ${accessToken}` },
-    }
+    `${BASE_URL}/entries?content_type=homePage&include=10`,
+    authHeaders()
   );
 
   const data = await res.json();
+
   if (!data.items.length) return null;
 
+  const entry = data.items[0];
+  const f = entry.fields;
+
+  // ✔ Use your global & correct buildAssetMap
   const assetMap = buildAssetMap(data.includes);
-  let product = parseProduct(data.items[0], assetMap);
 
-  // Attach slugs for referenced products
-  product = fillReferenceSlugs([product], data.includes?.Entry || [])[0];
+  // ------- Build entry (product) map ---------
+  const entryMap = {};
+  data.includes?.Entry?.forEach((e) => {
+    entryMap[e.sys.id] = e;
+  });
 
-  return product;
-}
+  // ------- Resolve main banner asset ---------
+  const bannerId = f.mainBanner?.sys?.id;
+  const banner = bannerId ? assetMap[bannerId] : null;
+
+  // ------- Resolve latest products WITH TAGGED IMAGES ---------
+  const latestProducts = (f.latestProducts || [])
+    .map((ref) => {
+      const entryObj = entryMap[ref.sys.id];
+      if (!entryObj) return null;
+
+      const pf = entryObj.fields;
+
+      const images =
+        pf.productImages?.map((imgRef) => {
+          const asset = assetMap[imgRef.sys.id];
+          return asset ? { url: asset.url, tag: asset.tag } : null;
+        }).filter(Boolean) || [];
+
+      return {
+        id: entryObj.sys.id,
+        slug: pf.slug,
+        title: pf.title,
+        price: pf.price,
+        images,
+        description: pf.description || "",
+        shortDescription: pf.shortDescription || "",
+      };
+    })
+    .filter(Boolean);
 
 
-// -------------------------------------------------------------
-// NEW FUNCTION #3
-// fetchUpsellProducts(slugs: string[])
-// -------------------------------------------------------------
-export async function fetchUpsellProducts(slugs = []) {
-  if (!Array.isArray(slugs) || slugs.length === 0) return [];
-
-  const upsellSlugs = new Set();
-
-  // Fetch each product to read its upsellProducts references
-  for (const slug of slugs) {
-    const product = await fetchContentfulProductBySlug(slug);
-    if (!product) continue;
-
-    product.upsellProducts.forEach((ref) => {
-      if (ref.slug) upsellSlugs.add(ref.slug);
-    });
-  }
-
-  // Convert Set to array
-  const uniqueSlugs = Array.from(upsellSlugs);
-
-  // Fetch the full product for each upsell slug
-  const results = [];
-  for (const slug of uniqueSlugs) {
-    const p = await fetchContentfulProductBySlug(slug);
-    if (p) results.push(p);
-  }
-
-  return results;
+  return {
+    entry: entry,
+    title: f.title,
+    slug: f.slug,
+    seo: entryMap[f.seo?.sys?.id]?.fields || null,
+    mainBanner: banner?.url || null,
+    featuredTitle: f.featuredTitle,
+    latestProducts,
+  };
 }
