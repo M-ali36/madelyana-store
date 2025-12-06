@@ -1,68 +1,78 @@
 import { db } from "@/lib/firebaseClient";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 
-// ---------------------------------------------------
-// Deduct stock for each order item (variants)
-// ---------------------------------------------------
+// -----------------------------------------
+// Improved variant matching
+// -----------------------------------------
+function variantsMatch(variant, itemVariant) {
+  for (const key in itemVariant) {
+    const val = itemVariant[key];
+
+    // Skip empty fields inside Firestore
+    if (variant[key] === "") continue;
+
+    if (variant[key] !== val) return false;
+  }
+  return true;
+}
+
+// -----------------------------------------
 export async function deductStockForOrder(order) {
-  // Prevent double deduction
   if (order.stockDeducted) {
     return { ok: true, message: "Stock already deducted." };
   }
 
   const items = order.items || [];
 
-  // 1. First pass — validate stock
+  // -----------------------------------------
+  // 1️⃣ VALIDATION PASS
+  // -----------------------------------------
   for (const item of items) {
     const productRef = doc(db, "products_dynamic", item.productId);
-    const productSnap = await getDoc(productRef);
+    const snap = await getDoc(productRef);
 
-    if (!productSnap.exists()) {
+    if (!snap.exists())
       return { ok: false, error: `Product not found: ${item.productId}` };
-    }
 
-    const product = productSnap.data();
+    const product = snap.data();
     const variants = product.variants || [];
 
-    const match = variants.find(
-      (v) => v.color === item.variant.color && v.size === item.variant.size
-    );
+    const match = variants.find((v) => variantsMatch(v, item.variant));
 
-    if (!match) {
+    if (!match)
       return {
         ok: false,
-        error: `Variant not found for ${item.name} (${item.variant.color}, ${item.variant.size})`,
+        error: `Variant not found for ${item.title} → ${JSON.stringify(
+          item.variant
+        )}`,
       };
-    }
 
-    if (match.quantity < item.quantity) {
+    if (Number(match.quantity) < item.qty)
       return {
         ok: false,
-        error: `Insufficient stock for ${item.name}: ${item.variant.color} / ${item.variant.size} — requested ${item.quantity}, available ${match.quantity}`
+        error: `Insufficient stock for ${item.title} (${item.qty} requested, ${match.quantity} available)`,
       };
-    }
   }
 
-  // 2. Second pass — deduct stock
+  // -----------------------------------------
+  // 2️⃣ DEDUCTION PASS
+  // -----------------------------------------
   for (const item of items) {
     const productRef = doc(db, "products_dynamic", item.productId);
-    const productSnap = await getDoc(productRef);
-    const product = productSnap.data();
+    const snap = await getDoc(productRef);
+
+    if (!snap.exists()) continue;
+
+    const product = snap.data();
     const variants = product.variants || [];
 
-    const updatedVariants = variants.map((v) => {
-      if (v.color === item.variant.color && v.size === item.variant.size) {
-        return {
-          ...v,
-          quantity: v.quantity - item.quantity,
-        };
-      }
-      return v;
-    });
+    const updated = variants.map((v) =>
+      variantsMatch(v, item.variant)
+        ? { ...v, quantity: Number(v.quantity) - item.qty }
+        : v
+    );
 
-    await updateDoc(productRef, {
-      variants: updatedVariants,
-    });
+    await updateDoc(productRef, { variants: updated });
   }
 
   return { ok: true };

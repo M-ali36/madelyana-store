@@ -5,6 +5,7 @@ import Navigation from './Navigation';
 import MiniCart from './MiniCart';
 import MiniWishlist from './MiniWishlist';
 import CurrencySwitcher from './CurrencySwitcher';
+import MiniAccount from './Customer';
 
 const Header = props => {
     return (
@@ -21,6 +22,7 @@ const Header = props => {
                     <div className="col-span-2 flex gap-4 items-center justify-end">
                         <MiniCart />
                         <MiniWishlist />
+                        <MiniAccount />
                         <CurrencySwitcher />
                     </div>
                 </div>

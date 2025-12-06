@@ -6,7 +6,7 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
 } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
