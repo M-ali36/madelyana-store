@@ -1,11 +1,13 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/components/Ui/Link";
 import Image from "next/image";
 import useCurrency from "@/components/hooks/useCurrency";
+import { useLocale } from "next-intl";
 
 export default function UpsellProducts({ products }) {
   const { format } = useCurrency();
+  const locale = useLocale();
 
   return (
     <div className="mt-8">
@@ -15,6 +17,7 @@ export default function UpsellProducts({ products }) {
         {products.map((p) => (
           <Link
             key={p.slug}
+            locale={locale}
             href={`/products/${p.slug}`}
             className="border rounded-lg p-3 hover:shadow-md transition"
           >

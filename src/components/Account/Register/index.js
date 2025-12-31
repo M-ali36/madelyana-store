@@ -8,9 +8,11 @@ import {
 } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import { useState } from "react";
-import Link from "next/link";
+import Link from "@/components/Ui/Link";
+import { useLocale } from "next-intl"; 
 
 export default function RegisterPage() {
+  const locale = useLocale();
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -169,7 +171,7 @@ export default function RegisterPage() {
         {/* Login Link */}
         <p className="text-sm text-center text-gray-600 mt-6">
           Already have an account?{" "}
-          <Link href="/login" className="text-primary font-medium hover:underline">
+          <Link href="/login" locale={locale} className="text-primary font-medium hover:underline">
             Login here
           </Link>
         </p>

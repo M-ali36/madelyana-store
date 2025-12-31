@@ -1,0 +1,41 @@
+{
+    "top_message": "Free shipping with over 12$",
+    "women_bags": "Women's Bags",
+    "home": {
+        "latest_products": "Latest Products",
+        "no_homepage_found": "No homepage found."
+    },
+    "account": {
+        "my_account": "My Account",
+        "orders": "Orders",
+        "wishlist": "Wishlist",
+        "settings": "Settings",
+        "logout": "Logout"
+    },
+    "productTrust": {
+        "heading": "Buy With Confidence",
+        "intro": "We understand that shopping online requires trust. This store is built to feel safe, honest, and familiar — a place where you can shop comfortably and come back with confidence.",
+        "qualityTitle": "Carefully Selected Quality",
+        "qualityDesc": "Every bag and pair of shoes is thoughtfully chosen for its materials, durability, and design. If it’s here, it’s something we believe in and would proudly use ourselves.",
+        "secureTitle": "Secure & Private Checkout",
+        "secureDesc": "Your personal and payment information is protected using trusted, secure technologies. We never store sensitive data and always put your privacy first.",
+        "returnsTitle": "Easy & Fair Returns",
+        "returnsDesc": "If something doesn’t feel right, returning your order is simple and stress-free. Buying should never feel like a risk.",
+        "supportTitle": "Real Human Support",
+        "supportDesc": "Have a question about sizing, materials, or delivery? We’re here to help. Behind this store is a real team that genuinely cares.",
+        "careTitle": "Built With Care for You",
+        "careDesc": "This store was created with you in mind — not just to sell products, but to create a place that feels reliable, welcoming, and yours."
+    },
+    "product": {
+        "details": "Product details",
+        "description": "Description",
+        "colors": "Colors",
+        "sizes": "Sizes",
+        "materials": "Materials",
+        "features": "Features"
+    },
+    "relatedProducts": {
+        "title": "You may also like",
+        "subTitle": "Handpicked items that perfectly match this product"
+    }
+}

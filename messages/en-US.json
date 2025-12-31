@@ -1,0 +1,15 @@
+{
+    "top_message": "Free shipping with over 12$",
+    "women_bags": "Women's Bags",
+    "home": {
+        "latest_products": "Latest Products",
+        "no_homepage_found": "No homepage found."
+    },
+    "account": {
+        "my_account": "My Account",
+        "orders": "Orders",
+        "wishlist": "Wishlist",
+        "settings": "Settings",
+        "logout": "Logout"
+    }
+}

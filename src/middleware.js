@@ -1,31 +1,65 @@
 import { NextResponse } from "next/server";
 
-export function middleware(request) {
-  const token = request.cookies.get("firebase_id_token")?.value;
-  const role = request.cookies.get("auth_role")?.value;
-  const { pathname } = request.nextUrl;
+const SUPPORTED_LOCALES = ["en", "ar"];
 
-  // Block admin/customer if no login
+// Detect locale from pathname
+function getLocale(pathname) {
+  const segment = pathname.split("/")[1];
+  return SUPPORTED_LOCALES.includes(segment) ? segment : "en";
+}
+
+export function middleware(request) {
+  const token = request.cookies.get("firebase_id_token")?.value || null;
+  const role = request.cookies.get("auth_role")?.value || null;
+
+  const url = request.nextUrl.clone();
+  const pathname = url.pathname;
+
+  // 1️⃣ Detect locale
+  const locale = getLocale(pathname);
+
+  // Remove existing locale prefix to get clean path
+  const pathWithoutLocale = SUPPORTED_LOCALES.includes(pathname.split("/")[1])
+    ? pathname.replace(/^\/(en|ar)/, "")
+    : pathname;
+
+  const isAdmin = pathWithoutLocale.startsWith("/admin");
+  const isCustomer = pathWithoutLocale.startsWith("/customer");
+
+  // 2️⃣ Rewrite URLs missing the locale prefix
+  //    /admin      → /en/admin
+  //    /customer   → /en/customer
+  //    /           → /en
+  if (!pathname.startsWith(`/${locale}`)) {
+    url.pathname = `/${locale}${pathWithoutLocale}`;
+    return NextResponse.rewrite(url);
+  }
+
+  // 3️⃣ AUTH REQUIRED (admin & customer sections)
   if (!token) {
-    if (pathname.startsWith("/admin") || pathname.startsWith("/customer")) {
-      return NextResponse.redirect(new URL("/login", request.url));
+    if (isAdmin || isCustomer) {
+      url.pathname = `/${locale}/login`;
+      return NextResponse.redirect(url);
     }
     return NextResponse.next();
   }
 
-  // USER trying to access admin → redirect
-  if (role === "user" && pathname.startsWith("/admin")) {
-    return NextResponse.redirect(new URL("/customer", request.url));
+  // 4️⃣ Restrict "user" from accessing admin
+  if (role === "user" && isAdmin) {
+    url.pathname = `/${locale}/customer`;
+    return NextResponse.redirect(url);
   }
 
-  // ADMIN trying to access customer → redirect
-  if (role === "admin" && pathname.startsWith("/customer")) {
-    return NextResponse.redirect(new URL("/admin", request.url));
+  // 5️⃣ Restrict "admin" from accessing customer
+  if (role === "admin" && isCustomer) {
+    url.pathname = `/${locale}/admin`;
+    return NextResponse.redirect(url);
   }
 
   return NextResponse.next();
 }
 
+// Ensure middleware applies to ALL pages except static assets/API
 export const config = {
-  matcher: ["/admin/:path*", "/customer/:path*"],
+  matcher: ["/((?!api|_next|.*\\..*).*)"],
 };

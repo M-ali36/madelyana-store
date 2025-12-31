@@ -1,8 +1,10 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/components/Ui/Link";
+import { useLocale } from "next-intl";
 
 export default function CartSummary({ subtotal, format }) {
+  const locale = useLocale();
   return (
     <div className="p-6 bg-white rounded-lg shadow-md border border-gray-200">
       <h3 className="text-xl font-semibold mb-4">Order Summary</h3>
@@ -17,6 +19,7 @@ export default function CartSummary({ subtotal, format }) {
       {/* Checkout */}
       <Link
         href="/checkout"
+        locale={locale}
         className="block w-full bg-black text-white text-center py-2 rounded-md hover:bg-gray-800 transition"
       >
         Proceed to Checkout
@@ -24,6 +27,7 @@ export default function CartSummary({ subtotal, format }) {
 
       <Link
         href="/products"
+        locale={locale}
         className="block text-center text-sm mt-3 text-gray-700 hover:underline"
       >
         Continue Shopping

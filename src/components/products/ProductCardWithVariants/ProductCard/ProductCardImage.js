@@ -1,6 +1,7 @@
 "use client";
 
-import Image from "next/image";
+import AnimatedImage from "@/components/Ui/AnimatedImage";
+import Image from "@/components/Ui/Image";
 
 export default function ProductCardImage({ images, selected }) {
   const mainImage =
@@ -25,12 +26,9 @@ export default function ProductCardImage({ images, selected }) {
   const displayImage = colorImage || mainImage;
 
   return (
-    <div className="relative w-full h-48 mb-3">
-      <Image
-        src={displayImage}
-        alt="Product"
-        fill
-        className="object-cover rounded-lg"
+    <div className="relative w-full aspect-video mb-3">
+      <AnimatedImage 
+        image={displayImage}
       />
     </div>
   );

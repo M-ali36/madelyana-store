@@ -9,9 +9,11 @@ import {
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
+import Link from "@/components/Ui/Link";
+import { useLocale } from "next-intl";
 
 export default function LoginPage() {
+  const locale = useLocale();
   const router = useRouter();
 
   const [email, setEmail] = useState("");
@@ -101,7 +103,13 @@ export default function LoginPage() {
       document.cookie = `auth_role=${role}; path=/; max-age=86400; secure`;
 
       // Redirect
-      router.replace(role === "admin" ? "/admin" : "/customer");
+      router.replace(
+        locale === "ar"
+          ? `/ar${role === "admin" ? "/admin" : "/customer"}`
+          : role === "admin"
+            ? "/admin"
+            : "/customer"
+      );
     } catch (err) {
       console.error(err);
       setError("Google login failed.");
@@ -178,7 +186,7 @@ export default function LoginPage() {
         {/* Register Link */}
         <p className="text-sm text-center text-gray-600 mt-6">
           Don&apos;t have an account?{" "}
-          <Link href="/register" className="text-primary font-medium hover:underline">
+          <Link href="/register" locale={locale} className="text-primary font-medium hover:underline">
             Register here
           </Link>
         </p>

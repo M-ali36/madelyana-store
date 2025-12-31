@@ -10,7 +10,7 @@ import OrderTimeline from "../OrderTimeline";
 import TrackingLinks from "../TrackingLinks";
 
 // --------------------------------------------
-// STOCK DEDUCTION LOGIC
+// STOCK DEDUCTION LOGIC (corrected)
 // --------------------------------------------
 async function deductStockForOrder(order) {
   if (order.stockDeducted) {
@@ -19,7 +19,7 @@ async function deductStockForOrder(order) {
 
   const items = order.items || [];
 
-  // First pass — validate
+  // Validate stock
   for (const item of items) {
     const productRef = doc(db, "products_dynamic", item.productId);
     const productSnap = await getDoc(productRef);
@@ -31,39 +31,38 @@ async function deductStockForOrder(order) {
     const product = productSnap.data();
     const variants = product.variants || [];
 
-    const variantMatch = variants.find(
-      (v) => v.color === item.variant.color && v.size === item.variant.size
-    );
+    // Your variant only has color, no size
+    const variantMatch = variants.find((v) => v.color === item.variant.color);
 
     if (!variantMatch) {
       return {
         ok: false,
-        error: `Variant not found: ${item.variant.color}/${item.variant.size}`,
+        error: `Variant not found: ${item.variant.color}`,
       };
     }
 
-    if (variantMatch.quantity < item.quantity) {
+    if (variantMatch.quantity < item.qty) {
       return {
         ok: false,
-        error: `Insufficient stock for ${item.name} (${item.variant.color}/${item.variant.size}) — Requested ${item.quantity}, Available ${variantMatch.quantity}`,
+        error: `Insufficient stock for ${item.title} (${item.variant.color}) — Requested ${item.qty}, Available ${variantMatch.quantity}`,
       };
     }
   }
 
-  // Second pass — deduct
+  // Deduct stock
   for (const item of items) {
-    const productRef = doc(db, "products_dynamic", item.productId);
-    const productSnap = await getDoc(productRef);
-    const product = productSnap.data();
+    const ref = doc(db, "products_dynamic", item.productId);
+    const snap = await getDoc(ref);
+    const product = snap.data();
 
     const updatedVariants = product.variants.map((v) => {
-      if (v.color === item.variant.color && v.size === item.variant.size) {
-        return { ...v, quantity: v.quantity - item.quantity };
+      if (v.color === item.variant.color) {
+        return { ...v, quantity: v.quantity - item.qty };
       }
       return v;
     });
 
-    await updateDoc(productRef, { variants: updatedVariants });
+    await updateDoc(ref, { variants: updatedVariants });
   }
 
   return { ok: true };
@@ -79,16 +78,20 @@ export default function OrderDetailsPage() {
 
   // Editable fields
   const [status, setStatus] = useState("");
-  const [paymentStatus, setPaymentStatus] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState("");
   const [tracking, setTracking] = useState("");
   const [notes, setNotes] = useState("");
+
+  // Refunds do not exist in your schema BUT kept optional for future extension
   const [refundReason, setRefundReason] = useState("");
 
+  // Shipping address (mapped from order.address)
   const [shipping, setShipping] = useState({
-    name: "",
+    fullName: "",
     phone: "",
-    address: "",
+    street: "",
     city: "",
+    state: "",
     country: "",
     zip: "",
   });
@@ -106,18 +109,19 @@ export default function OrderDetailsPage() {
       setOrder(data);
 
       setStatus(data.status);
-      setPaymentStatus(data.paymentStatus || "Pending");
+      setPaymentMethod(data.paymentMethod || "COD");
       setTracking(data.trackingNumber || "");
       setNotes(data.notes || "");
-      setRefundReason(data.refundReason || "");
 
+      // Shipping = order.address
       setShipping({
-        name: data.shipping?.name || "",
-        phone: data.shipping?.phone || "",
-        address: data.shipping?.address || "",
-        city: data.shipping?.city || "",
-        country: data.shipping?.country || "",
-        zip: data.shipping?.zip || "",
+        fullName: data.address?.fullName || "",
+        phone: data.address?.phone || "",
+        street: data.address?.street || "",
+        city: data.address?.city || "",
+        state: data.address?.state || "",
+        country: data.address?.country || "",
+        zip: data.address?.zip || "",
       });
 
       setLoading(false);
@@ -132,10 +136,7 @@ export default function OrderDetailsPage() {
     setError("");
     setSuccess("");
 
-    const mustDeduct =
-      status === "Completed" &&
-      paymentStatus === "Paid" &&
-      !order.stockDeducted;
+    const mustDeduct = status === "Completed" && !order.stockDeducted;
 
     if (mustDeduct) {
       const result = await deductStockForOrder(order);
@@ -151,36 +152,28 @@ export default function OrderDetailsPage() {
       const ref = doc(db, "orders", id);
 
       const updatedActivity = {
-        message:
-          paymentStatus === "Refunded"
-            ? "Order refunded"
-            : "Order updated",
-        detail:
-          paymentStatus === "Refunded"
-            ? `Refund Reason: ${refundReason || "(none provided)"}`
-            : `Status: ${order.status} → ${status}, Payment: ${order.paymentStatus} → ${paymentStatus}`,
+        message: "Order updated",
+        detail: `Status: ${order.status} → ${status}`,
         at: new Date(),
         admin: "admin",
       };
 
       await updateDoc(ref, {
         status,
-        paymentStatus,
+        paymentMethod,
         trackingNumber: tracking,
         notes,
-        refundReason: paymentStatus === "Refunded" ? refundReason : null,
-        shipping,
+        address: shipping,
         updatedAt: new Date(),
         stockDeducted: mustDeduct ? true : order.stockDeducted || false,
-
         activities: [...(order.activities || []), updatedActivity],
       });
 
-      setSuccess("Order updated!");
+      setSuccess("Order updated successfully!");
       setTimeout(() => setSuccess(""), 1200);
     } catch (err) {
       console.error(err);
-      setError("Error updating order");
+      setError("Error updating order.");
     }
 
     setSaving(false);
@@ -188,8 +181,6 @@ export default function OrderDetailsPage() {
 
   if (loading) return <p>Loading…</p>;
   if (!order) return <p className="text-red-500">Order not found</p>;
-
-  const isRefunded = paymentStatus === "Refunded";
 
   return (
     <div className="space-y-6">
@@ -216,18 +207,11 @@ export default function OrderDetailsPage() {
         <div>
           <h2 className="text-lg font-semibold mb-2">Order Summary</h2>
           <p><b>Order ID:</b> {id}</p>
-          <p><b>Email:</b> {order.userEmail}</p>
+          <p><b>Customer:</b> {shipping.fullName}</p>
           <p><b>Total:</b> ${order.total}</p>
           <p><b>Status:</b> <StatusBadge status={order.status} /></p>
-          <p><b>Payment:</b> {order.paymentStatus}</p>
+          <p><b>Payment Method:</b> {order.paymentMethod}</p>
         </div>
-
-        {/* Refund Reason Banner */}
-        {isRefunded && (
-          <div className="p-4 bg-red-100 text-red-700 border border-red-300 rounded">
-            <b>Refunded:</b> {refundReason || "No reason provided"}
-          </div>
-        )}
 
         {/* Timeline */}
         <OrderTimeline status={status} />
@@ -240,41 +224,26 @@ export default function OrderDetailsPage() {
             onChange={(e) => setStatus(e.target.value)}
             className="w-full border px-4 py-2 rounded mt-1"
           >
-            <option>Pending</option>
-            <option>Paid</option>
-            <option>Shipped</option>
-            <option>Completed</option>
-            <option>Cancelled</option>
+            <option>pending</option>
+            <option>paid</option>
+            <option>shipped</option>
+            <option>completed</option>
+            <option>cancelled</option>
           </select>
         </div>
 
-        {/* Payment Status */}
+        {/* Payment Method */}
         <div>
-          <label className="font-medium">Payment Status</label>
+          <label className="font-medium">Payment Method</label>
           <select
-            value={paymentStatus}
-            onChange={(e) => setPaymentStatus(e.target.value)}
+            value={paymentMethod}
+            onChange={(e) => setPaymentMethod(e.target.value)}
             className="w-full border px-4 py-2 rounded mt-1"
           >
-            <option value="Pending">Pending</option>
-            <option value="Paid">Paid</option>
-            <option value="Refunded">Refunded</option>
-            <option value="Failed">Failed</option>
+            <option value="COD">Cash on Delivery</option>
+            <option value="Card">Card</option>
           </select>
         </div>
-
-        {/* Refund Reason */}
-        {paymentStatus === "Refunded" && (
-          <div>
-            <label className="font-medium">Refund Reason</label>
-            <textarea
-              value={refundReason}
-              onChange={(e) => setRefundReason(e.target.value)}
-              className="w-full border px-4 py-2 rounded mt-1 h-20"
-              placeholder="Explain why the refund was issued…"
-            />
-          </div>
-        )}
 
         {/* Tracking */}
         <div>
@@ -300,14 +269,15 @@ export default function OrderDetailsPage() {
         {/* Shipping */}
         <div>
           <h3 className="text-lg font-semibold mb-2">Shipping Info</h3>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {["name", "phone", "address", "city", "country", "zip"].map((f) => (
-              <div key={f}>
-                <label className="font-medium capitalize">{f}</label>
+            {Object.keys(shipping).map((field) => (
+              <div key={field}>
+                <label className="font-medium capitalize">{field}</label>
                 <input
-                  value={shipping[f]}
+                  value={shipping[field]}
                   onChange={(e) =>
-                    setShipping({ ...shipping, [f]: e.target.value })
+                    setShipping({ ...shipping, [field]: e.target.value })
                   }
                   className="w-full border px-3 py-2 rounded mt-1"
                 />
@@ -322,11 +292,11 @@ export default function OrderDetailsPage() {
           <div className="bg-gray-50 p-4 rounded border space-y-4">
             {order.items.map((item, i) => (
               <div key={i} className="border-b pb-3">
-                <p className="font-medium">{item.name}</p>
+                <p className="font-medium">{item.title}</p>
                 <p className="text-sm text-gray-700">
-                  {item.variant.color} / {item.variant.size}
+                  Color: {item.variant.color}
                 </p>
-                <p>Qty: {item.quantity}</p>
+                <p>Qty: {item.qty}</p>
                 <p>${item.price} each</p>
               </div>
             ))}
@@ -342,16 +312,16 @@ export default function OrderDetailsPage() {
               order.activities.map((a, i) => (
                 <div key={i} className="text-sm">
                   <p className="font-semibold">{a.message}</p>
-                  <p className="text-gray-700 text-sm">{a.detail}</p>
+                  <p className="text-gray-700">{a.detail}</p>
                   <p className="text-gray-600 text-xs">
-                    {a.at.seconds
+                    {a.at?.seconds
                       ? new Date(a.at.seconds * 1000).toLocaleString()
                       : new Date(a.at).toLocaleString()}
                   </p>
                 </div>
               ))
             ) : (
-              <p className="text-gray-500 text-sm">No activity yet</p>
+              <p className="text-gray-500 text-sm">No activity yet.</p>
             )}
           </div>
         </div>

@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { db } from "@/lib/firebaseClient";
 import { collection, addDoc, getDocs, serverTimestamp } from "firebase/firestore";
-import { fetchContentfulProducts } from "@/lib/contentfulClient";
+import { fetchProducts } from "@/lib/contentfulClient";
 import { useRouter } from "next/navigation";
 
 export default function AddProductPage() {
@@ -28,7 +28,7 @@ export default function AddProductPage() {
     const loadData = async () => {
       try {
         // 1. Fetch all Contentful products
-        const list = await fetchContentfulProducts();
+        const list = await fetchProducts();
 
         // 2. Fetch existing Firebase dynamic product slugs
         const snap = await getDocs(collection(db, "products_dynamic"));

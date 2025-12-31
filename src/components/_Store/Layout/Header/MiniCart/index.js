@@ -4,13 +4,15 @@ import React from "react";
 import { HiOutlineShoppingBag } from "react-icons/hi";
 import { useAppContext } from "@/components/context/AppContext";
 import Image from "next/image";
-import Link from "next/link";
+import Link from "@/components/Ui/Link";
 import useCurrency from "@/components/hooks/useCurrency";
+import { useLocale } from "next-intl";
 
 export default function MiniCart() {
   const { cart, setCart, navState, setNavState } = useAppContext();
 
   const { format } = useCurrency();
+  const locale = useLocale(); 
 
   // Toggle mini cart
   const toggleCart = () => {
@@ -53,8 +55,8 @@ export default function MiniCart() {
       <div
         className={`control-menu ${
           navState === "cart" ? "opened" : ""
-        } fixed top-0 right-0 w-80 bg-white shadow-xl h-full z-50 transition-transform transform ${
-          navState === "cart" ? "translate-x-0" : "translate-x-full"
+        } fixed top-0 w-80 bg-white shadow-xl h-full z-50 transition-all ${
+          navState === "cart" ? "end-0" : "-end-80"
         }`}
       >
         {/* HEADER */}
@@ -180,6 +182,7 @@ export default function MiniCart() {
             {/* VIEW CART BUTTON */}
             <Link
               href="/cart"
+              locale={locale}
               onClick={() => setNavState("")}
               className="block w-full py-2 text-center bg-gray-100 border border-gray-300 text-gray-800 rounded-md font-medium hover:bg-gray-200 transition"
             >
@@ -189,6 +192,7 @@ export default function MiniCart() {
             {/* CHECKOUT BUTTON */}
             <Link
               href="/checkout"
+              locale={locale}
               onClick={() => setNavState("")}
               className="block w-full py-2 text-center bg-primary text-black rounded-md font-medium hover:bg-primary-dark transition"
             >

@@ -14,11 +14,13 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { db } from "@/lib/firebaseClient";
-import Link from "next/link";
+import Link from "@/components/Ui/Link";
 import StatusBadge from "./StatusBadge";
+import { useLocale } from "next-intl";
 
 export default function OrdersPage() {
   const PAGE_SIZE = 10;
+  const locale = useLocale();
 
   const [orders, setOrders] = useState([]);
   const [lastDoc, setLastDoc] = useState(null);
@@ -98,8 +100,6 @@ export default function OrdersPage() {
   // BUILD QUERY
   // -------------------------
   const buildQuery = (isLoadMore = false) => {
-    let q;
-
     const sortField = "createdAt";
     const sortDirection = sortOrder === "newest" ? "desc" : "asc";
 
@@ -110,12 +110,12 @@ export default function OrdersPage() {
       constraints.push(where("status", "==", statusFilter));
     }
 
-    // Payment Filter
+    // Payment Filter (you only have paymentMethod, not paymentStatus)
     if (paymentFilter !== "") {
-      constraints.push(where("paymentStatus", "==", paymentFilter));
+      constraints.push(where("paymentMethod", "==", paymentFilter));
     }
 
-    q = query(collection(db, "orders"), ...constraints);
+    let q = query(collection(db, "orders"), ...constraints);
 
     if (isLoadMore && lastDoc) {
       q = query(q, startAfter(lastDoc));
@@ -130,10 +130,9 @@ export default function OrdersPage() {
   const searched = orders.filter((order) => {
     const text = `
       ${order.id}
-      ${order.userEmail}
+      ${order.address?.fullName || ""}
       ${order.status}
-      ${order.paymentStatus}
-      ${order.refundReason || ""}
+      ${order.paymentMethod}
       ${order.total}
     `.toLowerCase();
 
@@ -201,6 +200,9 @@ export default function OrdersPage() {
     else setSelected(searched.map((o) => o.id));
   };
 
+  // -------------------------
+  // RENDER
+  // -------------------------
   return (
     <div className="space-y-6">
 
@@ -218,7 +220,6 @@ export default function OrdersPage() {
       {/* SEARCH + FILTER */}
       <div className="flex flex-col md:flex-row md:items-center gap-3">
 
-        {/* Search */}
         <input
           type="text"
           placeholder="Search…"
@@ -234,24 +235,22 @@ export default function OrdersPage() {
           className="px-3 py-2 border rounded-md"
         >
           <option value="">All Status</option>
-          <option>Pending</option>
-          <option>Paid</option>
-          <option>Shipped</option>
-          <option>Completed</option>
-          <option>Cancelled</option>
+          <option value="pending">Pending</option>
+          <option value="paid">Paid</option>
+          <option value="shipped">Shipped</option>
+          <option value="completed">Completed</option>
+          <option value="cancelled">Cancelled</option>
         </select>
 
-        {/* Payment Status */}
+        {/* Payment Method */}
         <select
           value={paymentFilter}
           onChange={(e) => setPaymentFilter(e.target.value)}
           className="px-3 py-2 border rounded-md"
         >
           <option value="">All Payments</option>
-          <option value="Pending">Pending</option>
-          <option value="Paid">Paid</option>
-          <option value="Refunded">Refunded</option>
-          <option value="Failed">Failed</option>
+          <option value="COD">Cash on Delivery</option>
+          <option value="Card">Card</option>
         </select>
 
         {/* Sort */}
@@ -272,31 +271,19 @@ export default function OrdersPage() {
           <p className="text-sm font-medium">Selected: {selected.length}</p>
 
           <div className="flex gap-2">
-            <button
-              onClick={() => openBulkModal("Paid")}
-              className="px-3 py-1 bg-blue-600 text-white rounded"
-            >
+            <button onClick={() => openBulkModal("paid")} className="px-3 py-1 bg-blue-600 text-white rounded">
               Mark Paid
             </button>
 
-            <button
-              onClick={() => openBulkModal("Shipped")}
-              className="px-3 py-1 bg-purple-600 text-white rounded"
-            >
+            <button onClick={() => openBulkModal("shipped")} className="px-3 py-1 bg-purple-600 text-white rounded">
               Mark Shipped
             </button>
 
-            <button
-              onClick={() => openBulkModal("Completed")}
-              className="px-3 py-1 bg-green-600 text-white rounded"
-            >
+            <button onClick={() => openBulkModal("completed")} className="px-3 py-1 bg-green-600 text-white rounded">
               Mark Completed
             </button>
 
-            <button
-              onClick={() => openBulkModal("Cancelled")}
-              className="px-3 py-1 bg-red-600 text-white rounded"
-            >
+            <button onClick={() => openBulkModal("cancelled")} className="px-3 py-1 bg-red-600 text-white rounded">
               Cancel
             </button>
           </div>
@@ -334,8 +321,6 @@ export default function OrdersPage() {
 
             <tbody>
               {searched.map((order) => {
-                const isRefunded = order.paymentStatus === "Refunded";
-
                 return (
                   <tr key={order.id} className="border-t">
                     <td className="px-4 py-3">
@@ -347,16 +332,16 @@ export default function OrdersPage() {
                     </td>
 
                     {/* Order ID */}
-                    <td className="px-4 py-3 font-medium">
-                      {order.id}
-                    </td>
+                    <td className="px-4 py-3 font-medium">{order.id}</td>
 
                     {/* Customer */}
-                    <td className="px-4 py-3">{order.userEmail}</td>
+                    <td className="px-4 py-3">
+                      {order.address?.fullName || "Unknown"}
+                    </td>
 
                     {/* Total */}
                     <td className="px-4 py-3 font-semibold">
-                      ${order.total?.toFixed(2)}
+                      ${Number(order.total || 0).toFixed(2)}
                     </td>
 
                     {/* Status */}
@@ -366,37 +351,21 @@ export default function OrdersPage() {
 
                     {/* Payment */}
                     <td className="px-4 py-3">
-                      <span
-                        className={`px-2 py-1 text-xs rounded ${
-                          isRefunded
-                            ? "bg-red-100 text-red-700"
-                            : "bg-gray-100 text-gray-700"
-                        }`}
-                      >
-                        {order.paymentStatus}
+                      <span className="px-2 py-1 text-xs rounded bg-gray-100 text-gray-700">
+                        {order.paymentMethod || "COD"}
                       </span>
-
-                      {/* Refund Reason */}
-                      {isRefunded && order.refundReason && (
-                        <p className="text-xs text-red-600 mt-1">
-                          {order.refundReason}
-                        </p>
-                      )}
                     </td>
 
                     {/* Date */}
                     <td className="px-4 py-3">
                       {order.createdAt?.toDate
                         ? order.createdAt.toDate().toLocaleString()
-                        : "—"}
+                        : new Date(order.createdAt.seconds * 1000).toLocaleString()}
                     </td>
 
                     {/* Actions */}
                     <td className="px-4 py-3">
-                      <Link
-                        href={`/admin/orders/${order.id}`}
-                        className="text-primary hover:underline"
-                      >
+                      <Link href={`/admin/orders/${order.id}`} locale={locale} className="text-primary hover:underline">
                         View
                       </Link>
                     </td>
@@ -426,9 +395,7 @@ export default function OrdersPage() {
       {showModal && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg w-full max-w-md">
-            <h2 className="text-xl font-semibold mb-4">
-              Confirm Bulk Action
-            </h2>
+            <h2 className="text-xl font-semibold mb-4">Confirm Bulk Action</h2>
 
             <p className="text-gray-700 mb-2">
               You are about to update <b>{selected.length}</b> order(s)

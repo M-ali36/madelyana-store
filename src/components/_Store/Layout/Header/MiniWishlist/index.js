@@ -3,11 +3,14 @@ import React from "react";
 import { HiOutlineHeart } from "react-icons/hi";
 import { useAppContext } from "@/components/context/AppContext";
 import Image from "next/image";
-import Link from "next/link";
+import Link from "@/components/Ui/Link";
+import { useLocale } from "next-intl";
 
 export default function MiniWishlist() {
   const { wishlist, setWishlist, cart, setCart, navState, setNavState } =
     useAppContext();
+
+  const locale = useLocale();
 
   // Toggle mini wishlist panel
   const toggleWishlist = () => {
@@ -89,8 +92,8 @@ export default function MiniWishlist() {
       <div
         className={`control-menu ${
           navState === "wishlist" ? "opened" : ""
-        } fixed top-0 right-0 w-80 bg-white shadow-xl h-full z-50 transition-transform transform ${
-          navState === "wishlist" ? "translate-x-0" : "translate-x-full"
+        } fixed top-0 w-80 bg-white shadow-xl h-full z-50 transition-all  ${
+          navState === "wishlist" ? "end-0" : "-end-80"
         }`}
       >
         {/* HEADER */}
@@ -151,6 +154,7 @@ export default function MiniWishlist() {
           <div className="p-4 border-t space-y-3">
             <Link
               href="/customer/wishlist"
+              locale={locale}
               onClick={() => setNavState("")}
               className="block w-full py-2 text-center bg-gray-100 border border-gray-300 text-gray-800 rounded-md font-medium hover:bg-gray-200 transition"
             >

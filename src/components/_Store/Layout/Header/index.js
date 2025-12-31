@@ -1,38 +1,41 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import Logo from '@/svgs/Logo';
 import Navigation from './Navigation';
 import MiniCart from './MiniCart';
 import MiniWishlist from './MiniWishlist';
-import CurrencySwitcher from './CurrencySwitcher';
 import MiniAccount from './Customer';
+import { getTranslations } from "next-intl/server";
+import HeaderLogo from './HeaderLogo';  // <-- NEW IMPORT
+import TopHeader from './TopHeader';
 
-const Header = props => {
+export default async function Header({ locale }) {
+
+    const t = await getTranslations({ locale });
+
+    // You never provided isHome logic — add your own here.
+    const isHome = false; // placeholder
+
     return (
-        <header className="">
-            <div className="px-4 py-2 w-full text-center text-white bg-black">Free shipping with over 12$</div>
+        <header className="fixed top-0 left-0 w-full z-50 bg-white shadow">
+            { /* top header */ }
+            <TopHeader  locale={locale} />
+            { /* main header */ }
             <div className="cont">
                 <div className="grid grid-cols-12 items-center py-2">
-                    <div className="col-span-2">
-                        <Logo className="w-48" />
-                    </div>
+
+                    {/* ⬇️ Moved into its own component */}
+                    <HeaderLogo locale={locale} />
+
                     <div className="col-span-8">
-                        <Navigation />
+                        <Navigation t={t} locale={locale}/>
                     </div>
+
                     <div className="col-span-2 flex gap-4 items-center justify-end">
                         <MiniCart />
                         <MiniWishlist />
                         <MiniAccount />
-                        <CurrencySwitcher />
                     </div>
                 </div>
             </div>
         </header>
     );
 };
-
-Header.propTypes = {
-    
-};
-
-export default Header;

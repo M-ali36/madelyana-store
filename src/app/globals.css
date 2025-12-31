@@ -1,36 +1,24 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --brand-black: #161413;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+html {
+  font-family: var(--font-english);
 }
 
-/* ❌ REMOVE system dark mode override entirely */
-/*
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html[lang="ar"] {
+  font-family: var(--font-arabic);
 }
-*/
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
-}
+/* -----------------------------
+   SEMANTIC UTILITIES
+------------------------------ */
 
 .primary-btn {
-  background-color: #000;
-  color: #fff;
+  background-color: var(--brand-black);
+  color: white;
 }
 
 .cont {
@@ -38,44 +26,150 @@ body {
 }
 
 .link {
-	@apply text-current relative;
+  @apply text-current relative;
 }
 
-.link:before {
-	content:'';
-	display:block;
-	position:absolute;
-	left:0;
-	bottom:0;
-	height:1px;
-	width:0;
-	transition:width 0s ease, background .5s ease;
- }
- 
- .link:after {
-	content:'';
-	display:block;
-	position:absolute;
-	right:0;
-	bottom:0;
-	height:1px;
-	width:0;
-	background: currentColor;
-	transition:width .5s ease;
- }
- 
- .link:hover:before {
-	width:100%;
-	background: currentColor;
-	transition:width .5s ease;
- }
- 
- .link:hover:after {
-	width:100%;
-	background:transparent;
-	transition:all 0s ease;
- }
-
- .control-btn {
+.control-btn {
   @apply cursor-pointer;
- }
+}
+
+/* -----------------------------
+   LINKS
+------------------------------ */
+
+.link:before {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 1px;
+  width: 0;
+  transition: width 0s ease, background .5s ease;
+}
+
+.link:after {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  width: 0;
+  background: currentColor;
+  transition: width .5s ease;
+}
+
+.link:hover:before {
+  width: 100%;
+  background: currentColor;
+  transition: width .5s ease;
+}
+
+.link:hover:after {
+  width: 100%;
+  background: transparent;
+  transition: all 0s ease;
+}
+
+/* -----------------------------
+   SWIPER FALLBACK GRID
+------------------------------ */
+
+.swiper-products:not(.swiper-initialized) .swiper-wrapper {
+  @apply grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4;
+}
+
+/* -----------------------------
+   PRICE RANGE SLIDER
+------------------------------ */
+
+.price-range-slider .slider-container input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  pointer-events: none;
+  position: absolute;
+  width: 100%;
+  height: 0;
+  background: transparent;
+  margin-top: -8px;
+}
+
+.price-range-slider .slider-thumb::-webkit-slider-thumb {
+  pointer-events: auto;
+  -webkit-appearance: none;
+  height: 18px;
+  width: 18px;
+  border-radius: 9999px;
+  background: white;
+  border: 2px solid var(--brand-black);
+  cursor: pointer;
+  margin-top: -8px;
+}
+
+.price-range-slider .slider-thumb::-moz-range-thumb {
+  pointer-events: auto;
+  height: 18px;
+  width: 18px;
+  background: white;
+  border: 2px solid var(--brand-black);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.price-range-slider .slider-track {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #d1d5db; /* gray-300 */
+  transform: translateY(-50%);
+  border-radius: 9999px;
+}
+
+.price-range-slider .slider-range {
+  position: absolute;
+  top: 50%;
+  height: 2px;
+  background: var(--brand-black);
+  transform: translateY(-50%);
+  border-radius: 9999px;
+}
+
+/* -----------------------------
+   HEAVY SHADE (THUMBNAILS)
+------------------------------ */
+
+.heavy-shade::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  transition: all 0.2s ease-in-out;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.heavy-shade:hover::after,
+.heavy-shade.active::after {
+  box-shadow: inset 0 0 0 4px currentColor;
+}
+
+.swiper-slide-thumb-active .heavy-shade::after {
+  box-shadow: inset 0 0 0 4px rgba(22, 20, 19, 0.64);
+}
+
+/* -----------------------------
+   HEAVY SHADE BOX
+------------------------------ */
+.heavy-shade-box {
+  @apply relative;
+}
+
+.heavy-shade-box::after {
+  @apply content-[''] absolute inset-0 rounded pointer-events-none transition-all duration-200 z-[1];
+}
+
+.heavy-shade-box:hover::after,
+.heavy-shade-box.active::after {
+  box-shadow: inset 0 0 0 4px currentColor;
+}

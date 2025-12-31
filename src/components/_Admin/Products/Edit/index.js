@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { db } from "@/lib/firebaseClient";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
-import { fetchContentfulProducts } from "@/lib/contentfulClient";
+import { fetchProducts } from "@/lib/contentfulClient";
 import { useRouter, useParams } from "next/navigation";
 
 export default function EditProductPage() {
@@ -41,7 +41,7 @@ export default function EditProductPage() {
         const data = snap.data();
 
         // Fetch Contentful products list
-        const cList = await fetchContentfulProducts();
+        const cList = await fetchProducts();
         setContentfulProducts(cList);
 
         // Find the Contentful product info

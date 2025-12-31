@@ -11,6 +11,19 @@ import ProductWishlistButton from "./ProductCard/ProductWishlistButton";
 import ProductAddToCartButton from "./ProductCard/ProductAddToCartButton";
 import { useProductVariantEngine } from "./ProductCard/useProductVariantEngine";
 import useCurrency from "@/components/hooks/useCurrency";
+import Link from "@/components/Ui/Link";
+import { useLocale } from "next-intl";
+
+/* -----------------------------------------
+   Skeleton helpers (Tailwind only)
+------------------------------------------ */
+const SkeletonLine = ({ className = "" }) => (
+    <div className={`animate-pulse bg-gray-200 rounded ${className}`} />
+);
+
+const SkeletonButton = ({ className = "" }) => (
+    <div className={`animate-pulse bg-gray-200 rounded-lg ${className}`} />
+);
 
 export default function ProductCardWithVariants({ product }) {
     // -----------------------------------------
@@ -21,6 +34,8 @@ export default function ProductCardWithVariants({ product }) {
 
     const { wishlist, setWishlist, cart, setCart } = useAppContext();
     const { format } = useCurrency();
+
+    const locale = useLocale();
 
     // -----------------------------------------
     // 2️⃣ Fetch Firebase dynamic data
@@ -41,15 +56,14 @@ export default function ProductCardWithVariants({ product }) {
 
                     setMergedProduct((prev) => ({
                         ...prev,
-                        firebaseId: docSnap.id, // ⭐ FIXED: real Firestore ID
+                        firebaseId: docSnap.id,
                         price: Number(dynamicData.price) || prev.price || 0,
                         variants: dynamicData.variants || [],
                     }));
                 } else {
-                    // fallback if no dynamic entry exists
                     setMergedProduct((prev) => ({
                         ...prev,
-                        firebaseId: prev.firebaseId || prev.id, // backup fallback
+                        firebaseId: prev.firebaseId || prev.id,
                         price: prev.price || 0,
                         variants: prev.variants || [],
                     }));
@@ -71,11 +85,17 @@ export default function ProductCardWithVariants({ product }) {
     // -----------------------------------------
     // 3️⃣ Wishlist Toggle
     // -----------------------------------------
-    const isInWishlist = wishlist.some((w) => w.id === mergedProduct.firebaseId);
+    const isInWishlist = wishlist.some(
+        (w) => w.id === mergedProduct.firebaseId
+    );
 
     const toggleWishlist = () => {
+        if (loading) return;
+
         if (isInWishlist) {
-            setWishlist(wishlist.filter((w) => w.id !== mergedProduct.firebaseId));
+            setWishlist(
+                wishlist.filter((w) => w.id !== mergedProduct.firebaseId)
+            );
         } else {
             setWishlist([
                 ...wishlist,
@@ -96,12 +116,10 @@ export default function ProductCardWithVariants({ product }) {
     // -----------------------------------------
     const {
         hasVariants,
-        variants,
         attributeKeys,
         attributeOptions,
         selected,
         setSelected,
-        selectedVariant,
         variantStock,
         canAddToCart,
     } = useProductVariantEngine(mergedProduct);
@@ -135,63 +153,20 @@ export default function ProductCardWithVariants({ product }) {
     };
 
     // -----------------------------------------
-    // 6️⃣ ADD TO CART — FIXED WITH FIRESTORE ID
+    // 6️⃣ Add to Cart
     // -----------------------------------------
     const addToCart = () => {
-        if (!canAddToCart) return;
+        if (loading || !canAddToCart) return;
 
         const selectedImage = getSelectedImageFromCard();
 
-        // ---------------------------------------------
-        // SIMPLE PRODUCT
-        // ---------------------------------------------
-        if (!hasVariants) {
-            const variantId = `${mergedProduct.firebaseId}-default`;
+        const variantId = hasVariants
+            ? `${mergedProduct.firebaseId}-${Object.values(selected).join("-")}`
+            : `${mergedProduct.firebaseId}-default`;
 
-            const existing = cart.find((i) => i.variantId === variantId);
+        const existing = cart.find((i) => i.variantId === variantId);
 
-            if (existing) {
-                setCart(
-                    cart.map((i) =>
-                        i.variantId === variantId
-                            ? { ...i, qty: Math.min(i.qty + 1, i.maxQty) }
-                            : i
-                    )
-                );
-                return;
-            }
-
-            setCart([
-                ...cart,
-                {
-                    id: mergedProduct.firebaseId, // ⭐ FIXED
-                    slug: mergedProduct.slug,
-                    title: mergedProduct.title,
-                    image: selectedImage,
-                    price: mergedProduct.price,
-                    qty: 1,
-                    maxQty: 99,
-                    selectedAttributes: {},
-                    variantId,
-                },
-            ]);
-
-            return;
-        }
-
-        // ---------------------------------------------
-        // VARIANT PRODUCT
-        // ---------------------------------------------
-        const sortedKeys = [...attributeKeys].sort();
-
-        const variantId =
-            mergedProduct.firebaseId +
-            "-" +
-            sortedKeys.map((k) => selected[k]).join("-");
-
-        const existingVariant = cart.find((i) => i.variantId === variantId);
-
-        if (existingVariant) {
+        if (existing) {
             setCart(
                 cart.map((i) =>
                     i.variantId === variantId
@@ -205,64 +180,93 @@ export default function ProductCardWithVariants({ product }) {
         setCart([
             ...cart,
             {
-                id: mergedProduct.firebaseId, // ⭐ FIXED
+                id: mergedProduct.firebaseId,
                 slug: mergedProduct.slug,
                 title: mergedProduct.title,
                 image: selectedImage,
                 price: mergedProduct.price,
                 qty: 1,
-                maxQty: Number(variantStock) || 1,
-                selectedAttributes: { ...selected },
+                maxQty: hasVariants ? Number(variantStock) || 1 : 99,
+                selectedAttributes: hasVariants ? { ...selected } : {},
                 variantId,
             },
         ]);
     };
 
-    // -----------------------------------------
-    // 7️⃣ UI Rendering
-    // -----------------------------------------
-    if (loading) return null;
-
     return (
-        <div className="min-w-[240px] bg-white rounded-xl shadow hover:shadow-md transition p-4">
+        <div className="shadow-lg p-4 rounded-lg bg-white">
+            {/* Image (SEO safe) */}
+            <Link href={`/${mergedProduct.slug}.html`} locale={locale}>
+            <ProductCardImage
+                images={mergedProduct.images}
+                selected={selected}
+            />
+            </Link>
 
-            {/* Image */}
-            <ProductCardImage images={mergedProduct.images} selected={selected} />
-
-            {/* Title */}
+            {/* Title (SEO safe) */}
             <h3 className="font-medium text-gray-800 text-sm mb-1">
                 {mergedProduct.title}
             </h3>
 
             {/* Price */}
-            <p className="text-primary font-semibold mb-3">
-                {format(mergedProduct.price)}
-            </p>
+            <div className="mb-3">
+                {loading ? (
+                    <SkeletonLine className="h-4 w-20" />
+                ) : (
+                    <p className="text-primary font-semibold">
+                        {format(mergedProduct.price)}
+                    </p>
+                )}
+            </div>
 
             {/* Wishlist */}
-            <ProductWishlistButton
-                isInWishlist={isInWishlist}
-                toggleWishlist={toggleWishlist}
-            />
+            <div className="mb-3">
+                {loading ? (
+                    <SkeletonButton className="h-8 w-8 rounded-full" />
+                ) : (
+                    <ProductWishlistButton
+                        isInWishlist={isInWishlist}
+                        toggleWishlist={toggleWishlist}
+                    />
+                )}
+            </div>
 
             {/* Variants */}
             {hasVariants && (
-                <ProductAttributeSelector
-                    attributeKeys={attributeKeys}
-                    attributeOptions={attributeOptions}
-                    selected={selected}
-                    setSelected={setSelected}
-                />
+                <div className="mb-4">
+                    {loading ? (
+                        <div className="flex gap-2">
+                            <SkeletonLine className="h-7 w-12" />
+                            <SkeletonLine className="h-7 w-12" />
+                            <SkeletonLine className="h-7 w-12" />
+                        </div>
+                    ) : (
+                        <ProductAttributeSelector
+                            attributeKeys={attributeKeys}
+                            attributeOptions={attributeOptions}
+                            selected={selected}
+                            setSelected={setSelected}
+                        />
+                    )}
+                </div>
             )}
 
             {/* Add to Cart */}
-            <ProductAddToCartButton
-                canAddToCart={canAddToCart}
-                hasVariants={hasVariants}
-                allAttributesSelected={attributeKeys.every((k) => selected[k])}
-                variantStock={variantStock}
-                addToCart={addToCart}
-            />
+            <div>
+                {loading ? (
+                    <SkeletonButton className="h-10 w-full" />
+                ) : (
+                    <ProductAddToCartButton
+                        canAddToCart={canAddToCart}
+                        hasVariants={hasVariants}
+                        allAttributesSelected={attributeKeys.every(
+                            (k) => selected[k]
+                        )}
+                        variantStock={variantStock}
+                        addToCart={addToCart}
+                    />
+                )}
+            </div>
         </div>
     );
 }

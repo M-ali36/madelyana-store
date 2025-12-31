@@ -1,12 +1,33 @@
 import { NextResponse } from "next/server";
-import { auth, db } from "@/lib/firebaseAdmin"; // admin SDK
+import { db } from "@/lib/firebaseClient"; // ⭐ client SDK
 import { collection, getDocs, deleteDoc, doc, addDoc, serverTimestamp } from "firebase/firestore";
 
-// 🔥 Make sure you have firebaseAdmin.js for Admin SDK authentication
-// This ensures the API can read user carts securely
+// ⭐ Validate ID Token using Google Identity Toolkit REST API  
+async function verifyIdToken(idToken) {
+  const apiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
+
+  const response = await fetch(
+    `https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${apiKey}`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ idToken }),
+    }
+  );
+
+  const data = await response.json();
+
+  if (data.error) return null;
+
+  return {
+    uid: data.users[0].localId,
+    email: data.users[0].email,
+  };
+}
 
 export async function POST(req) {
   try {
+    // Read auth header
     const { authorization } = req.headers;
 
     if (!authorization || !authorization.startsWith("Bearer ")) {
@@ -14,11 +35,19 @@ export async function POST(req) {
     }
 
     const idToken = authorization.split("Bearer ")[1];
-    const decoded = await auth.verifyIdToken(idToken);
+
+    // ⭐ Verify token via REST API
+    const decoded = await verifyIdToken(idToken);
+
+    if (!decoded) {
+      return NextResponse.json({ error: "Invalid token" }, { status: 401 });
+    }
+
     const uid = decoded.uid;
 
-    // Fetch user cart
+    // ⭐ Fetch user cart using firebaseClient
     const cartSnap = await getDocs(collection(db, "carts", uid, "items"));
+
     if (cartSnap.empty) {
       return NextResponse.json({ error: "Cart is empty" }, { status: 400 });
     }
@@ -31,7 +60,7 @@ export async function POST(req) {
       0
     );
 
-    // Order payload
+    // Create order object
     const orderData = {
       userId: uid,
       userEmail: decoded.email || "",
@@ -48,8 +77,7 @@ export async function POST(req) {
       status: "Pending",
       paymentStatus: "Unpaid",
       paymentMethod: "COD",
-
-      shipping: {}, // will fill later when you build checkout form
+      shipping: {},
 
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
@@ -63,7 +91,7 @@ export async function POST(req) {
       await deleteDoc(doc(db, "carts", uid, "items", item.id));
     }
 
-    // Return success
+    // Success
     return NextResponse.json(
       { success: true, orderId: orderRef.id },
       { status: 200 }

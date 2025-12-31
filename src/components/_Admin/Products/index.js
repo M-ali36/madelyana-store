@@ -3,13 +3,15 @@
 import { useEffect, useState } from "react";
 import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
 import { db } from "@/lib/firebaseClient";
-import Link from "next/link";
+import Link from "@/components/Ui/Link";
+import { useLocale } from "next-intl";
 
 export default function ProductsPage() {
   const [products, setProducts] = useState([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState("");
+  const locale = useLocale();
 
   // Fetch products
   const fetchProducts = async () => {
@@ -70,6 +72,7 @@ export default function ProductsPage() {
 
         <Link
           href="/admin/products/new"
+          locale={locale}
           className="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 transition"
         >
           + Add Product
@@ -151,6 +154,7 @@ export default function ProductsPage() {
                     <div className="flex gap-3">
                       <Link
                         href={`/admin/products/edit/${product.id}`}
+                        locale={locale}
                         className="text-primary hover:underline"
                       >
                         Edit
