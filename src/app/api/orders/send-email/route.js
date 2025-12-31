@@ -2,12 +2,47 @@ import { NextResponse } from "next/server";
 import { Resend } from "resend";
 import { orderConfirmationEmail } from "@/lib/email/orderConfirmationEmail";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// ✅ Lazy, env-safe Resend initializer
+function getResendClient() {
+  const apiKey = process.env.RESEND_API_KEY;
+
+  if (!apiKey) {
+    console.warn("⚠️ Resend not initialized: missing RESEND_API_KEY");
+    return null;
+  }
+
+  return new Resend(apiKey);
+}
 
 export async function POST(req) {
   try {
+    const resend = getResendClient();
+
+    if (!resend) {
+      return NextResponse.json(
+        { ok: false, error: "Email service not configured" },
+        { status: 500 }
+      );
+    }
+
     const body = await req.json();
-    const { email, orderId, items, subtotal, shipping, total, address } = body;
+    const {
+      email,
+      orderId,
+      items,
+      subtotal,
+      shipping,
+      total,
+      address,
+    } = body || {};
+
+    // Basic validation
+    if (!email || !orderId || !items || !total) {
+      return NextResponse.json(
+        { ok: false, error: "Missing order email data" },
+        { status: 400 }
+      );
+    }
 
     const html = orderConfirmationEmail({
       orderId,
@@ -26,8 +61,13 @@ export async function POST(req) {
     });
 
     return NextResponse.json({ ok: true, send });
+
   } catch (err) {
     console.error("Email error:", err);
-    return NextResponse.json({ ok: false, error: err.message }, { status: 500 });
+
+    return NextResponse.json(
+      { ok: false, error: err?.message || "Failed to send email" },
+      { status: 500 }
+    );
   }
 }

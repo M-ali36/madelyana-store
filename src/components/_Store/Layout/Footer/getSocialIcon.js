@@ -7,6 +7,7 @@ import {
   SiLinkedin,
   SiX,
 } from "react-icons/si";
+import { SlSocialFacebook } from "react-icons/sl";
 
 /**
  * Maps CMS icon string → React Icon component
@@ -23,7 +24,7 @@ export function getSocialIcon(iconName, className = "w-5 h-5") {
 
   const iconMap = {
     instagram: <SiInstagram className={className} />,
-    facebook: <SiFacebook className={className} />,
+    facebook: <SlSocialFacebook className={className} />,
     tiktok: <SiTiktok className={className} />,
     youtube: <SiYoutube className={className} />,
     linkeden: <SiLinkedin className={className} />, // CMS typo-safe
