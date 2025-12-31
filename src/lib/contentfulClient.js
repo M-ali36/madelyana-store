@@ -1,8 +1,8 @@
 // ---------------------------------------------------------------------------
 // ENV + BASE URL
 // ---------------------------------------------------------------------------
-const space = process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID;
-const accessToken = process.env.NEXT_PUBLIC_CONTENTFUL_DELIVERY_TOKEN;
+const space = process.env.CONTENTFUL_SPACE_ID;
+const accessToken = process.env.CONTENTFUL_DELIVERY_TOKEN;
 
 const BASE_URL = `https://cdn.contentful.com/spaces/${space}/environments/master`;
 

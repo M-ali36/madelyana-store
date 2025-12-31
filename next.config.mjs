@@ -6,7 +6,6 @@ const nextConfig = {
   images: {
     domains: ['images.ctfassets.net']
   },
-  output: "export",
   async rewrites() {
     return [
       {
