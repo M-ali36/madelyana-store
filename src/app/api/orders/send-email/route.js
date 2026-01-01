@@ -4,7 +4,7 @@ import { orderConfirmationEmail } from "@/lib/email/orderConfirmationEmail";
 
 // ✅ Lazy, env-safe Resend initializer
 function getResendClient() {
-  const apiKey = process.env.RESEND_API_KEY;
+  const apiKey = process.env.NEXT_PUBLIC_RESEND_API_KEY;
 
   if (!apiKey) {
     console.warn("⚠️ Resend not initialized: missing RESEND_API_KEY");

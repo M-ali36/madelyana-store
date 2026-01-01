@@ -4,7 +4,7 @@ import { collection, getDocs, deleteDoc, doc, addDoc, serverTimestamp } from "fi
 
 // ⭐ Validate ID Token using Google Identity Toolkit REST API  
 async function verifyIdToken(idToken) {
-  const apiKey = process.env.FIREBASE_API_KEY;
+  const apiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
 
   const response = await fetch(
     `https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${apiKey}`,
