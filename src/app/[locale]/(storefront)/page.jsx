@@ -21,8 +21,6 @@ export default async function Home(props) {
 
   const homepage = await fetchHomePage(normalizedLocale);
 
-  console.log(JSON.stringify(homepage.aboutUsText) );
-
   if (!homepage) return <p>{t("no_homepage_found")}</p>;
 
   return (

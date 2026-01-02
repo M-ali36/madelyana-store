@@ -64,8 +64,8 @@ export default function SidebarFilters({ products, filters, setFilters }) {
 					<div
 					className="slider-range"
 					style={{
-						left: `${((filters.price[0] - minPrice) / (maxPrice - minPrice)) * 100}%`,
-						right: `${100 - ((filters.price[1] - minPrice) / (maxPrice - minPrice)) * 100}%`,
+						insetInlineStart: `${((filters.price[0] - minPrice) / (maxPrice - minPrice)) * 100}%`,
+						insetInlineEnd: `${100 - ((filters.price[1] - minPrice) / (maxPrice - minPrice)) * 100}%`,
 					}}
 					/>
 

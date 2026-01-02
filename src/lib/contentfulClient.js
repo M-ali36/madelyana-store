@@ -61,15 +61,30 @@ export async function fetchCategories(locale = "en-US") {
       mainBanner = assetMap[bannerId];
     }
 
+    // 🔥 GET TAG FROM CONTENTFUL METADATA
+    const tag = item.metadata?.tags?.[0]?.sys?.id || null;
+
     return {
       id: item.sys.id,
       title: f.title,
       slug: f.slug,
       mainBanner,
       featuredTitle: f.featuredTitle || "",
-      description: f.description || null, // FIXED TYPO
+      description: f.description || null,
+      tag, // ⭐ category tag from metadata
     };
   });
+}
+
+export async function fetchRelatedCategories(currentTag, locale = "en-US") {
+  if (!currentTag) return [];
+
+  const allCategories = await fetchCategories(locale);
+
+  // Filter by matching tag and exclude the current category itself
+  return allCategories.filter(
+    (cat) => cat.tag === currentTag
+  );
 }
 
 export async function fetchCategoryBySlug(slug, locale = "en-US") {

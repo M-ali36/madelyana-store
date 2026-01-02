@@ -2,20 +2,18 @@ import { notFound } from "next/navigation";
 import {
   fetchCategories,
   fetchProductsByCategory,
+  fetchRelatedCategories,
 } from "@/lib/contentfulClient";
 
 import CategoryProductsLayout from "@/components/_Store/_Category/CategoryProductsLayout";
 import MainBanner from "@/components/_Store/_Category/MainBanner";
 import { documentToReactComponents } from "@contentful/rich-text-react-renderer";
+import RelatedCategories from "@/components/_Store/_Category/RelatedCategories";
 
 export const revalidate = 60;
 
 /**
  * 🔹 Generate all category routes statically:
- * /en/women
- * /en/men
- * /ar/women
- * /ar/men
  */
 export async function generateStaticParams() {
   const locales = ["en", "ar"];
@@ -33,22 +31,28 @@ export async function generateStaticParams() {
  * 🔹 Render Category Page
  */
 export default async function CategoryPage({ params }) {
-  // ⛳ IMPORTANT: await params fixes the Promise issue in Windows/WAMP setups
   const resolvedParams = await params;
   const { locale, category_slug } = resolvedParams;
 
   const normalizedLocale = locale === "ar" ? "ar" : "en-US";
 
-  // Fetch categories from Contentful
+  // Fetch all categories
   const categories = await fetchCategories(normalizedLocale);
 
-  // Match the category using slug
+  // Find the current one
   const category = categories.find((c) => c.slug === category_slug);
-
   if (!category) return notFound();
 
-  // Fetch products only for this category
+  // Fetch products
   const products = await fetchProductsByCategory(category.id, normalizedLocale);
+
+  // ⭐ NEW: fetch categories that share the same asset tag
+  const relatedCategories = await fetchRelatedCategories(
+    category.tag,
+    normalizedLocale
+  );
+
+  console.log(JSON.stringify(relatedCategories));
 
   return (
     <>
@@ -64,9 +68,13 @@ export default async function CategoryPage({ params }) {
         }
       />
 
+      <section className="container mx-auto p-4">
+        <RelatedCategories categories={relatedCategories} currentSlug={category.slug}  />
+      </section>
+
       {/* Products Grid */}
-      <section className="container mx-auto px-6 py-16">
-        <CategoryProductsLayout products={products} />
+      <section className="container mx-auto px-6 py-4">
+        <CategoryProductsLayout products={products}/>
       </section>
     </>
   );
