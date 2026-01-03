@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "@/components/Ui/Image";
+import AnimatedImage from "@/components/Ui/AnimatedImage";
 import Link from "@/components/Ui/Link";
 import { documentToReactComponents } from "@contentful/rich-text-react-renderer";
 import { useLocale } from "next-intl";
@@ -22,11 +22,9 @@ export default function About({ data }) {
       >
         {/* RIGHT — IMAGE */}
         <div className="relative w-full aspect-[4/5] overflow-hidden rounded-lg">
-          <Image
+          <AnimatedImage
             image={image?.url}
             alt={title}
-            fill
-            className="object-cover rounded-lg"
           />
         </div>
         
@@ -50,7 +48,7 @@ export default function About({ data }) {
                 rounded-full
                 text-sm font-medium
                 transition-all duration-300
-                hover:bg-black hover:text-white
+                hover:bg-neutral-900 hover:text-white
               "
             >
               {link.title}

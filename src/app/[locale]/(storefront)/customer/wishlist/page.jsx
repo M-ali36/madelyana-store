@@ -69,7 +69,7 @@ export default function WishlistPage() {
         <Link
           href="/"
           locale={locale} 
-          className="inline-block mt-4 px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 transition"
+          className="inline-block mt-4 px-4 py-2 bg-neutral-900 text-white rounded-md hover:bg-gray-800 transition"
         >
           Browse Products
         </Link>

@@ -24,7 +24,7 @@ export default function LanguageSwitcher({ locale }) {
     <select
       value={locale}
       onChange={handleChange}
-      className="rounded-md px-3 py-1 text-sm bg-black border-white text-white border cursor-pointer"
+      className="rounded-md px-3 py-1 text-sm bg-neutral-900 border-white text-white border cursor-pointer"
     >
       <option value="en">English</option>
       <option value="ar">العربية</option>

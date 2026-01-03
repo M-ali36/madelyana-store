@@ -66,7 +66,7 @@ export default function OrderSuccessPage() {
 
         <Link
           href="/"
-          className="inline-block mt-6 px-4 py-2 bg-black text-white rounded-md"
+          className="inline-block mt-6 px-4 py-2 bg-neutral-900 text-white rounded-md"
         >
           Back to Home
         </Link>
@@ -159,7 +159,7 @@ export default function OrderSuccessPage() {
         <Link
           locale={locale}
           href="/"
-          className="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 transition"
+          className="px-4 py-2 bg-neutral-900 text-white rounded-md hover:bg-gray-800 transition"
         >
           Continue Shopping
         </Link>

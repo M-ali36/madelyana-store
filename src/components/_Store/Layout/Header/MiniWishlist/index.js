@@ -1,52 +1,43 @@
 "use client";
+
 import React from "react";
 import { HiOutlineHeart } from "react-icons/hi";
 import { useAppContext } from "@/components/context/AppContext";
 import Image from "next/image";
 import Link from "@/components/Ui/Link";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 export default function MiniWishlist() {
   const { wishlist, setWishlist, cart, setCart, navState, setNavState } =
     useAppContext();
 
   const locale = useLocale();
+  const t = useTranslations("MiniWishlist");
 
   // Toggle mini wishlist panel
   const toggleWishlist = () => {
     setNavState(navState === "wishlist" ? "" : "wishlist");
   };
 
-  /** REMOVE WISHLIST ITEM (by variantless slug or id)
-      wishlist items do NOT include variantId 
-  */
+  // Remove wishlist item
   const removeItem = (id) => {
     setWishlist(wishlist.filter((item) => item.id !== id));
   };
 
-  /** ADD TO CART (requires a default or selected variant)
-      For wishlist, we add product WITHOUT variant selection.
-      The productPage handles variant choice.
-      So: redirect to product page OR add “base cart item”
-  */
+  // Add item to cart
   const addToCart = (item) => {
-    // If product has variants, redirect user to product page
     if (item.hasVariants) {
       window.location.href = `/product/${item.slug}`;
       return;
     }
 
-    // If no variants → add simple product to cart
     const existing = cart.find((c) => c.id === item.id);
 
     if (existing) {
       setCart(
         cart.map((c) =>
           c.id === item.id
-            ? {
-                ...c,
-                qty: Math.min(c.qty + 1, c.maxQty || 99),
-              }
+            ? { ...c, qty: Math.min(c.qty + 1, c.maxQty || 99) }
             : c
         )
       );
@@ -62,18 +53,17 @@ export default function MiniWishlist() {
           image: item.image,
           selectedColor: null,
           selectedSize: null,
-          variantId: item.id, // simple fallback
-        },
+          variantId: item.id
+        }
       ]);
     }
 
-    // Close menu
     setNavState("");
   };
 
   return (
     <div className="relative">
-      {/* WISHLIST ICON */}
+      {/* ICON */}
       <button
         className="relative control-btn"
         type="button"
@@ -82,23 +72,23 @@ export default function MiniWishlist() {
         <HiOutlineHeart className="w-6 h-6" />
 
         {wishlist.length > 0 && (
-          <span className="absolute -top-2 -right-2 bg-primary text-black text-xs w-5 h-5 flex items-center justify-center rounded-full">
+          <span className="absolute -top-2 -right-2 bg-primary text-neutral-900 text-xs w-5 h-5 flex items-center justify-center rounded-full">
             {wishlist.length}
           </span>
         )}
       </button>
 
-      {/* SLIDE PANEL */}
+      {/* PANEL */}
       <div
         className={`control-menu ${
           navState === "wishlist" ? "opened" : ""
-        } fixed top-0 w-80 bg-white shadow-xl h-full z-50 transition-all  ${
+        } fixed top-0 w-80 bg-white shadow-xl h-full z-50 transition-all ${
           navState === "wishlist" ? "end-0" : "-end-80"
         }`}
       >
         {/* HEADER */}
         <div className="p-4 flex justify-between items-center border-b">
-          <h2 className="text-lg font-semibold">Your Wishlist</h2>
+          <h2 className="text-lg font-semibold">{t("yourWishlist")}</h2>
           <button onClick={toggleWishlist} className="text-gray-500">
             ✕
           </button>
@@ -107,9 +97,7 @@ export default function MiniWishlist() {
         {/* ITEMS */}
         <div className="p-4 space-y-4 overflow-y-auto max-h-[70vh]">
           {wishlist.length === 0 && (
-            <p className="text-gray-500 text-center">
-              Your wishlist is empty.
-            </p>
+            <p className="text-gray-500 text-center">{t("empty")}</p>
           )}
 
           {wishlist.map((item) => (
@@ -132,9 +120,9 @@ export default function MiniWishlist() {
                 {/* ADD TO CART */}
                 <button
                   onClick={() => addToCart(item)}
-                  className="mt-2 px-3 py-1 bg-primary text-black rounded text-sm w-full"
+                  className="mt-2 px-3 py-1 bg-primary text-neutral-900 rounded text-sm w-full"
                 >
-                  Add to Cart
+                  {t("addToCart")}
                 </button>
               </div>
 
@@ -143,7 +131,7 @@ export default function MiniWishlist() {
                 className="text-red-500 text-sm"
                 onClick={() => removeItem(item.id)}
               >
-                Remove
+                {t("remove")}
               </button>
             </div>
           ))}
@@ -158,7 +146,7 @@ export default function MiniWishlist() {
               onClick={() => setNavState("")}
               className="block w-full py-2 text-center bg-gray-100 border border-gray-300 text-gray-800 rounded-md font-medium hover:bg-gray-200 transition"
             >
-              View Wishlist
+              {t("viewWishlist")}
             </Link>
           </div>
         )}

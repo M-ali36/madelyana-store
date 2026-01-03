@@ -30,7 +30,7 @@ export default function TrackingLinks({ tracking }) {
             key={c.name}
             href={c.url}
             target="_blank"
-            className="px-3 py-1 bg-primary/10 text-primary border border-primary rounded-md text-sm hover:bg-black hover:text-white transition"
+            className="px-3 py-1 bg-primary/10 text-primary border border-primary rounded-md text-sm hover:bg-neutral-900 hover:text-white transition"
           >
             {c.name}
           </a>

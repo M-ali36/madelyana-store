@@ -24,7 +24,7 @@ export default function ProductAttributeSelector({
                 className={`px-3 py-1 text-xs rounded border
                   ${
                     selected[key] === value
-                      ? "bg-black text-white"
+                      ? "bg-neutral-900 text-white"
                       : "bg-gray-100 text-gray-800"
                   }
                 `}

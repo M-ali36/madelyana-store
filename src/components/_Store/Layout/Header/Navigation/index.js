@@ -14,7 +14,7 @@ const Navigation = ({t, locale}) => {
                     <Link locale={locale} href="/women" className="link">{t('women_bags')}</Link>
                 </li>
                 <li className="px-2 py-4">
-                    <Link locale={locale} href="/" className="link">men's Bags</Link>
+                    <Link locale={locale} href="/style-insights" className="link">{t('styleInsights')}</Link>
                 </li>
                 <li className="px-2 py-4">
                     <Link locale={locale} href="/" className="link">Gifts</Link>

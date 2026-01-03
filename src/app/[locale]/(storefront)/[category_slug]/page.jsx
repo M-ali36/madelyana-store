@@ -5,6 +5,7 @@ import {
   fetchRelatedCategories,
 } from "@/lib/contentfulClient";
 
+import Seo from "@/components/Seo";
 import CategoryProductsLayout from "@/components/_Store/_Category/CategoryProductsLayout";
 import MainBanner from "@/components/_Store/_Category/MainBanner";
 import { documentToReactComponents } from "@contentful/rich-text-react-renderer";
@@ -46,16 +47,26 @@ export default async function CategoryPage({ params }) {
   // Fetch products
   const products = await fetchProductsByCategory(category.id, normalizedLocale);
 
-  // ⭐ NEW: fetch categories that share the same asset tag
+  // ⭐ Fetch categories that share the same asset tag
   const relatedCategories = await fetchRelatedCategories(
     category.tag,
     normalizedLocale
   );
 
-  console.log(JSON.stringify(relatedCategories));
-
   return (
     <>
+      {/* ⭐⭐⭐ SEO (Category Structured Data, Canonical, OG) ⭐⭐⭐ */}
+      <Seo
+        type="category"
+        slug={category.slug}
+        seo={category.seo}
+        category={{
+          title: category.title,
+          slug: category.slug,
+          products: products?.length ? products : [],
+        }}
+      />
+
       {/* Category Hero Banner */}
       <MainBanner
         image={category.mainBanner}
@@ -69,12 +80,15 @@ export default async function CategoryPage({ params }) {
       />
 
       <section className="container mx-auto p-4">
-        <RelatedCategories categories={relatedCategories} currentSlug={category.slug}  />
+        <RelatedCategories
+          categories={relatedCategories}
+          currentSlug={category.slug}
+        />
       </section>
 
       {/* Products Grid */}
       <section className="container mx-auto px-6 py-4">
-        <CategoryProductsLayout products={products}/>
+        <CategoryProductsLayout products={products} />
       </section>
     </>
   );

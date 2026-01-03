@@ -11,14 +11,13 @@ import AnimatedImage from "@/components/Ui/AnimatedImage";
 
 import { HiArrowRight } from "react-icons/hi";
 import { useRef } from "react";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 export default function RelatedCategories({ categories, currentSlug }) {
   const locale = useLocale();
   const nextRef = useRef(null);
   const prevRef = useRef(null);
-
-  console.log("Related Categories:", currentSlug);
+  const t = useTranslations("categories");
 
   // ⭐ Remove the current category
   const filteredCategories = categories.filter(
@@ -30,9 +29,13 @@ export default function RelatedCategories({ categories, currentSlug }) {
       {/* Slider Header */}
       <div className="col-span-1 lg:col-span-2 flex items-center justify-end">
         <h2 className="text-4xl text-end">
-          <strong>Related</strong>
-          <br /> Categories
+          {t.rich("discoverTitle", {
+            b: (chunks) => <strong>{chunks}</strong>,
+            linebreak: () => <br />
+          })}
         </h2>
+
+
       </div>
 
       <div className="col-span-1 lg:col-span-11">
@@ -65,7 +68,7 @@ export default function RelatedCategories({ categories, currentSlug }) {
                   className="relative block rounded h-40 overflow-hidden group"
                 >
                   {/* Overlay */}
-                  <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-all z-10" />
+                  <div className="absolute inset-0 bg-neutral-900/40 group-hover:bg-neutral-900/20 transition-all z-10" />
 
                   {/* Image */}
                   {imageSrc && (
@@ -93,14 +96,14 @@ export default function RelatedCategories({ categories, currentSlug }) {
       <div className="absolute right-0 -bottom-4 items-center gap-3 z-30 hidden">
         <button
           ref={prevRef}
-          className="w-10 h-10 flex items-center justify-center rounded-full bg-black text-white"
+          className="w-10 h-10 flex items-center justify-center rounded-full bg-neutral-900 text-white"
         >
           <HiArrowRight className="text-xl rotate-180" />
         </button>
 
         <button
           ref={nextRef}
-          className="w-10 h-10 flex items-center justify-center rounded-full bg-black text-white"
+          className="w-10 h-10 flex items-center justify-center rounded-full bg-neutral-900 text-white"
         >
           <HiArrowRight className="text-xl" />
         </button>

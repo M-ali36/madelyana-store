@@ -13,6 +13,24 @@ import "swiper/css/thumbs";
 
 gsap.registerPlugin(ScrollTrigger);
 
+export function getAspectClass(tag) {
+  switch (tag) {
+    case "aspectLandscape":
+      return "aspect-[16/9]";        // Wide landscape
+    case "aspectMonitor":
+      return "aspect-[5/4]";        // Ultra-wide monitor
+    case "aspectBoxed":
+      return "aspect-square";        // 1:1 boxed
+    case "aspectTablet":
+      return "aspect-[4/5]";         // Tablet vertical
+    case "aspectProtrait":
+      return "aspect-[9/16]";         // Portrait
+    default:
+      return "aspect-auto";          // Safe fallback
+  }
+}
+
+
 export default function ProductGallery({ product }) {
   const images = product.images || [];
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
@@ -21,6 +39,8 @@ export default function ProductGallery({ product }) {
   const controlsRef = useRef(null);
 
   if (!images.length) return null;
+
+  console.log(images)
 
   // ⭐ PIN CONTROLS LIKE EXTERNAL COMPONENT
   useEffect(() => {
@@ -62,7 +82,7 @@ export default function ProductGallery({ product }) {
               w-[30px] h-[30px]
               flex items-center justify-center
               rounded-full border border-black
-              bg-white text-black
+              bg-white text-neutral-900
               transition-all duration-200
               transition-shadow duration-200 
               hover:shadow-[inset_0_0_0_4px_#161413]
@@ -91,17 +111,19 @@ export default function ProductGallery({ product }) {
               return (
                 <SwiperSlide key={i} className="!w-auto">
                   <div
-                    className="
+                    className={`
                       heavy-shade
                       w-[30px] h-[30px]
                       rounded-full overflow-hidden
                       cursor-pointer border border-black bg-white
                       transition-all duration-200
-                    "
+                    `}
                   >
                     {!isVideo ? (
                       <img
                         src={thumb}
+                        height="30px"
+                        width="30px"
                         className="w-full h-full object-cover"
                       />
                     ) : (
@@ -125,7 +147,7 @@ export default function ProductGallery({ product }) {
               w-[30px] h-[30px]
               flex items-center justify-center
               rounded-full border border-black
-              bg-white text-black
+              bg-white text-neutral-900
               transition-all duration-200
               transition-shadow duration-200 
               hover:shadow-[inset_0_0_0_4px_#161413]
@@ -155,17 +177,19 @@ export default function ProductGallery({ product }) {
                 key={i}
                 className="!w-auto flex items-center justify-center"
               >
-                <div className="max-h-screen flex items-center justify-center bg-black">
+                <div className="max-h-screen flex items-center justify-center bg-neutral-900">
                   {!isVideo ? (
                     <img
                       src={media.url}
                       alt={product.title}
+                      height={media.height}
+                      width={media.width}
                       className="max-h-screen w-auto object-contain"
                     />
                   ) : (
                     <video
                       src={media.url}
-                      className="max-h-screen w-auto object-contain"
+                      className={`max-h-screen w-auto object-contain ${getAspectClass(media.tag)}`}
                       autoPlay
                       loop
                       muted

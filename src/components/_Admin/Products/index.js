@@ -73,7 +73,7 @@ export default function ProductsPage() {
         <Link
           href="/admin/products/new"
           locale={locale}
-          className="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 transition"
+          className="px-4 py-2 bg-neutral-900 text-white rounded-md hover:bg-gray-800 transition"
         >
           + Add Product
         </Link>

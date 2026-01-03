@@ -16,7 +16,7 @@ export default function CurrencySwitcher() {
       <select
         value={currency}
         onChange={(e) => setCurrency(e.target.value)}
-        className="rounded-md px-3 py-1 text-sm bg-black border-white text-white border cursor-pointer"
+        className="rounded-md px-3 py-1 text-sm bg-neutral-900 border-white text-white border cursor-pointer"
       >
         {currencies.map((curr) => (
           <option key={curr.code} value={curr.code}>

@@ -1,6 +1,7 @@
 {
     "top_message": "Free shipping with over 12$",
     "women_bags": "Women's Bags",
+    "styleInsights": "Style Insights",
     "home": {
         "latest_products": "Latest Products",
         "no_homepage_found": "No homepage found."
@@ -37,5 +38,46 @@
     "relatedProducts": {
         "title": "You may also like",
         "subTitle": "Handpicked items that perfectly match this product"
+    },
+    "categories": {
+        "discoverTitle": "<b>Discover</b><linebreak></linebreak>Your Style"
+    },
+    "newsletterCta": {
+        "headline": "Stay Connected. Save More.",
+        "title": "Enjoy exclusive discounts in every newsletter—subscribe to never miss one.",
+        "emailPlaceholder": "Enter your email",
+        "button": "Subscribe",
+        "success": "You're subscribed! Check your inbox for your discount.",
+        "error": "Please enter a valid email."
+    },
+    "article": {
+        "minRead": "min read"
+    },
+        "MiniCart": {
+        "yourCart": "Your Cart",
+        "empty": "Your cart is empty.",
+        "perOne": "per one",
+        "remove": "Remove",
+        "subtotal": "Subtotal",
+        "viewCart": "View Cart",
+        "checkout": "Checkout"
+    },
+    "MiniWishlist": {
+        "yourWishlist": "Your Wishlist",
+        "empty": "Your wishlist is empty.",
+        "addToCart": "Add to Cart",
+        "remove": "Remove",
+        "viewWishlist": "View Wishlist"
+    },
+    "insights": {
+        "allArticles": "All Articles"
+    },
+    "articlesList": {
+        "sectionTitle": "Style Insights",
+        "sectionSubTitle": "Explore our curated articles on luxury bags, style, and timeless fashion.",
+        "all": "All",
+        "loadMore": "Load More",
+        "noArticles": "No articles available.",
+        "noResults": "No matching articles found."
     }
 }

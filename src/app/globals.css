@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  --brand-black: #161413;
+  --brand-black: #171717;
 }
 
 html {
@@ -104,18 +104,20 @@ html[lang="ar"] {
   height: 18px;
   width: 18px;
   border-radius: 9999px;
-  background: white;
-  border: 2px solid var(--brand-black);
+  background: var(--brand-black);
+  box-shadow: 0 0 0 4px rgba(22, 20, 19, 0.1);
   cursor: pointer;
   margin-top: -8px;
+  border: none;
 }
 
 .price-range-slider .slider-thumb::-moz-range-thumb {
   pointer-events: auto;
   height: 18px;
   width: 18px;
-  background: white;
-  border: 2px solid var(--brand-black);
+  background: var(--brand-black);
+  box-shadow: 0 0 0 4px rgba(22, 20, 19, 0.1);
+  border: none;
   border-radius: 50%;
   cursor: pointer;
 }

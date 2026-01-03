@@ -211,7 +211,7 @@ export default function OrdersPage() {
         <h1 className="text-2xl font-semibold">Orders</h1>
         <button
           onClick={() => exportCSV()}
-          className="px-4 py-2 bg-black text-white rounded hover:bg-gray-800"
+          className="px-4 py-2 bg-neutral-900 text-white rounded hover:bg-gray-800"
         >
           Export CSV
         </button>
@@ -384,7 +384,7 @@ export default function OrdersPage() {
           <button
             onClick={loadMore}
             disabled={loadingMore}
-            className="px-4 py-2 bg-black text-white rounded hover:bg-gray-900"
+            className="px-4 py-2 bg-neutral-900 text-white rounded hover:bg-gray-900"
           >
             {loadingMore ? "Loading…" : "Load More"}
           </button>
@@ -393,7 +393,7 @@ export default function OrdersPage() {
 
       {/* BULK ACTION MODAL */}
       {showModal && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-neutral-900/40 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg w-full max-w-md">
             <h2 className="text-xl font-semibold mb-4">Confirm Bulk Action</h2>
 
@@ -422,7 +422,7 @@ export default function OrdersPage() {
 
               <button
                 onClick={applyBulkAction}
-                className="px-4 py-2 bg-black text-white rounded"
+                className="px-4 py-2 bg-neutral-900 text-white rounded"
               >
                 {savingBulk ? "Saving…" : "Confirm"}
               </button>

@@ -102,7 +102,7 @@ export default function CustomerLayout({ children }) {
                 className={`px-4 py-2 rounded-md text-sm font-medium transition 
                   ${
                     active
-                      ? "bg-black text-white"
+                      ? "bg-neutral-900 text-white"
                       : "text-gray-700 hover:bg-gray-200"
                   }`}
               >

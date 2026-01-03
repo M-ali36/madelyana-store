@@ -207,7 +207,7 @@ export default function AddProductPage() {
             <h3 className="text-lg font-semibold">Variants</h3>
             <button
               onClick={addVariant}
-              className="px-3 py-2 bg-black text-white rounded-md hover:bg-gray-800"
+              className="px-3 py-2 bg-neutral-900 text-white rounded-md hover:bg-gray-800"
             >
               + Add Variant
             </button>
@@ -298,7 +298,7 @@ export default function AddProductPage() {
           onClick={handleSubmit}
           disabled={loading}
           className={`w-full py-2 rounded-md text-white font-medium transition 
-            ${loading ? "bg-gray-400" : "bg-black hover:bg-gray-800"}`}
+            ${loading ? "bg-gray-400" : "bg-neutral-900 hover:bg-gray-800"}`}
         >
           {loading ? "Saving..." : "Create Product"}
         </button>

@@ -172,7 +172,7 @@ export default function SettingsPage() {
           <button
             onClick={handleSaveProfile}
             disabled={saving}
-            className="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 transition"
+            className="px-4 py-2 bg-neutral-900 text-white rounded-md hover:bg-gray-800 transition"
           >
             Save Changes
           </button>
@@ -197,7 +197,7 @@ export default function SettingsPage() {
         <button
           onClick={handleChangeEmail}
           disabled={saving}
-          className="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 transition"
+          className="px-4 py-2 bg-neutral-900 text-white rounded-md hover:bg-gray-800 transition"
         >
           Update Email
         </button>
@@ -231,7 +231,7 @@ export default function SettingsPage() {
           <button
             onClick={handleChangePassword}
             disabled={saving}
-            className="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 transition"
+            className="px-4 py-2 bg-neutral-900 text-white rounded-md hover:bg-gray-800 transition"
           >
             Update Password
           </button>

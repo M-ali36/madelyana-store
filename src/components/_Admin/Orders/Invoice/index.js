@@ -33,7 +33,7 @@ export default function InvoicePage() {
 
       <div className="flex justify-end gap-3 mb-4 print:hidden">
         <button
-          className="px-4 py-2 bg-black text-white rounded hover:bg-gray-800"
+          className="px-4 py-2 bg-neutral-900 text-white rounded hover:bg-gray-800"
           onClick={() => window.print()}
         >
           Print Invoice

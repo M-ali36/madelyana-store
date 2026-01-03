@@ -40,7 +40,7 @@ export default function BulkDeleteModal({ isOpen, closeModal, users, refreshUser
   };
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center backdrop-blur-sm z-50">
+    <div className="fixed inset-0 bg-neutral-900/40 flex items-center justify-center backdrop-blur-sm z-50">
       <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-lg">
         <h2 className="text-xl font-semibold text-red-600 mb-4">
           Bulk Delete Users

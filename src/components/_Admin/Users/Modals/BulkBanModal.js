@@ -45,7 +45,7 @@ export default function BulkBanModal({ isOpen, closeModal, users, ban, refreshUs
   };
 
   return (
-    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-neutral-900/40 backdrop-blur-sm flex items-center justify-center z-50">
       <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-lg">
         <h2 className={`text-xl font-semibold mb-4 ${actionColor}`}>
           {actionLabel}

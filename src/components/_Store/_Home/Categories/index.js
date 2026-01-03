@@ -43,8 +43,8 @@ export default function HomeCategories({ title, subTitle, items }) {
               {/* Overlay */}
               <div
                 className="
-                  absolute inset-0 bg-black/30 
-                  group-hover:bg-black/40 
+                  absolute inset-0 bg-neutral-900/30 
+                  group-hover:bg-neutral-900/40 
                   transition-colors duration-300
                 "
               />
@@ -82,7 +82,7 @@ export default function HomeCategories({ title, subTitle, items }) {
           locale={locale}
           className="
             inline-block text-lg font-medium text-gray-800 
-            hover:text-black underline underline-offset-4
+            hover:text-neutral-900 underline underline-offset-4
             transition-colors duration-200
           "
         >

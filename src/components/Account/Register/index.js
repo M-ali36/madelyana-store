@@ -145,7 +145,7 @@ export default function RegisterPage() {
         {/* Register button */}
         <button
           onClick={handleRegister}
-          className="w-full py-2 mb-4 bg-primary text-black font-medium rounded-md shadow hover:bg-primary-dark transition"
+          className="w-full py-2 mb-4 bg-primary text-neutral-900 font-medium rounded-md shadow hover:bg-primary-dark transition"
         >
           Register
         </button>

@@ -5,6 +5,7 @@ import {
   fetchProducts,
 } from "@/lib/contentfulClient";
 
+import Seo from "@/components/Seo";
 import ProductDetailsLayout from "@/components/_Store/_Product/ProductDetailsLayout";
 import { documentToReactComponents } from "@contentful/rich-text-react-renderer";
 
@@ -22,7 +23,7 @@ export async function generateStaticParams() {
   return locales.flatMap((locale) =>
     products.map((p) => ({
       locale,
-      slug: p.slug, // because folder = [slug]
+      slug: p.slug,
     }))
   );
 }
@@ -33,13 +34,12 @@ export async function generateStaticParams() {
  * -------------------------------------------------------------
  */
 export default async function ProductPage({ params }) {
-  // Ensure stability on Windows/WAMP
   const resolved = await params;
   const { locale, slug } = resolved;
 
   const normalizedLocale = locale === "ar" ? "ar" : "en-US";
 
-  // Fetch main product
+  // Fetch product
   const product = await fetchProductBySlug(slug, normalizedLocale);
   if (!product) return notFound();
 
@@ -48,6 +48,19 @@ export default async function ProductPage({ params }) {
 
   return (
     <>
+      {/* ⭐⭐⭐ SEO for Product Page ⭐⭐⭐ */}
+      <Seo
+        type="product"
+        slug={product.slug}
+        seo={product.seo}
+        product={product}
+        category={
+          product.categoryId
+            ? { id: product.categoryId, title: product.categoryTitle, slug: product.categorySlug }
+            : null
+        }
+      />
+
       <section className="container mx-auto">
         <ProductDetailsLayout product={product} related={related} />
       </section>

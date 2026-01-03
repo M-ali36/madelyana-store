@@ -191,7 +191,7 @@ export default function OrderDetailsPage() {
 
         <a
           href={`/admin/orders/${id}/invoice`}
-          className="px-4 py-2 bg-black text-white rounded hover:bg-gray-800"
+          className="px-4 py-2 bg-neutral-900 text-white rounded hover:bg-gray-800"
         >
           Print Invoice
         </a>
@@ -329,7 +329,7 @@ export default function OrderDetailsPage() {
         {/* Save Button */}
         <button
           onClick={handleSave}
-          className="w-full mt-4 py-2 bg-black text-white rounded hover:bg-gray-800"
+          className="w-full mt-4 py-2 bg-neutral-900 text-white rounded hover:bg-gray-800"
         >
           {saving ? "Saving…" : "Save Changes"}
         </button>

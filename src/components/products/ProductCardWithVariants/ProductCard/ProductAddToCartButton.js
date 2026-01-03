@@ -16,7 +16,7 @@ export default function ProductAddToCartButton({
       className={`w-full py-2 rounded-md font-medium flex items-center gap-2 justify-center
         ${
           canAddToCart
-            ? "bg-primary text-black hover:bg-primary-dark"
+            ? "bg-primary text-neutral-900 hover:bg-primary-dark"
             : "bg-gray-300 text-gray-600 cursor-not-allowed"
         }
       `}

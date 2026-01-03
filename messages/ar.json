@@ -1,6 +1,7 @@
 {
     "top_message": "شحن مجاني للطلبات التي تزيد عن 12$",
     "women_bags": "حقائب نسائية",
+    "styleInsights": "دليل الأناقة",
     "home" : {
         "latest_products": "أحدث المنتجات",
         "no_homepage_found": "لم يتم العثور على الصفحة الرئيسية."
@@ -37,5 +38,46 @@
     "relatedProducts": {
         "title": "منتجات قد تعجبك",
         "subTitle": "مختارات بعناية تتناسق مع هذا المنتج"
+    },
+    "categories": {
+        "discoverTitle": "<b>اكتشف</b><linebreak></linebreak>أسلوبك"
+    },
+    "newsletterCta": {
+        "headline": "ابقَ على اتصال. وفر أكثر.",
+        "title": "استمتع بخصومات حصرية في كل رسالة بريدية—اشترك ولن تفوّت أيًا منها.",
+        "emailPlaceholder": "أدخل بريدك الإلكتروني",
+        "button": "اشترك",
+        "success": "تم الاشتراك! تحقق من بريدك للحصول على الخصم.",
+        "error": "يرجى إدخال بريد إلكتروني صالح."
+    },
+    "article" : {
+        "minRead": "دقيقة قراءة"
+    },
+    "MiniCart": {
+        "yourCart": "سلة التسوق",
+        "empty": "سلة التسوق فارغة.",
+        "perOne": "لكل قطعة",
+        "remove": "إزالة",
+        "subtotal": "المجموع",
+        "viewCart": "عرض السلة",
+        "checkout": "إتمام الشراء"
+    },
+    "MiniWishlist": {
+        "yourWishlist": "قائمة الأمنيات",
+        "empty": "قائمة الأمنيات فارغة.",
+        "addToCart": "أضف إلى السلة",
+        "remove": "إزالة",
+        "viewWishlist": "عرض قائمة الأمنيات"
+    },
+    "insights": {
+        "allArticles": "كل الأناقة"
+    },
+    "articlesList": {
+        "sectionTitle": "رؤى في الأناقة",
+        "sectionSubTitle": "استكشف مقالاتنا المختارة حول الحقائب الفاخرة، والأناقة، والموضة الخالدة.",
+        "all": "الكل",
+        "loadMore": "عرض المزيد",
+        "noArticles": "لا توجد مقالات متاحة.",
+        "noResults": "لا توجد مقالات مطابقة."
     }
 }

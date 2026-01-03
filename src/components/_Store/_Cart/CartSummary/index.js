@@ -20,7 +20,7 @@ export default function CartSummary({ subtotal, format }) {
       <Link
         href="/checkout"
         locale={locale}
-        className="block w-full bg-black text-white text-center py-2 rounded-md hover:bg-gray-800 transition"
+        className="block w-full bg-neutral-900 text-white text-center py-2 rounded-md hover:bg-gray-800 transition"
       >
         Proceed to Checkout
       </Link>

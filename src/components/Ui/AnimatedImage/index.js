@@ -60,7 +60,7 @@ export default function AnimatedImage({
     >
       <div className="animated-img-inner absolute min-w-full min-h-full">
         <Image
-          image={image}
+          image={image.url ? image.url : image}
           alt={alt}
           width={width}
           height={height}

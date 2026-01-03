@@ -51,7 +51,7 @@ export default function SidebarFilters({ products, filters, setFilters }) {
 		<aside className="lg:col-span-1 space-y-6">
 
 			{/* PRICE RANGE */}
-			<div className="price-range-slider shadow-lg p-6 rounded-lg bg-white">
+			<div className="price-range-slider border border-slate-300 p-6 rounded-lg bg-white">
 				<h4 className="mb-3 font-bold">By Price</h4>
 
 				{/* Slider Track + Thumbs */}
@@ -99,7 +99,7 @@ export default function SidebarFilters({ products, filters, setFilters }) {
 					<span className="text-xs p-2 border border-slate-200 rounded">{format(filters.price[1])}</span>
 				</div>
 			</div>
-			<div className="shadow-lg p-6 rounded-lg bg-white">
+			<div className="border border-slate-300 p-6 rounded-lg bg-white">
 				{/* In Stock */}
 				<div className="flex items-center gap-2">
 					<Checkbox

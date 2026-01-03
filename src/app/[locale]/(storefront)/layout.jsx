@@ -31,7 +31,7 @@ export default async function RootLocaleLayout({ children, params }) {
           <Header locale={locale} pathname={pathname} />
 
           {/* Smooth scroll area */}
-          <SmoothScrollWrapper>
+          <SmoothScrollWrapper locale={locale}>
             <main className="pt-[120px]">
               {children}
             </main>

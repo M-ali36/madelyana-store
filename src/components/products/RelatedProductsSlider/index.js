@@ -76,7 +76,7 @@ export default function RelatedProductsSlider({ products, title, subTitle, ...pr
             <button
             ref={prevRef}
             aria-label="Previous"
-            className="w-12 h-12 rounded-full bg-black flex items-center justify-center text-white hover:bg-gray-800 transition"
+            className="w-12 h-12 rounded-full bg-neutral-900 flex items-center justify-center text-white hover:bg-gray-800 transition"
             >
             <HiArrowLeft className="w-5 h-5 rtl:rotate-180" />
             </button>
@@ -84,7 +84,7 @@ export default function RelatedProductsSlider({ products, title, subTitle, ...pr
             <button
             ref={nextRef}
             aria-label="Next"
-            className="w-12 h-12 rounded-full bg-black flex items-center justify-center text-white hover:bg-gray-800 transition"
+            className="w-12 h-12 rounded-full bg-neutral-900 flex items-center justify-center text-white hover:bg-gray-800 transition"
             >
             <HiArrowLeft className="w-5 h-5 rotate-180 rtl:rotate-0" />
             </button>

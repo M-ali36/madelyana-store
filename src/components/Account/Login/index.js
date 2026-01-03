@@ -159,7 +159,7 @@ export default function LoginPage() {
           onClick={handleLogin}
           disabled={loading}
           className={`w-full py-2 rounded-md font-medium transition ${
-            loading ? "bg-gray-400" : "bg-primary text-black shadow hover:bg-primary-dark"
+            loading ? "bg-gray-400" : "bg-primary text-neutral-900 shadow hover:bg-primary-dark"
           }`}
         >
           {loading ? "Logging in..." : "Login"}

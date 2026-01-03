@@ -41,7 +41,7 @@ export default function Video({ vimeoId, image, title, subTitle }) {
                 ></iframe>
 
                 {/* Dark Overlay */}
-                <div className="absolute inset-0 bg-black/40 z-20"></div>
+                <div className="absolute inset-0 bg-neutral-900/40 z-20"></div>
 
                 {/* Text Content */}
             </div>
@@ -62,7 +62,7 @@ export default function Video({ vimeoId, image, title, subTitle }) {
                 <Link
                     href="/women"
                     locale={locale}
-                    className="inline-block px-8 py-3 text-white border border-white rounded-full text-lg font-medium transition-all duration-300 hover:bg-white hover:text-black"
+                    className="inline-block px-8 py-3 text-white border border-white rounded-full text-lg font-medium transition-all duration-300 hover:bg-white hover:text-neutral-900"
                     aria-label="See all women's categories"
                 >
                     Explore Women’s Collection

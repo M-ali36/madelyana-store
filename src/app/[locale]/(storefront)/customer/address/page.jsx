@@ -183,7 +183,7 @@ export default function AddressPage() {
         <button
           onClick={handleSave}
           disabled={saving}
-          className="mt-6 px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 transition"
+          className="mt-6 px-4 py-2 bg-neutral-900 text-white rounded-md hover:bg-gray-800 transition"
         >
           Save Address
         </button>

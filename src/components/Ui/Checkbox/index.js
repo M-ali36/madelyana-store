@@ -19,7 +19,7 @@ export default function Checkbox({ checked, onChange, title }) {
 					h-5 w-5 
 					border border-gray-400 rounded 
 					flex items-center justify-center
-					peer-checked:bg-black 
+					peer-checked:bg-neutral-900 
 					peer-checked:border-black
 					transition
 				"

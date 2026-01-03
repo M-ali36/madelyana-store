@@ -194,7 +194,7 @@ export default function EditProductPage() {
             <h3 className="text-lg font-semibold">Variants</h3>
             <button
               onClick={addVariant}
-              className="px-3 py-2 bg-black text-white rounded-md hover:bg-gray-800"
+              className="px-3 py-2 bg-neutral-900 text-white rounded-md hover:bg-gray-800"
             >
               + Add Variant
             </button>
@@ -267,7 +267,7 @@ export default function EditProductPage() {
           onClick={handleSave}
           disabled={saving}
           className={`w-full py-2 rounded-md text-white transition ${
-            saving ? "bg-gray-400" : "bg-black hover:bg-gray-800"
+            saving ? "bg-gray-400" : "bg-neutral-900 hover:bg-gray-800"
           }`}
         >
           {saving ? "Saving…" : "Save Changes"}

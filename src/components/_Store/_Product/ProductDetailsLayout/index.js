@@ -176,7 +176,7 @@ export default function ProductDetailsLayout({ product, related }) {
               {/* Wishlist */}
               <button
                 onClick={toggleWishlist}
-                className={`px-4 py-3 cursor-pointer border rounded-lg overflow-hidden transition ${wishlist.some((w) => w.id === merged.firebaseId) ? 'bg-rose-500 border-rose-500 text-white' : 'text-black border-black  hover:border-rose-500 hover:text-rose-500'}`}
+                className={`px-4 py-3 cursor-pointer border rounded-lg overflow-hidden transition ${wishlist.some((w) => w.id === merged.firebaseId) ? 'bg-rose-500 border-rose-500 text-white' : 'text-neutral-900 border-black  hover:border-rose-500 hover:text-rose-500'}`}
               >
                 <HiOutlineHeart className='w-5 h-5' />
               </button>

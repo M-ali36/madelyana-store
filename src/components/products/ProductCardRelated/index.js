@@ -125,7 +125,7 @@ export default function ProductCardRelated({ product }) {
           )}
 
           {/* Overlay */}
-          <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-40 transition-opacity" />
+          <div className="absolute inset-0 bg-neutral-900 opacity-0 group-hover:opacity-40 transition-opacity" />
         </Link>
 
         {/* Wishlist (top-left) */}
@@ -136,7 +136,7 @@ export default function ProductCardRelated({ product }) {
             ${
               isInWishlist
                 ? "bg-rose-500 border-rose-500 text-white"
-                : "border-white text-white hover:bg-white hover:text-black"
+                : "border-white text-white hover:bg-white hover:text-neutral-900"
             }
           `}
         >
@@ -145,12 +145,12 @@ export default function ProductCardRelated({ product }) {
 
         {/* Color thumbnails (top-right) */}
         {colorImages.length > 0 && (
-          <div className="absolute top-3 right-3 z-10 flex flex-col gap-2">
+          <div className="absolute top-3 right-3 z-10 flex flex-col gap-2 p-1 bg-white/40 rounded-full border border-white/60">
             {colorImages.map((img) => (
               <button
                 key={img.url}
                 onClick={() => setActiveImage(img.url)}
-                className={`w-10 h-10 cursor-pointer rounded-full overflow-hidden heavy-shade relative  transition
+                className={`w-10 h-10 cursor-pointer rounded-full overflow-hidden text-white heavy-shade relative  transition
                   ${
                     activeImage === img.url
                       ? "active"

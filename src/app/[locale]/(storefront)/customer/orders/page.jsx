@@ -62,7 +62,7 @@ export default function CustomerOrdersPage() {
         <Link
           href="/"
           locale={locale} 
-          className="inline-block mt-4 px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 transition"
+          className="inline-block mt-4 px-4 py-2 bg-neutral-900 text-white rounded-md hover:bg-gray-800 transition"
         >
           Start Shopping
         </Link>
@@ -137,7 +137,7 @@ function OrderCard({ order, format }) {
       </div>
 
       {/* Link hint */}
-      <p className="mt-4 text-sm text-black hover:underline">
+      <p className="mt-4 text-sm text-neutral-900 hover:underline">
         View Order Details →
       </p>
     </Link>

@@ -60,6 +60,10 @@ export async function fetchCategories(locale = "en-US") {
     if (bannerId && assetMap[bannerId]) {
       mainBanner = assetMap[bannerId];
     }
+    const entryMap = {};
+    data.includes?.Entry?.forEach((e) => {
+      entryMap[e.sys.id] = e;
+    });
 
     // 🔥 GET TAG FROM CONTENTFUL METADATA
     const tag = item.metadata?.tags?.[0]?.sys?.id || null;
@@ -69,6 +73,7 @@ export async function fetchCategories(locale = "en-US") {
       title: f.title,
       slug: f.slug,
       mainBanner,
+      seo: entryMap[f.seo?.sys?.id]?.fields || null,
       featuredTitle: f.featuredTitle || "",
       description: f.description || null,
       tag, // ⭐ category tag from metadata
@@ -120,7 +125,7 @@ export async function fetchCategoryBySlug(slug, locale = "en-US") {
 // ---------------------------------------------------------------------------
 // PRODUCT PARSING
 // ---------------------------------------------------------------------------
-function parseProduct(entry, assetMap) {
+function parseProduct(entry, assetMap, entryMap) {
   const f = entry.fields;
 
   const images =
@@ -143,14 +148,28 @@ function parseProduct(entry, assetMap) {
     materials: f.materials || [],
     features: f.features || [],
     categoryId: f.category?.sys?.id || null,
-    seo: f.seo || null,
+
+    // ⭐ FIXED SEO — identical logic to fetchCategories()
+    seo:f.seo &&
+      f.seo.sys &&
+      entryMap &&
+      entryMap[f.seo.sys.id] &&
+      entryMap[f.seo.sys.id].fields
+        ? entryMap[f.seo.sys.id].fields
+        : null,
+
     images,
+
     relatedProducts:
       f.relatedProducts?.map((r) => ({ id: r.sys.id, slug: null })) || [],
+
     upsellProducts:
       f.upsellProducts?.map((r) => ({ id: r.sys.id, slug: null })) || [],
   };
 }
+
+
+
 
 function fillReferenceSlugs(products, entries) {
   const map = {};
@@ -265,7 +284,7 @@ export async function fetchProductBySlug(slug, locale = "en-US") {
 
   const assetMap = buildAssetMap(data.includes);
 
-  // Build entryMap for included entries (id -> entry)
+  // Build entryMap for all linked entries
   const entryMap = {};
   data.includes?.Entry?.forEach((e) => {
     entryMap[e.sys.id] = e;
@@ -273,10 +292,10 @@ export async function fetchProductBySlug(slug, locale = "en-US") {
 
   const productEntry = data.items[0];
 
-  // Base product (keeps your current normalized shape)
-  const product = parseProduct(productEntry, assetMap);
+  // ❗ FIX: pass entryMap into parseProduct
+  const product = parseProduct(productEntry, assetMap, entryMap);
 
-  // ✅ Full mapping for relatedProducts / upsellProducts (instead of only {id, slug})
+  // Map related products
   const relatedProducts = mapProductsFromRefs(
     productEntry.fields?.relatedProducts || [],
     entryMap,
@@ -295,6 +314,7 @@ export async function fetchProductBySlug(slug, locale = "en-US") {
     upsellProducts,
   };
 }
+
 
 // ---------------------------------------------------------------------------
 // FETCH ALL SLUGS (for SSG indexing if needed)
@@ -419,6 +439,7 @@ export async function fetchHomePage(locale = "en-US") {
         ?.filter(Boolean) || []
     );
   }
+  
 
   const latestProducts = mapProducts(f.latestProducts);
   const onSaleProducts = mapProducts(f.onSaleProducts);
@@ -627,3 +648,265 @@ export async function fetchFooter(locale = "en-US") {
   };
 }
 
+// ---------------------------------------------------------------------------
+// Articles FETCHERS
+// ---------------------------------------------------------------------------
+export async function fetchArticles(locale = "en-US") {
+  const res = await fetch(
+    `${BASE_URL}/entries?content_type=article&include=10&locale=${locale}`,
+    authHeaders()
+  );
+
+  const data = await res.json();
+  if (!data.items?.length) return [];
+
+  const assetMap = buildAssetMap(data.includes);
+
+  return data.items.map((item) => {
+    const f = item.fields;
+
+    let mainBanner = null;
+    const bannerId = f.mainBanner?.sys?.id;
+    if (bannerId && assetMap[bannerId]) {
+      mainBanner = assetMap[bannerId];
+    }
+
+    let mainImage = null;
+    const imageId = f.mainImage?.sys?.id;
+    if (imageId && assetMap[imageId]) {
+      mainImage = assetMap[imageId];
+    }
+    const entryMap = {};
+    data.includes?.Entry?.forEach((e) => {
+      entryMap[e.sys.id] = e;
+    });
+
+    // 🔥 GET TAG FROM CONTENTFUL METADATA
+    const tag = item.metadata?.tags?.[0]?.sys?.id || null;
+
+    return {
+      id: item.sys.id,
+      title: f.title,
+      slug: f.slug,
+      mainBanner,
+      mainImage,
+      date: f.date || null,
+      seo: entryMap[f.seo?.sys?.id]?.fields || null,
+      featuredTitle: f.featuredTitle || "",
+      content: f.content || null,
+      tag, // ⭐ Article tag from metadata
+    };
+  });
+}
+
+export async function fetchRelatedArticles(currentTag, locale = "en-US") {
+  if (!currentTag) return [];
+
+  const allArticles = await fetchArticles(locale);
+
+  // Filter by matching tag and exclude the current article itself
+  return allArticles.filter(
+    (item) => item.tag === currentTag
+  );
+}
+
+export async function fetchArticleBySlug(slug, locale = "en-US") {
+  const res = await fetch(
+    `${BASE_URL}/entries?content_type=article&fields.slug=${slug}&include=10&locale=${locale}`,
+    authHeaders()
+  );
+
+  const data = await res.json();
+  if (!data.items?.length) return null;
+
+  const item = data.items[0];
+  const f = item.fields;
+
+  const assetMap = buildAssetMap(data.includes);
+
+  // ------------------------------------------------
+  // ⭐ Resolve Main Banner
+  // ------------------------------------------------
+  let mainBanner = null;
+  const bannerId = f.mainBanner?.sys?.id;
+  if (bannerId && assetMap[bannerId]) {
+    mainBanner = assetMap[bannerId];
+  }
+
+  // ------------------------------------------------
+  // ⭐ Build Entry Map (for SEO + linked entries)
+  // ------------------------------------------------
+  const entryMap = {};
+  data.includes?.Entry?.forEach((e) => {
+    entryMap[e.sys.id] = e.fields;
+  });
+
+  // ------------------------------------------------
+  // ⭐ Get Tag from Metadata
+  // ------------------------------------------------
+  const tag = item.metadata?.tags?.[0]?.sys?.id || null;
+
+  // ------------------------------------------------
+  // ⭐ Resolve SEO entry (same logic as fetchArticles)
+  // ------------------------------------------------
+  const seo =
+    f.seo?.sys?.id && entryMap[f.seo.sys.id]
+      ? entryMap[f.seo.sys.id]
+      : null;
+
+  return {
+    id: item.sys.id,
+    title: f.title,
+    slug: f.slug,
+    mainBanner,
+    date: f.date || null,
+    featuredTitle: f.featuredTitle || "",
+    description: f.description || null,
+    content: f.content || null, // optional if you use content instead of description
+    seo,
+    tag,
+  };
+}
+
+
+export async function fetchLatestArticles(locale = "en-US", limit = 10) {
+  const res = await fetch(
+    `${BASE_URL}/entries?content_type=article&order=-sys.createdAt&limit=${limit}&include=10&locale=${locale}`,
+    authHeaders()
+  );
+
+  const data = await res.json();
+  if (!data.items?.length) return [];
+
+  const assetMap = buildAssetMap(data.includes);
+
+  return data.items.map((item) => {
+    const f = item.fields;
+
+    // ⭐ Extract main image
+    let mainImage = null;
+    const bannerId = f.mainImage?.sys?.id;
+    if (bannerId && assetMap[bannerId]) {
+      mainImage = assetMap[bannerId];
+    }
+
+    // ⭐ Extract tag from metadata (same logic as fetchArticles)
+    const tag = item.metadata?.tags?.[0]?.sys?.id || null;
+
+    return {
+      id: item.sys.id,
+      slug: f.slug,
+      title: f.title,
+      featuredTitle: f.featuredTitle || "",
+      content: f.content || null,
+      date: f.date || null,
+      mainImage,
+      tag, // ← ⭐ Now tags are passed to LatestArticles!
+    };
+  });
+}
+
+
+
+// ---------------------------------------------------------------------------
+// Style Insights
+// ---------------------------------------------------------------------------
+
+export async function fetchStyleInsights(locale = "en-US") {
+  const res = await fetch(
+    `${BASE_URL}/entries?content_type=styleInsights&include=10&locale=${locale}`,
+    authHeaders()
+  );
+
+  const data = await res.json();
+  if (!data.items?.length) return null;
+
+  const item = data.items[0];
+  const f = item.fields;
+
+  const assetMap = buildAssetMap(data.includes);
+  const entryMap = {};
+  data.includes?.Entry?.forEach((e) => {
+    entryMap[e.sys.id] = e.fields;
+  });
+
+  // -------------------------------------------------------------------
+  // ⭐ MAIN BANNER (Single Image)
+  // -------------------------------------------------------------------
+  let mainBanner = null;
+  const bannerId = f.mainBanner?.sys?.id;
+  if (bannerId && assetMap[bannerId]) {
+    mainBanner = assetMap[bannerId];
+  }
+
+  // -------------------------------------------------------------------
+  // ⭐ SEO
+  // -------------------------------------------------------------------
+  const seo =
+    f.seo?.sys?.id && entryMap[f.seo.sys.id]
+      ? entryMap[f.seo.sys.id]
+      : null;
+
+  // -------------------------------------------------------------------
+  // ⭐ PINNED INSIGHTS (Articles)
+  // -------------------------------------------------------------------
+  const pinnedInsights = (f.pinnedInsights || []).map((ref) => {
+    const entry = entryMap[ref.sys.id];
+    if (!entry) return null;
+
+    const article = {
+      id: ref.sys.id,
+      title: entry.title,
+      slug: entry.slug,
+      featuredTitle: entry.featuredTitle || "",
+      content: entry.content || null
+    };
+
+    // Attach image if present
+    if (entry.mainImage?.sys?.id && assetMap[entry.mainImage.sys.id]) {
+      article.mainImage = assetMap[entry.mainImage.sys.id];
+    }
+
+    return article;
+  }).filter(Boolean);
+
+  // -------------------------------------------------------------------
+  // ⭐ TIKTOK VIDEOS
+  // -------------------------------------------------------------------
+  const tiktokVideos = (f.tiktokVideos || []).map((ref) => {
+    const videoEntry = entryMap[ref.sys.id];
+    if (!videoEntry) return null;
+
+    const mediaObj = {
+      title: videoEntry.title || "",
+      videoUrl: videoEntry.videoUrl || "",
+      aspectRatio: videoEntry.aspectRatio || "",
+      image: null
+    };
+
+    if (videoEntry.image?.sys?.id && assetMap[videoEntry.image.sys.id]) {
+      mediaObj.image = assetMap[videoEntry.image.sys.id];
+    }
+
+    return mediaObj;
+  }).filter(Boolean);
+
+  // -------------------------------------------------------------------
+  // ⭐ ALL ARTICLES (reuse existing fetcher)
+  // -------------------------------------------------------------------
+  const allArticles = await fetchArticles(locale);
+
+  return {
+    id: item.sys.id,
+    title: f.title,
+    slug: f.slug,
+    seo,
+    mainBanner,
+    featuredTitle: f.featuredTitle || null,
+    pinnedInsights,
+    tikTokTitle: f.tikTokTitle || null,
+    tiktokSubTitle: f.tiktokSubTitle || "",
+    tiktokVideos,
+    allArticles
+  };
+}

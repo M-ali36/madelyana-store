@@ -15,7 +15,7 @@ export default function TopHeader({ locale }) {
   return (
     <div
       className="
-        w-full bg-black text-white 
+        w-full bg-neutral-900 text-white 
         transition-all duration-500 overflow-hidden
       "
       style={{

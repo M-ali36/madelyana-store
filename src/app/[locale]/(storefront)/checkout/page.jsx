@@ -88,7 +88,7 @@ export default function CheckoutPage() {
 			<div className="p-6 text-center">
 				<p>Your cart is empty.</p>
 				<button
-					className="mt-4 px-4 py-2 bg-black text-white rounded-md"
+					className="mt-4 px-4 py-2 bg-neutral-900 text-white rounded-md"
 					onClick={() => router.push("/")}
 				>
 					Continue Shopping
@@ -330,7 +330,7 @@ export default function CheckoutPage() {
 						onClick={placeOrder}
 						disabled={placing}
 						className={`mt-6 w-full py-3 rounded-md transition ${
-							placing ? "bg-gray-400" : "bg-black text-white hover:bg-gray-800"
+							placing ? "bg-gray-400" : "bg-neutral-900 text-white hover:bg-gray-800"
 						}`}
 					>
 						{placing ? "Placing Order…" : "Place Order"}
