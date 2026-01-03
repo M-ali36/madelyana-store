@@ -7,7 +7,7 @@ import { ScrollSmoother } from "gsap/ScrollSmoother";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useAppContext } from "@/components/context/AppContext";
 
-export default function SmoothScrollWrapper({ children }) {
+export default function SmoothScrollWrapper({ children, locale }) {
   const { setScrollPosition, setScrollDirection } = useAppContext();
   const pathname = usePathname();
 
@@ -61,7 +61,7 @@ export default function SmoothScrollWrapper({ children }) {
         gsap.ticker.remove(updateScroll);
       };
     }, 10);
-  }, [pathname]);
+  }, [pathname, locale]);
 
   return (
     <div id="smooth-wrapper">

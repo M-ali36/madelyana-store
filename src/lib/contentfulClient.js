@@ -910,3 +910,56 @@ export async function fetchStyleInsights(locale = "en-US") {
     allArticles
   };
 }
+
+// ---------------------------------------------------------------------------
+// CONTACT PAGE
+// ---------------------------------------------------------------------------
+export async function fetchContactPage(locale = "en-US") {
+  const res = await fetch(
+    `${BASE_URL}/entries?content_type=contactPage&include=10&locale=${locale}`,
+    authHeaders()
+  );
+
+  const data = await res.json();
+  if (!data?.items?.length) return null;
+
+  const item = data.items[0].fields;
+  const assetMap = buildAssetMap(data.includes);
+
+  let bannerImage = null;
+  if (item.bannerImage?.sys?.id && assetMap[item.bannerImage.sys.id]) {
+    bannerImage = assetMap[item.bannerImage.sys.id];
+  }
+
+  const entryMap = {};
+  data.includes?.Entry?.forEach((e) => {
+    entryMap[e.sys.id] = e.fields;
+  });
+
+  const seo =
+    item.seo?.sys?.id && entryMap[item.seo.sys.id]
+      ? entryMap[item.seo.sys.id]
+      : null;
+
+  const mapSocialLinks = (list = []) =>
+  list
+    .map((ref) => entryMap[ref.sys.id])
+    .map((l) => ({
+      url: l?.url || "",
+      icon: l?.icon || "",
+    }))
+    .filter(Boolean);
+
+  return {
+    title: item.featuredTitle || null,
+    subTitle: item.subTitle || null,
+    bannerImage,
+    contactInfoTitle: item.contactInfoTitle || "",
+    contactInfoText: item.contactInfoText || "",
+    email: item.email || "",
+    phone: item.phone || "",
+    whatsapp: item.whatsapp || "",
+    socialLinks: mapSocialLinks(item.socialLinks) || [],
+    seo
+  };
+}

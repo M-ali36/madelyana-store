@@ -11,7 +11,7 @@ export default function About({ data }) {
   const locale = useLocale();
 
   return (
-    <section className="w-full py-20 container mx-auto px-4">
+    <section className="w-full py-20 container mx-auto px-4 max-w-7xl">
       <div 
         className="
           grid grid-cols-1
@@ -23,8 +23,10 @@ export default function About({ data }) {
         {/* RIGHT — IMAGE */}
         <div className="relative w-full aspect-[4/5] overflow-hidden rounded-lg">
           <AnimatedImage
-            image={image?.url}
+            image={image}
             alt={title}
+            width={image.width}
+            height={image.height}
           />
         </div>
         

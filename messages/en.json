@@ -79,5 +79,41 @@
         "loadMore": "Load More",
         "noArticles": "No articles available.",
         "noResults": "No matching articles found."
+    },
+    "homeCategories": {
+        "showMore": "Show all categories"
+    },
+    "videoSection": {
+        "cta": "Explore Women’s Collection"
+    },
+    "contact" : {
+        "title": "Contact Us",
+        "subTitle": "We’re here to assist you. Reach out anytime.",
+        "form": {
+            "name": "Full Name",
+            "email": "Email",
+            "phone": "Phone Number",
+            "subject": "Subject",
+            "message": "Message",
+            "submit": "Send Message",
+            "success": "Your message has been sent successfully.",
+            "error": "Something went wrong. Please try again.",
+            "subjects": {
+                "productInquiry": "Product Inquiry",
+                "orderStatus": "Order Status",
+                "returns": "Returns & Exchanges",
+                "shipping": "Shipping & Delivery",
+                "wholesale": "Wholesale Inquiry",
+                "customOrder": "Custom Order Request",
+                "support": "Website / Account Support",
+                "other": "Other"
+            }
+        },
+        "info": {
+            "email": "Email",
+            "phone": "Phone",
+            "whatsapp": "WhatsApp",
+            "chatNow": "Chat Now"
+        }
     }
 }
