@@ -4,14 +4,14 @@ module.exports = {
 
   // ⭐ Correct content paths for Next.js App Router
   content: [
-    "./app/**/*.{js,jsx}",
-    "./components/**/*.{js,jsx}",
-    "./pages/**/*.{js,jsx}",
+    "./app/**/*.{js,jsx,ts,tsx}",
+    "./components/**/*.{js,jsx,ts,tsx}",
+    "./pages/**/*.{js,jsx,ts,tsx}",
     "./app/**/*.module.css",
     "./components/**/*.module.css",
   ],
 
-  // If you intentionally use `_` instead of `:` for responsive/hover variants
+  // Using `_` instead of `:` for responsive/hover variants
   separator: "_",
 
   theme: {
@@ -40,5 +40,19 @@ module.exports = {
     },
   },
 
-  plugins: [],
+  plugins: [
+    // ⭐ Custom Tailwind Utility: no-transform
+    function ({ addUtilities }) {
+      addUtilities(
+        {
+          ".no-transform": {
+            transform: "none !important",
+          },
+        },
+        {
+          variants: ["responsive", "hover", "focus"], // generates lg:no-transform, md:no-transform, etc.
+        }
+      );
+    },
+  ],
 };

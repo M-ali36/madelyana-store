@@ -56,7 +56,7 @@ export default function ContactForm() {
 
       <form
         onSubmit={submit}
-        className="bg-white p-8 rounded-2xl border border-neutral-200 shadow-sm"
+        className="bg-white p-8 rounded-2xl border border-neutral-300"
       >
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

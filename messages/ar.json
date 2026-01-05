@@ -2,6 +2,12 @@
     "top_message": "شحن مجاني للطلبات التي تزيد عن 12$",
     "women_bags": "حقائب نسائية",
     "styleInsights": "دليل الأناقة",
+    "gifts": "الهدايا",
+    "cart": "سلة التسوق",
+    "wishlist": "قائمة الرغبات",
+    "my_account": "حسابي",
+    "menu": "القائمة",
+    "filters": "تصفية",
     "home" : {
         "latest_products": "أحدث المنتجات",
         "no_homepage_found": "لم يتم العثور على الصفحة الرئيسية."
@@ -115,5 +121,225 @@
             "whatsapp": "واتساب",
             "chatNow": "ابدأ المحادثة"
         }
+    },
+    "cartPage": {
+        "yourCart": "سلة التسوق",
+        "youMayAlsoLike": "قد يعجبك أيضاً"
+    },
+    "emptyCart": {
+        "title": "Your cart is empty",
+        "startShopping": "Start Shopping"
+    },
+    "cartSummary": {
+        "orderSummary": "ملخص الطلب",
+        "subtotal": "الإجمالي",
+        "proceedToCheckout": "المتابعة لإتمام الشراء",
+        "continueShopping": "متابعة التسوق"
+    },
+    "cartItem": {
+        "remove": "إزالة"
+    },
+    "checkout": {
+        "checkoutTitle": "إتمام الشراء",
+        "shippingAddress": "عنوان الشحن",
+        "paymentMethod": "طريقة الدفع",
+        "cashOnDelivery": "الدفع عند الاستلام",
+        "orderSummary": "ملخص الطلب",
+        "subtotal": "الإجمالي",
+        "shipping": "الشحن",
+        "total": "المجموع",
+        "placeOrder": "إتمام الطلب",
+        "placingOrder": "جاري إنشاء الطلب…",
+        "loginRequired": "تسجيل الدخول مطلوب.",
+        "loading": "جارٍ تحميل صفحة الدفع…",
+        "cartEmpty": "سلة التسوق فارغة.",
+        "continueShopping": "متابعة التسوق",
+
+        "fullName": "الاسم الكامل *",
+        "phone": "رقم الهاتف *",
+        "country": "الدولة *",
+        "city": "المدينة *",
+        "state": "المنطقة / المحافظة *",
+        "zip": "الرمز البريدي (اختياري)",
+        "street": "العنوان التفصيلي *",
+
+        "errFullName": "الاسم الكامل مطلوب.",
+        "errPhone": "رقم الهاتف مطلوب.",
+        "errCountry": "الدولة مطلوبة.",
+        "errCity": "المدينة مطلوبة.",
+        "errStreet": "العنوان مطلوب.",
+        "errState": "المنطقة / المحافظة مطلوبة.",
+        "orderError": "تعذر إنشاء الطلب. يرجى المحاولة مرة أخرى."
+    },
+    "orderSuccess": {
+        "loading": "جارٍ تحميل طلبك…",
+        "orderNotFound": "الطلب غير موجود",
+        "orderNotFoundMessage": "تعذر العثور على هذا الطلب.",
+        "backToHome": "العودة إلى الصفحة الرئيسية",
+
+        "thankYou": "شكرًا لك! 🎉",
+        "orderPlaced": "تم إرسال طلبك بنجاح.",
+        "orderId": "رقم الطلب",
+
+        "orderSummary": "ملخص الطلب",
+        "subtotal": "الإجمالي",
+        "shipping": "الشحن",
+        "total": "المجموع",
+
+        "shippingAddress": "عنوان الشحن",
+
+        "viewMyOrders": "عرض طلباتي",
+        "continueShopping": "متابعة التسوق"
+    },
+    "addressPage": {
+        "loading": "جارٍ تحميل العنوان...",
+        "success": "تم تحديث العنوان بنجاح!",
+        "failed": "فشل في تحديث العنوان.",
+
+        "title": "عنوان الشحن",
+
+        "fullName": "الاسم الكامل",
+        "phone": "رقم الهاتف",
+        "street": "عنوان الشارع",
+        "city": "المدينة",
+        "state": "المنطقة / الولاية",
+        "country": "الدولة",
+        "zip": "الرمز البريدي",
+
+        "save": "حفظ العنوان"
+    },
+    "settingsPage": {
+        "loading": "جارٍ تحميل الإعدادات...",
+
+        "successProfile": "تم تحديث الملف الشخصي بنجاح!",
+        "failedProfile": "فشل في تحديث الملف الشخصي.",
+
+        "successEmail": "تم تحديث البريد الإلكتروني بنجاح!",
+        "failedEmail": "فشل في تحديث البريد الإلكتروني (يتطلب تسجيل دخول حديث).",
+
+        "successPassword": "تم تحديث كلمة المرور بنجاح!",
+        "failedPassword": "فشل في تحديث كلمة المرور (تحقق من كلمة المرور الحالية).",
+
+        "title": "إعدادات الحساب",
+        "profileInfo": "معلومات الحساب",
+        "fullName": "الاسم الكامل",
+        "phone": "رقم الهاتف",
+        "saveChanges": "حفظ التغييرات",
+
+        "changeEmail": "تغيير البريد الإلكتروني",
+        "emailWarning": "قد يتطلب تحديث البريد الإلكتروني إعادة تسجيل الدخول.",
+        "updateEmail": "تحديث البريد الإلكتروني",
+
+        "changePassword": "تغيير كلمة المرور",
+        "currentPassword": "كلمة المرور الحالية",
+        "newPassword": "كلمة المرور الجديدة",
+        "updatePassword": "تحديث كلمة المرور"
+    },
+    "wishlistPage": {
+        "loading": "جارٍ تحميل قائمة المفضلة...",
+        "empty": "قائمة المفضلة فارغة.",
+        "browseProducts": "تصفح المنتجات",
+        "title": "قائمة المفضلة"
+    },
+    "ordersPage": {
+        "loading": "جارٍ تحميل طلباتك...",
+        "empty": "ليس لديك أي طلبات حتى الآن.",
+        "startShopping": "ابدأ التسوق",
+        "title": "طلباتك",
+        "order": "الطلب",
+        "date": "التاريخ",
+        "items": "المنتجات",
+        "total": "الإجمالي",
+        "details": "عرض تفاصيل الطلب →",
+        "status": {
+            "pending": "قيد المعالجة",
+            "paid": "مدفوع",
+            "shipped": "تم الشحن",
+            "delivered": "تم التوصيل"
+        }
+    },
+    "orderDetailsPage": {
+        "loading": "جارٍ تحميل الطلب...",
+        "notFound": "الطلب غير موجود.",
+        "unauthorized": "لا يمكنك عرض هذا الطلب.",
+        "back": "← العودة إلى الطلبات",
+        "order": "الطلب",
+        "placedOn": "تم تقديمه في",
+        "items": "المنتجات",
+        "subtotal": "المجموع:",
+        "shipping": "الشحن:",
+        "total": "الإجمالي:",
+        "shippingAddress": "عنوان الشحن",
+        "noAddress": "لا يوجد عنوان مسجل.",
+        "qty": "الكمية",
+        "unitPrice": "سعر الوحدة",
+        "lineTotal": "الإجمالي الفرعي",
+        "status": {
+            "pending": "قيد المعالجة",
+            "confirmed": "تم التأكيد",
+            "shipped": "تم الشحن",
+            "delivered": "تم التوصيل",
+            "cancelled": "تم الإلغاء"
+        }
+    },
+    "customerDashboard": {
+        "yourAccount": "حسابك",
+        "orders": {
+            "title": "طلباتك",
+            "desc": "عرض جميع مشترياتك وحالات الطلب والتفاصيل."
+        },
+        "wishlist": {
+            "title": "قائمة الرغبات",
+            "desc": "عناصرك المحفوظة."
+        },
+        "settings": {
+            "title": "الإعدادات",
+            "desc": "تحديث ملفك الشخصي وتفاصيل تسجيل الدخول."
+        },
+        "address": {
+            "title": "العنوان",
+            "desc": "إدارة عنوان الشحن الخاص بك."
+        }
+    },
+    "customerLayout": {
+        "loading": "جاري تحميل حسابك...",
+        "accountMenu": "قائمة الحساب",
+        "hello": "مرحباً",
+        "dashboard": "لوحة التحكم",
+        "orders": "الطلبات",
+        "wishlist": "قائمة الرغبات",
+        "settings": "الإعدادات",
+        "address": "العنوان",
+        "logout": "تسجيل الخروج"
+    },
+    "login": {
+        "login": "تسجيل الدخول",
+        "email": "البريد الإلكتروني",
+        "password": "كلمة المرور",
+        "loggingIn": "جارٍ تسجيل الدخول...",
+        "enterEmailPassword": "يرجى إدخال البريد الإلكتروني وكلمة المرور.",
+        "emailNotFound": "البريد الإلكتروني غير موجود.",
+        "incorrectPassword": "كلمة المرور غير صحيحة.",
+        "loginFailed": "فشل تسجيل الدخول. يرجى المحاولة مرة أخرى.",
+        "googleFailed": "فشل تسجيل الدخول عبر Google.",
+        "or": "— أو —",
+        "continueGoogle": "المتابعة باستخدام Google",
+        "noAccount": "ليس لديك حساب؟",
+        "register": "سجل من هنا"
+    },
+    "register": {
+        "register": "إنشاء حساب",
+        "fullName": "الاسم الكامل",
+        "email": "البريد الإلكتروني",
+        "password": "كلمة المرور",
+        "confirmPassword": "تأكيد كلمة المرور",
+        "allRequired": "جميع الحقول مطلوبة.",
+        "passwordNotMatch": "كلمتا المرور غير متطابقتين.",
+        "registerFailed": "فشل إنشاء الحساب.",
+        "googleFailed": "فشل التسجيل عبر Google.",
+        "or": "— أو —",
+        "continueGoogle": "التسجيل باستخدام Google",
+        "haveAccount": "لديك حساب بالفعل؟",
+        "loginHere": "سجل الدخول من هنا"
     }
 }

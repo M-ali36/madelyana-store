@@ -63,7 +63,7 @@ export default function LatestArticles({ articles, title, subTitle }) {
           <Swiper
             modules={[Navigation]}
             spaceBetween={24}
-            slidesPerView={1.2}
+            slidesPerView={1.5}
             breakpoints={{
               640: { slidesPerView: 2.2 },
               1024: { slidesPerView: 3.2 },

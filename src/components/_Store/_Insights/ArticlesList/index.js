@@ -123,7 +123,7 @@ export default function ArticlesList({ articles }) {
                     key={article.id}
                     className="group block"
                     >
-                    <div className="relative aspect-[4/5] rounded-xl overflow-hidden bg-neutral-100 shadow-sm ring-1 ring-gray-200 transition group-hover:shadow-lg">
+                    <div className="relative aspect-video lg:aspect-[4/5] rounded-xl overflow-hidden bg-neutral-100 shadow-sm ring-1 ring-gray-200 transition group-hover:shadow-lg">
                         <AnimatedImage
                         image={article.mainImage}
                         width={article.mainImage?.width || 800}

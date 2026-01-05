@@ -40,9 +40,8 @@ export default function RelatedProductsSlider({ products, title, subTitle, ...pr
         {/* Slider */}
         <Swiper
             modules={[Navigation]}
-            navigation={{}} // ✅ THIS IS THE KEY LINE
             spaceBetween={24}
-            slidesPerView={1.2}
+            slidesPerView={2}
             onSwiper={(swiper) => {
             // Bind navigation AFTER refs exist
             setTimeout(() => {

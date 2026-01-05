@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import ColorSwatch from "../ColorSwatch";
+import { useTranslations } from "next-intl";
 
 export default function CartItem({
   item,
@@ -9,6 +10,8 @@ export default function CartItem({
   removeFromCart,
   format,
 }) {
+  const t = useTranslations("cartItem");
+
   return (
     <div className="flex gap-4 p-4 bg-white rounded-lg shadow-sm border border-gray-200">
       {/* Image */}
@@ -67,6 +70,8 @@ export default function CartItem({
             <button
               onClick={() => removeFromCart(item.variantId)}
               className="text-gray-500 hover:text-red-600 transition"
+              aria-label={t("remove")}
+              title={t("remove")}
             >
               ✕
             </button>

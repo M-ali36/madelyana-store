@@ -87,7 +87,7 @@ export default async function CategoryPage({ params }) {
       </section>
 
       {/* Products Grid */}
-      <section className="container mx-auto px-6 py-4">
+      <section className="container mx-auto px-4 py-4">
         <CategoryProductsLayout products={products} />
       </section>
     </>

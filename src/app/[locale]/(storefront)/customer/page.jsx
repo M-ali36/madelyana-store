@@ -1,45 +1,45 @@
-// app/customer/page.jsx
 "use client";
 
 import Link from "@/components/Ui/Link";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 export default function CustomerDashboard() {
   const locale = useLocale();
-  
+  const t = useTranslations("customerDashboard");
+
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-4xl">
       <h1 className="text-2xl font-semibold text-gray-800 mb-6">
-        Your Account
+        {t("yourAccount")}
       </h1>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <DashboardCard
-          title="Your Orders"
-          desc="View all your purchases, statuses, and details."
+          title={t("orders.title")}
+          desc={t("orders.desc")}
           href="/customer/orders"
-          locale={locale} 
+          locale={locale}
         />
 
         <DashboardCard
-          title="Wishlist"
-          desc="Your saved items."
+          title={t("wishlist.title")}
+          desc={t("wishlist.desc")}
           href="/customer/wishlist"
-          locale={locale} 
+          locale={locale}
         />
 
         <DashboardCard
-          title="Settings"
-          desc="Update your profile and login details."
+          title={t("settings.title")}
+          desc={t("settings.desc")}
           href="/customer/settings"
-          locale={locale} 
+          locale={locale}
         />
 
         <DashboardCard
-          title="Address"
-          desc="Manage your shipping address."
+          title={t("address.title")}
+          desc={t("address.desc")}
           href="/customer/address"
-          locale={locale} 
+          locale={locale}
         />
       </div>
     </div>
@@ -50,8 +50,8 @@ function DashboardCard({ title, desc, href, ...props }) {
   return (
     <Link
       href={href}
-      className="block bg-white border border-gray-200 p-6 rounded-lg shadow-sm hover:shadow-md transition"
       {...props}
+      className="block bg-white border border-gray-200 p-6 rounded-lg shadow-sm hover:shadow-md transition"
     >
       <h2 className="text-lg font-semibold text-gray-800 mb-2">{title}</h2>
       <p className="text-sm text-gray-600">{desc}</p>

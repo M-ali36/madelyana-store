@@ -8,7 +8,7 @@ export default function ContactInfo({ data }) {
   const t = useTranslations("contact.info");
 
   return (
-    <div className="bg-white rounded-2xl p-8 border border-neutral-200 shadow-sm">
+    <div className="bg-white rounded-2xl p-8 border border-neutral-300">
 
       {/* Title */}
       <h2 className="text-2xl font-semibold mb-4">{data.contactInfoTitle}</h2>

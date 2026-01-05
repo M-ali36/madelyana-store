@@ -31,8 +31,8 @@ export default function ProductsTopBar({ sort, setSort, sortDir, setSortDir }) {
   }, []);
 
   return (
-    <div className="sort-controls relative">
-      <div className="absolute bottom-0 end-0 inline-flex items-center justify-end mb-6 gap-3 border rounded-full p-1 border-neutral-900/50 bg-neutral-900/20">
+    <div className="sort-controls relative z-100 max-lg:flex justify-center">
+      <div className="absolute bottom-0 lg:end-0 inline-flex items-center justify-end mb-6 gap-3 border rounded-full p-1 border-neutral-900 bg-white">
         {/* Sorting */}
         <div className="flex items-center gap-2">
           <select

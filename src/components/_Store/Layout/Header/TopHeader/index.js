@@ -18,9 +18,6 @@ export default function TopHeader({ locale }) {
         w-full bg-neutral-900 text-white 
         transition-all duration-500 overflow-hidden
       "
-      style={{
-        height: hidden ? "0px" : "46px",
-      }}
     >
       <div className="container mx-auto px-4 flex items-center justify-between py-2">
 

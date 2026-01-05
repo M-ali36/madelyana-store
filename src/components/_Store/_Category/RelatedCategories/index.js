@@ -27,8 +27,8 @@ export default function RelatedCategories({ categories, currentSlug }) {
   return (
     <div className="relative w-full grid grid-cols-1 lg:grid-cols-13 items-center gap-4">
       {/* Slider Header */}
-      <div className="col-span-1 lg:col-span-2 flex items-center justify-end">
-        <h2 className="text-4xl text-end">
+      <div className="col-span-1 lg:col-span-2 flex items-center justify-center lg:justify-end">
+        <h2 className="text-2xl max-lg:mb-8 lg:text-4xl lg:text-end">
           {t.rich("discoverTitle", {
             b: (chunks) => <strong>{chunks}</strong>,
             linebreak: () => <br />
@@ -44,7 +44,7 @@ export default function RelatedCategories({ categories, currentSlug }) {
           spaceBetween={18}
           slidesPerView={6.5}
           breakpoints={{
-            440: { slidesPerView: 1.5 },
+            440: { slidesPerView: 2.5 },
             640: { slidesPerView: 2.5 },
             1024: { slidesPerView: 3.5 },
             1280: { slidesPerView: 5.5 },
@@ -65,7 +65,7 @@ export default function RelatedCategories({ categories, currentSlug }) {
                 <Link
                   href={`/${cat.slug}`}
                   locale={locale}
-                  className="relative block rounded h-40 overflow-hidden group"
+                  className="relative block rounded-xl lg:rounded h-40 overflow-hidden group"
                 >
                   {/* Overlay */}
                   <div className="absolute inset-0 bg-neutral-900/40 group-hover:bg-neutral-900/20 transition-all z-10" />
@@ -81,7 +81,7 @@ export default function RelatedCategories({ categories, currentSlug }) {
 
                   {/* Title */}
                   <div className="absolute bottom-0 w-full p-3 z-20">
-                    <span className="text-white text-2xl font-medium drop-shadow">
+                    <span className="text-white text-lg lg:text-2xl font-medium drop-shadow">
                       {cat.featuredTitle || cat.title}
                     </span>
                   </div>

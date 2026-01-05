@@ -72,7 +72,7 @@ export default function MiniAccount() {
 
 	// Logged-in → dropdown
 	return (
-		<div className="relative" ref={dropdownRef}>
+		<div className="relative max-lg:hidden" ref={dropdownRef}>
 			<button
 				onClick={toggleOpen}
 				className="control-btn relative"

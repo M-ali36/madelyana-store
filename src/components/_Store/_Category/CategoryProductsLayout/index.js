@@ -194,7 +194,7 @@ export default function CategoryProductsLayout({ products }) {
           loadMore={() => setLimit(limit + LOAD_MORE_STEP)}
         />
       </div>
-      <div className="products-list-end"></div>
+      <div className="products-list-end mt-20"></div>
     </div>
   );
 }

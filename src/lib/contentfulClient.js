@@ -963,3 +963,151 @@ export async function fetchContactPage(locale = "en-US") {
     seo
   };
 }
+
+
+// ---------------------------------------------------------------------------
+// Your Rights PAGE
+// ---------------------------------------------------------------------------
+
+export async function fetchYourRightsPage(locale = "en-US") {
+  const res = await fetch(
+    `${BASE_URL}/entries?content_type=yourRights&include=10&locale=${locale}`,
+    authHeaders()
+  );
+
+  const data = await res.json();
+  if (!data?.items?.length) return null;
+
+  const item = data.items[0].fields;
+
+  const entryMap = {};
+  data.includes?.Entry?.forEach((e) => {
+    entryMap[e.sys.id] = e.fields;
+  });
+
+  const seo =
+    item.seo?.sys?.id && entryMap[item.seo.sys.id]
+      ? entryMap[item.seo.sys.id]
+      : null;
+
+  return {
+    slug: item.slug || "your-rights",
+    featuredTitle: item.featuredTitle || null,
+    content: item.content || null,
+    seo
+  };
+}
+
+export async function fetchStandardContents(locale = "en-US") {
+  const res = await fetch(
+    `${BASE_URL}/entries?content_type=standerdContent&include=10&locale=${locale}`,
+    authHeaders()
+  );
+
+  const data = await res.json();
+
+  if (!data?.items?.length) {
+    console.log("No standardContent entries found");
+    return [];
+  }
+
+  return data.items.map((i) => i.fields);
+}
+
+
+export async function fetchStandardContent(slug, locale = "en-US") {
+  const res = await fetch(
+    `${BASE_URL}/entries?content_type=standerdContent&fields.slug=${slug}&include=10&locale=${locale}`,
+    authHeaders()
+  );
+
+  const data = await res.json();
+
+  console.log("Single page query result:", data);
+
+  if (!data?.items?.length) return null;
+
+  const fields = data.items[0].fields;
+
+  const entryMap = {};
+  data.includes?.Entry?.forEach((e) => {
+    entryMap[e.sys.id] = e.fields;
+  });
+
+  const seo =
+    fields.seo?.sys?.id && entryMap[fields.seo.sys.id]
+      ? entryMap[fields.seo.sys.id]
+      : null;
+
+  return {
+    slug: fields.slug,
+    featuredTitle: fields.featuredTitle,
+    content: fields.content,
+    seo,
+  };
+}
+
+export async function fetchPackingExperience(locale = "en-US") {
+  const res = await fetch(
+    `${BASE_URL}/entries?content_type=packingExperiencePage&include=10&locale=${locale}`,
+    authHeaders()
+  );
+
+  const data = await res.json();
+  if (!data?.items?.length) return null;
+
+  const fields = data.items[0].fields;
+
+  // Build asset + entry maps
+  const assetMap = buildAssetMap(data.includes);
+  const entryMap = {};
+  data.includes?.Entry?.forEach((e) => {
+    entryMap[e.sys.id] = e.fields;
+  });
+
+  const giftItems = (fields.giftItems || []).map((ref) => {
+    const giftEntry = entryMap[ref.sys.id];
+    if (!giftEntry) return null;
+
+    const mediaObj = {
+      title: giftEntry.title || "",
+      description: giftEntry.description || "",
+      image: giftEntry.image?.sys?.id ? assetMap[giftEntry.image.sys.id] : null,
+      isActive: giftEntry.isActive || false,
+    };
+
+    if (giftEntry.image?.sys?.id && assetMap[giftEntry.image.sys.id]) {
+      mediaObj.image = assetMap[giftEntry.image.sys.id];
+    }
+
+    return mediaObj;
+  }).filter(Boolean);
+
+  return {
+    slug: fields.slug || "packing",
+    seo: fields.seo ? entryMap[fields.seo.sys.id] : null,
+
+    heroTitle: fields.heroTitle || "",
+    heroSubtitle: fields.heroSubtitle || "",
+    heroImage:
+      fields.heroImage?.sys?.id ? assetMap[fields.heroImage.sys.id] : null,
+
+    bagTitle: fields.bagTitle || "",
+    bagDescription: fields.bagDescription || "",
+    bagImages: Array.isArray(fields.bagImages)
+      ? fields.bagImages.map((img) => assetMap[img.sys.id])
+      : [],
+
+    giftTitle: fields.giftTitle || "",
+    giftDescription: fields.giftDescription || "",
+    giftItems,
+
+    scentTitle: fields.scentTitle || "",
+    scentDescription: fields.scentDescription || "",
+    scentImage:
+      fields.scentImage?.sys?.id ? assetMap[fields.scentImage.sys.id] : null,
+
+    extrasTitle: fields.extrasTitle || "",
+    extrasList: fields.extrasList || "",
+  };
+}

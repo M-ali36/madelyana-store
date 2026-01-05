@@ -79,9 +79,63 @@ html[lang="ar"] {
 }
 
 .categories-swiper:not(.swiper-initialized) .swiper-wrapper {
-  @apply grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4;
+  @apply grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4;
 }
 
+/* PRODUCT SWIPER — CLS SAFE */
+  .swiper-products:not(.swiper-initialized) .swiper-wrapper {
+    @apply grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4;
+  }
+
+  /* Show only allowed items per breakpoint (Tailwind-only nth-child) */
+  .swiper-products:not(.swiper-initialized) .swiper-wrapper > *:nth-child(n+2) {
+    @apply hidden;
+  }
+  @media (min-width: 640px) {
+    .swiper-products:not(.swiper-initialized) .swiper-wrapper > *:nth-child(n+3) {
+      @apply hidden;
+    }
+  }
+  @media (min-width: 768px) {
+    .swiper-products:not(.swiper-initialized) .swiper-wrapper > *:nth-child(n+4) {
+      @apply hidden;
+    }
+  }
+  @media (min-width: 1024px) {
+    .swiper-products:not(.swiper-initialized) .swiper-wrapper > *:nth-child(n+5) {
+      @apply hidden;
+    }
+  }
+  @media (min-width: 1280px) {
+    .swiper-products:not(.swiper-initialized) .swiper-wrapper > *:nth-child(n+6) {
+      @apply hidden;
+    }
+  }
+
+  /* CATEGORIES SWIPER — CLS SAFE */
+  .categories-swiper:not(.swiper-initialized) .swiper-wrapper {
+    @apply grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4;
+  }
+
+  /* Show only allowed items per breakpoint */
+  .categories-swiper:not(.swiper-initialized) .swiper-wrapper > *:nth-child(n+3) {
+    @apply hidden;
+  }
+  @media (min-width: 768px) {
+    .categories-swiper:not(.swiper-initialized) .swiper-wrapper > *:nth-child(n+4) {
+      @apply hidden;
+    }
+  }
+  @media (min-width: 1024px) {
+    .categories-swiper:not(.swiper-initialized) .swiper-wrapper > *:nth-child(n+5) {
+      @apply hidden;
+    }
+  }
+  @media (min-width: 1280px) {
+    .categories-swiper:not(.swiper-initialized) .swiper-wrapper > *:nth-child(n+6) {
+      @apply hidden;
+    }
+  }
 
 /* -----------------------------
    PRICE RANGE SLIDER
@@ -256,4 +310,81 @@ html[lang="ar"] {
   background-position: left 1rem center !important;
   padding-right: 1rem; /* reduce right padding */
   padding-left: 3rem; /* space for arrow on the left */
+}
+
+/* GLOBAL CONTENT STYLING */
+
+/* Headings */
+.content h1,
+.content h2,
+.content h3,
+.content h4 {
+  @apply font-bold mt-8 mb-4;
+}
+
+.content h1 {
+  @apply text-3xl md:text-3xl;
+}
+
+.content h2 {
+  @apply text-2xl md:text-2xl;
+}
+
+.content h3 {
+  @apply text-xl md:text-xl;
+}
+
+.content h4 {
+  @apply text-lg md:text-base;
+}
+
+/* Paragraphs */
+.content p {
+  @apply mb-4;
+}
+
+/* Lists */
+.content ul {
+  @apply list-disc pl-5 space-y-2 mb-4;
+}
+.content ol {
+  @apply list-decimal pl-5 space-y-2 mb-4;
+}
+.content li {
+  @apply leading-relaxed;
+}
+
+/* Links */
+.content a {
+  @apply text-blue-600 underline underline-offset-2 hover:text-blue-800 ;
+}
+
+/* Images */
+.content img {
+  @apply rounded-lg my-6 w-full h-auto;
+}
+
+/* Horizontal Separator */
+.content hr {
+  @apply my-8 border-gray-300;
+}
+
+/* Blockquotes */
+.content blockquote {
+  @apply border-l-4 border-blue-500 pl-4 italic text-gray-600 dark:text-gray-300 my-6;
+}
+
+/* RTL SUPPORT (Arabic) */
+html[dir='rtl'] .content {
+  direction: rtl;
+  text-align: right;
+}
+
+html[dir='rtl'] .content ul,
+html[dir='rtl'] .content ol {
+  @apply pl-0 pr-5;
+}
+
+.no-transform {
+  transform: none !important;
 }

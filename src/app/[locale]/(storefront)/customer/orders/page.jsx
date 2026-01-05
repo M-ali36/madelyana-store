@@ -1,4 +1,3 @@
-// app/customer/orders/page.jsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -6,26 +5,26 @@ import { auth, db } from "@/lib/firebaseClient";
 import { collection, query, where, getDocs, orderBy } from "firebase/firestore";
 import Link from "@/components/Ui/Link";
 import useCurrency from "@/components/hooks/useCurrency";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 export default function CustomerOrdersPage() {
   const locale = useLocale();
+  const t = useTranslations("ordersPage");
+  const { format } = useCurrency();
+
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // 🔥 NEW: currency formatter from AppContext
-   const { format } = useCurrency();
-
+  // Fetch orders
   useEffect(() => {
     const fetchOrders = async () => {
       const currentUser = auth.currentUser;
       if (!currentUser) return;
 
-      const ref = collection(db, "orders");
       const q = query(
-          collection(db, "orders"),
-          where("userId", "==", currentUser.uid),
-          orderBy("createdAt", "desc")
+        collection(db, "orders"),
+        where("userId", "==", currentUser.uid),
+        orderBy("createdAt", "desc")
       );
 
       const snap = await getDocs(q);
@@ -35,8 +34,6 @@ export default function CustomerOrdersPage() {
         ...doc.data(),
       }));
 
-      console.log(JSON.stringify(list));
-
       setOrders(list);
       setLoading(false);
     };
@@ -44,39 +41,33 @@ export default function CustomerOrdersPage() {
     fetchOrders();
   }, []);
 
-  // -------------------------------------------------------
-  // UI: Loading
-  // -------------------------------------------------------
+  // Loading
   if (loading) {
-    return <div className="text-gray-600">Loading your orders...</div>;
+    return <div className="text-gray-600">{t("loading")}</div>;
   }
 
-  // -------------------------------------------------------
-  // UI: No orders
-  // -------------------------------------------------------
+  // Empty state
   if (orders.length === 0) {
     return (
       <div className="text-center text-gray-600 mt-10">
-        <p>You have no orders yet.</p>
+        <p>{t("empty")}</p>
 
         <Link
           href="/"
-          locale={locale} 
+          locale={locale}
           className="inline-block mt-4 px-4 py-2 bg-neutral-900 text-white rounded-md hover:bg-gray-800 transition"
         >
-          Start Shopping
+          {t("startShopping")}
         </Link>
       </div>
     );
   }
 
-  // -------------------------------------------------------
-  // UI: Orders List
-  // -------------------------------------------------------
+  // Order list
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-4xl">
       <h1 className="text-2xl font-semibold text-gray-800 mb-6">
-        Your Orders
+        {t("title")}
       </h1>
 
       <div className="space-y-4">
@@ -88,57 +79,60 @@ export default function CustomerOrdersPage() {
   );
 }
 
-// -------------------------------------------------------
-// Order Card Component
-// -------------------------------------------------------
+// Card Component
 function OrderCard({ order, format }) {
   const locale = useLocale();
-  const createdDate = order.createdAt?.toDate
-  ? order.createdAt.toDate().toLocaleString()
-  : "—";
+  const t = useTranslations("ordersPage");
 
-  const statusColor = {
+  const createdDate = order.createdAt?.toDate
+    ? order.createdAt.toDate().toLocaleString()
+    : "—";
+
+  // Status colors
+  const statusColorMap = {
     pending: "bg-yellow-100 text-yellow-700",
     paid: "bg-blue-100 text-blue-700",
     shipped: "bg-purple-100 text-purple-700",
     delivered: "bg-green-100 text-green-700",
-  }[order.status] || "bg-gray-100 text-gray-700";
+  };
+
+  const statusKey = order.status || "pending";
+  const statusColor = statusColorMap[statusKey] || "bg-gray-100 text-gray-700";
 
   const itemCount = order.items?.length || 0;
 
   return (
     <Link
       href={`/customer/orders/${order.id}`}
-      locale={locale} 
+      locale={locale}
       className="block bg-white rounded-lg border border-gray-200 p-6 shadow-sm hover:shadow-md transition"
     >
-      {/* Top row */}
+      {/* Header */}
       <div className="flex justify-between items-center mb-3">
-        <h2 className="font-semibold text-gray-800">Order #{order.id}</h2>
+        <h2 className="font-semibold text-gray-800">
+          {t("order")} #{order.id}
+        </h2>
 
-        <span
-          className={`px-3 py-1 text-xs rounded-full font-medium ${statusColor}`}
-        >
-          {order.status}
+        <span className={`px-3 py-1 text-xs rounded-full font-medium ${statusColor}`}>
+          {t(`status.${statusKey}`)}
         </span>
       </div>
 
-      {/* Order details */}
+      {/* Details */}
       <div className="text-sm text-gray-600 space-y-1">
         <p>
-          <strong>Date:</strong> {createdDate}
+          <strong>{t("date")}:</strong> {createdDate}
         </p>
         <p>
-          <strong>Items:</strong> {itemCount}
+          <strong>{t("items")}:</strong> {itemCount}
         </p>
         <p>
-          <strong>Total:</strong> {format(order.total)}
+          <strong>{t("total")}:</strong> {format(order.total)}
         </p>
       </div>
 
-      {/* Link hint */}
       <p className="mt-4 text-sm text-neutral-900 hover:underline">
-        View Order Details →
+        {t("details")}
       </p>
     </Link>
   );

@@ -67,7 +67,7 @@ export default function TikTokSlider({ title, subTitle, videos }) {
                     prevEl: ".tiktok-prev",
                     nextEl: ".tiktok-next",
                 }}
-                slidesPerView={1.2}
+                slidesPerView={2.2}
                 spaceBetween={20}
                 breakpoints={{
                     640: { slidesPerView: 2.2 },

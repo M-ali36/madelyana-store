@@ -1,11 +1,13 @@
-// app/customer/address/page.jsx
 "use client";
 
 import { useEffect, useState } from "react";
 import { auth, db } from "@/lib/firebaseClient";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { useTranslations } from "next-intl";
 
 export default function AddressPage() {
+  const t = useTranslations("addressPage");
+
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -20,9 +22,7 @@ export default function AddressPage() {
 
   const [message, setMessage] = useState("");
 
-  // ---------------------------------------------------------
-  // Load existing address from Firestore
-  // ---------------------------------------------------------
+  // Load address
   useEffect(() => {
     const loadAddress = async () => {
       const user = auth.currentUser;
@@ -48,16 +48,13 @@ export default function AddressPage() {
     };
 
     loadAddress();
-
   }, []);
 
   if (loading) {
-    return <div className="text-gray-600">Loading address...</div>;
+    return <div className="text-gray-600">{t("loading")}</div>;
   }
 
-  // ---------------------------------------------------------
   // Save updated address
-  // ---------------------------------------------------------
   const handleSave = async () => {
     setSaving(true);
     setMessage("");
@@ -74,14 +71,14 @@ export default function AddressPage() {
           city,
           state: stateName,
           country,
-          zip,
-        },
+          zip
+        }
       });
 
-      setMessage("Address updated successfully!");
+      setMessage(t("success"));
     } catch (error) {
       console.error(error);
-      setMessage("Failed to update address.");
+      setMessage(t("failed"));
     }
 
     setSaving(false);
@@ -90,7 +87,7 @@ export default function AddressPage() {
   return (
     <div className="max-w-3xl">
       <h1 className="text-2xl font-semibold text-gray-800 mb-6">
-        Shipping Address
+        {t("title")}
       </h1>
 
       {message && (
@@ -101,9 +98,10 @@ export default function AddressPage() {
 
       <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          {/* FULL NAME */}
+
+          {/* NAME */}
           <div className="col-span-2">
-            <label className="block text-sm font-medium mb-1">Full Name</label>
+            <label className="block text-sm font-medium mb-1">{t("fullName")}</label>
             <input
               type="text"
               className="w-full border border-gray-300 rounded-md px-3 py-2"
@@ -114,7 +112,7 @@ export default function AddressPage() {
 
           {/* PHONE */}
           <div className="col-span-2">
-            <label className="block text-sm font-medium mb-1">Phone</label>
+            <label className="block text-sm font-medium mb-1">{t("phone")}</label>
             <input
               type="text"
               className="w-full border border-gray-300 rounded-md px-3 py-2"
@@ -125,7 +123,7 @@ export default function AddressPage() {
 
           {/* STREET */}
           <div className="col-span-2">
-            <label className="block text-sm font-medium mb-1">Street Address</label>
+            <label className="block text-sm font-medium mb-1">{t("street")}</label>
             <input
               type="text"
               className="w-full border border-gray-300 rounded-md px-3 py-2"
@@ -136,7 +134,7 @@ export default function AddressPage() {
 
           {/* CITY */}
           <div>
-            <label className="block text-sm font-medium mb-1">City</label>
+            <label className="block text-sm font-medium mb-1">{t("city")}</label>
             <input
               type="text"
               className="w-full border border-gray-300 rounded-md px-3 py-2"
@@ -147,7 +145,7 @@ export default function AddressPage() {
 
           {/* STATE */}
           <div>
-            <label className="block text-sm font-medium mb-1">State / Region</label>
+            <label className="block text-sm font-medium mb-1">{t("state")}</label>
             <input
               type="text"
               className="w-full border border-gray-300 rounded-md px-3 py-2"
@@ -158,7 +156,7 @@ export default function AddressPage() {
 
           {/* COUNTRY */}
           <div>
-            <label className="block text-sm font-medium mb-1">Country</label>
+            <label className="block text-sm font-medium mb-1">{t("country")}</label>
             <input
               type="text"
               className="w-full border border-gray-300 rounded-md px-3 py-2"
@@ -169,7 +167,7 @@ export default function AddressPage() {
 
           {/* ZIP */}
           <div>
-            <label className="block text-sm font-medium mb-1">ZIP / Postal Code</label>
+            <label className="block text-sm font-medium mb-1">{t("zip")}</label>
             <input
               type="text"
               className="w-full border border-gray-300 rounded-md px-3 py-2"
@@ -179,13 +177,12 @@ export default function AddressPage() {
           </div>
         </div>
 
-        {/* Save button */}
         <button
           onClick={handleSave}
           disabled={saving}
           className="mt-6 px-4 py-2 bg-neutral-900 text-white rounded-md hover:bg-gray-800 transition"
         >
-          Save Address
+          {t("save")}
         </button>
       </div>
     </div>

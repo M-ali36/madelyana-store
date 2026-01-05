@@ -32,7 +32,7 @@ export default async function RootLocaleLayout({ children, params }) {
 
           {/* Smooth scroll area */}
           <SmoothScrollWrapper locale={locale}>
-            <main className="pt-[120px]">
+            <main className="pt-[110px]">
               {children}
             </main>
 

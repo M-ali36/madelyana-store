@@ -9,7 +9,7 @@ export default function HomeCategories({ title, subTitle, items }) {
   const t = useTranslations("homeCategories");
 
   return (
-    <section className="w-full py-16 container mx-auto px-4 max-w-7xl">
+    <section className="w-full py-10 lg:py-16 container mx-auto px-4 max-w-7xl">
       {/* Section Heading */}
       <div className="text-center max-w-2xl mx-auto mb-12 px-4">
         <h2 className="text-3xl md:text-4xl font-bold mb-4">
@@ -72,7 +72,7 @@ export default function HomeCategories({ title, subTitle, items }) {
           href="/women"
           locale={locale}
           className="
-            relative w-full aspect-square border border-neutral-300
+            relative w-full p-8 lg:aspect-square border border-neutral-300
             rounded-2xl flex items-center justify-center
             text-neutral-700 hover:bg-neutral-100
             transition cursor-pointer

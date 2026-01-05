@@ -177,19 +177,19 @@ export default function ProductGallery({ product }) {
                 key={i}
                 className="!w-auto flex items-center justify-center"
               >
-                <div className="max-h-screen flex items-center justify-center bg-neutral-900">
+                <div className="max-h-80 lg:max-h-screen flex items-center justify-center bg-neutral-900">
                   {!isVideo ? (
                     <img
                       src={media.url}
                       alt={product.title}
                       height={media.height}
                       width={media.width}
-                      className="max-h-screen w-auto object-contain"
+                      className="max-h-80 lg:max-h-screen w-auto object-contain"
                     />
                   ) : (
                     <video
                       src={media.url}
-                      className={`max-h-screen w-auto object-contain ${getAspectClass(media.tag)}`}
+                      className={`max-h-80 lg:max-h-screen w-auto object-contain ${getAspectClass(media.tag)}`}
                       autoPlay
                       loop
                       muted

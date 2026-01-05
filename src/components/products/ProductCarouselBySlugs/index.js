@@ -1,20 +1,21 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { fetchProductsBySlugs } from "@/lib/contentfulClient";
-import ProductCardWithVariants from "@/components/products/ProductCardWithVariants";
+import ProductCardRelated from "@/components/products/ProductCardRelated";
 
-// Swiper imports
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Pagination } from "swiper/modules";
+import { Navigation } from "swiper/modules";
 
-// Swiper styles
 import "swiper/css";
-import "swiper/css/navigation";
-import "swiper/css/pagination";
 
-export default function ProductCarouselBySlugs({ slugs = [] }) {
+import { HiArrowLeft } from "react-icons/hi";
+
+export default function ProductCarouselBySlugs({ slugs = [], title, subTitle }) {
   const [products, setProducts] = useState([]);
+
+  const prevRef = useRef(null);
+  const nextRef = useRef(null);
 
   useEffect(() => {
     if (!slugs.length) return;
@@ -27,32 +28,73 @@ export default function ProductCarouselBySlugs({ slugs = [] }) {
     load();
   }, [slugs]);
 
-  if (!products.length) return null;
+  if (!products?.length) return null;
 
   return (
-    <div className="relative w-full max-w-5xl mx-auto">
+    <div className="w-full py-16 container mx-auto max-w-7xl">
 
+      {/* Section Heading */}
+      {(title || subTitle) && (
+        <div className="text-center max-w-2xl mx-auto mb-12 px-4">
+          {title && (
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              {title}
+            </h2>
+          )}
+
+          {subTitle && (
+            <p className="text-lg text-gray-400">{subTitle}</p>
+          )}
+        </div>
+      )}
+
+      {/* Slider */}
       <Swiper
-        modules={[Navigation, Pagination]}
-        navigation
-        pagination={{ clickable: true }}
-        spaceBetween={20}
-        slidesPerView={1}
-        className="w-full"
+        modules={[Navigation]}
+        spaceBetween={24}
+        slidesPerView={2}
+        onSwiper={(swiper) => {
+          // Bind navigation only after refs exist
+          setTimeout(() => {
+            if (swiper?.params?.navigation && prevRef.current && nextRef.current) {
+              swiper.params.navigation.prevEl = prevRef.current;
+              swiper.params.navigation.nextEl = nextRef.current;
+              swiper.navigation.init();
+              swiper.navigation.update();
+            }
+          });
+        }}
         breakpoints={{
-          640: { slidesPerView: 1.2 },
-          768: { slidesPerView: 2 },
+          640: { slidesPerView: 2 },
           1024: { slidesPerView: 3 },
+          1280: { slidesPerView: 4 },
         }}
       >
         {products.map((product) => (
           <SwiperSlide key={product.slug}>
-            <div className="h-full">
-              <ProductCardWithVariants product={product} />
-            </div>
+            <ProductCardRelated product={product} />
           </SwiperSlide>
         ))}
       </Swiper>
+
+      {/* Custom Navigation */}
+      <div className="flex justify-center gap-4 mt-10">
+        <button
+          ref={prevRef}
+          aria-label="Previous"
+          className="w-12 h-12 rounded-full bg-neutral-900 flex items-center justify-center text-white hover:bg-gray-800 transition"
+        >
+          <HiArrowLeft className="w-5 h-5 rtl:rotate-180" />
+        </button>
+
+        <button
+          ref={nextRef}
+          aria-label="Next"
+          className="w-12 h-12 rounded-full bg-neutral-900 flex items-center justify-center text-white hover:bg-gray-800 transition"
+        >
+          <HiArrowLeft className="w-5 h-5 rotate-180 rtl:rotate-0" />
+        </button>
+      </div>
     </div>
   );
 }

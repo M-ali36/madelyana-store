@@ -1,18 +1,10 @@
 import ProductCardRelated from "@/components/products/ProductCardRelated";
 import ProductCardWithVariants from "@/components/products/ProductCardWithVariants";
 
-export default function ProductGrid({ products, view, onlyInStock }) {
-  const gridCols =
-    view === 1
-      ? "grid-cols-1"
-      : view === 2
-      ? "grid-cols-2"
-      : view === 3
-      ? "grid-cols-3"
-      : "grid-cols-4";
+export default function ProductGrid({ products }) {
 
   return (
-    <div className={`grid ${gridCols} gap-6`}>
+    <div className={`grid grid-cols-2 lg:grid-cols-3 gap-6`}>
       {products.map((product, index) => (
         <ProductCardRelated product={product} key={index} />
       ))}

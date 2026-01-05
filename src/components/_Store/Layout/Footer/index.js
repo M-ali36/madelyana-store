@@ -13,9 +13,9 @@ export default function Footer({ footer }) {
       <NewsletterCta />
       <footer className="border-t border-gray-200">
         <div className="container mx-auto px-4 py-16 max-w-7xl">
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-12">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-12">
             {/* Brand */}
-            <div className="md:col-span-2">
+            <div className="col-span-2">
               <Logo className="w-48"/>
 
               {footer.footerDescription && (

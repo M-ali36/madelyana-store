@@ -1,4 +1,3 @@
-// app/customer/settings/page.jsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -7,11 +6,14 @@ import {
   updateEmail,
   updatePassword,
   reauthenticateWithCredential,
-  EmailAuthProvider,
+  EmailAuthProvider
 } from "firebase/auth";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { useTranslations } from "next-intl";
 
 export default function SettingsPage() {
+  const t = useTranslations("settingsPage");
+
   const [userData, setUserData] = useState(null);
 
   const [fullName, setFullName] = useState("");
@@ -25,9 +27,7 @@ export default function SettingsPage() {
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
 
-  // --------------------------------------------------------
-  // Load user profile from Firestore
-  // --------------------------------------------------------
+  // Load user settings
   useEffect(() => {
     const loadData = async () => {
       const currentUser = auth.currentUser;
@@ -52,12 +52,10 @@ export default function SettingsPage() {
   }, []);
 
   if (loading) {
-    return <div className="text-gray-600">Loading settings...</div>;
+    return <div className="text-gray-600">{t("loading")}</div>;
   }
 
-  // --------------------------------------------------------
-  // UPDATE PROFILE (Firestore)
-  // --------------------------------------------------------
+  // Update profile
   const handleSaveProfile = async () => {
     setSaving(true);
     setMessage("");
@@ -65,45 +63,37 @@ export default function SettingsPage() {
     try {
       const currentUser = auth.currentUser;
 
-      const ref = doc(db, "users", currentUser.uid);
-      await updateDoc(ref, {
+      await updateDoc(doc(db, "users", currentUser.uid), {
         fullName,
-        phone,
+        phone
       });
 
-      setMessage("Profile updated successfully!");
+      setMessage(t("successProfile"));
     } catch (error) {
       console.error(error);
-      setMessage("Failed to update profile.");
+      setMessage(t("failedProfile"));
     }
 
     setSaving(false);
   };
 
-  // --------------------------------------------------------
-  // UPDATE EMAIL
-  // --------------------------------------------------------
+  // Update email
   const handleChangeEmail = async () => {
     setSaving(true);
     setMessage("");
 
     try {
-      const currentUser = auth.currentUser;
-
-      await updateEmail(currentUser, email);
-
-      setMessage("Email updated successfully!");
+      await updateEmail(auth.currentUser, email);
+      setMessage(t("successEmail"));
     } catch (error) {
       console.error(error);
-      setMessage("Failed to update email (requires recent login).");
+      setMessage(t("failedEmail"));
     }
 
     setSaving(false);
   };
 
-  // --------------------------------------------------------
-  // UPDATE PASSWORD
-  // --------------------------------------------------------
+  // Update password
   const handleChangePassword = async () => {
     setSaving(true);
     setMessage("");
@@ -111,7 +101,6 @@ export default function SettingsPage() {
     try {
       const currentUser = auth.currentUser;
 
-      // Firebase requires re-authentication
       const credential = EmailAuthProvider.credential(
         currentUser.email,
         currentPassword
@@ -120,12 +109,12 @@ export default function SettingsPage() {
       await reauthenticateWithCredential(currentUser, credential);
       await updatePassword(currentUser, newPassword);
 
-      setMessage("Password updated successfully!");
+      setMessage(t("successPassword"));
       setNewPassword("");
       setCurrentPassword("");
     } catch (error) {
       console.error(error);
-      setMessage("Failed to update password (check your current password).");
+      setMessage(t("failedPassword"));
     }
 
     setSaving(false);
@@ -134,23 +123,22 @@ export default function SettingsPage() {
   return (
     <div className="max-w-3xl">
       <h1 className="text-2xl font-semibold text-gray-800 mb-6">
-        Account Settings
+        {t("title")}
       </h1>
 
-      {/* Success/Error Message */}
       {message && (
         <div className="mb-4 p-3 rounded-md bg-blue-100 border border-blue-300 text-blue-800 text-sm">
           {message}
         </div>
       )}
 
-      {/* PROFILE INFO */}
+      {/* PROFILE INFORMATION */}
       <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm mb-8">
-        <h2 className="text-lg font-semibold mb-4">Profile Information</h2>
+        <h2 className="text-lg font-semibold mb-4">{t("profileInfo")}</h2>
 
         <div className="space-y-4">
           <div>
-            <p className="text-sm font-medium mb-1">Full Name</p>
+            <p className="text-sm font-medium mb-1">{t("fullName")}</p>
             <input
               type="text"
               value={fullName}
@@ -160,7 +148,7 @@ export default function SettingsPage() {
           </div>
 
           <div>
-            <p className="text-sm font-medium mb-1">Phone Number</p>
+            <p className="text-sm font-medium mb-1">{t("phone")}</p>
             <input
               type="text"
               value={phone}
@@ -174,17 +162,17 @@ export default function SettingsPage() {
             disabled={saving}
             className="px-4 py-2 bg-neutral-900 text-white rounded-md hover:bg-gray-800 transition"
           >
-            Save Changes
+            {t("saveChanges")}
           </button>
         </div>
       </div>
 
       {/* EMAIL */}
       <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm mb-8">
-        <h2 className="text-lg font-semibold mb-4">Change Email</h2>
+        <h2 className="text-lg font-semibold mb-4">{t("changeEmail")}</h2>
 
         <p className="text-sm text-gray-600 mb-3">
-          Updating email may require re-authentication.
+          {t("emailWarning")}
         </p>
 
         <input
@@ -199,17 +187,17 @@ export default function SettingsPage() {
           disabled={saving}
           className="px-4 py-2 bg-neutral-900 text-white rounded-md hover:bg-gray-800 transition"
         >
-          Update Email
+          {t("updateEmail")}
         </button>
       </div>
 
       {/* PASSWORD */}
       <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
-        <h2 className="text-lg font-semibold mb-4">Change Password</h2>
+        <h2 className="text-lg font-semibold mb-4">{t("changePassword")}</h2>
 
         <div className="space-y-4">
           <div>
-            <p className="text-sm font-medium mb-1">Current Password</p>
+            <p className="text-sm font-medium mb-1">{t("currentPassword")}</p>
             <input
               type="password"
               value={currentPassword}
@@ -219,7 +207,7 @@ export default function SettingsPage() {
           </div>
 
           <div>
-            <p className="text-sm font-medium mb-1">New Password</p>
+            <p className="text-sm font-medium mb-1">{t("newPassword")}</p>
             <input
               type="password"
               value={newPassword}
@@ -233,7 +221,7 @@ export default function SettingsPage() {
             disabled={saving}
             className="px-4 py-2 bg-neutral-900 text-white rounded-md hover:bg-gray-800 transition"
           >
-            Update Password
+            {t("updatePassword")}
           </button>
         </div>
       </div>

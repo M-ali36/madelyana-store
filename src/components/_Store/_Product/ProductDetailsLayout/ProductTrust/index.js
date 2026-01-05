@@ -44,7 +44,7 @@ export default function ProductTrust() {
 
   return (
     <section
-      className={`w-full max-w-5xl mx-auto px-4 ${
+      className={`w-full max-w-5xl mx-auto lg:px-4 ${
         isRTL ? "text-right" : "text-left"
       }`}
       dir={isRTL ? "rtl" : "ltr"}

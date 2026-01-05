@@ -2,6 +2,12 @@
     "top_message": "Free shipping with over 12$",
     "women_bags": "Women's Bags",
     "styleInsights": "Style Insights",
+    "gifts": "The Madelyana Experience",
+    "cart": "Cart",
+    "wishlist": "Wishlist",
+    "my_account": "My Account",
+    "menu": "Menu",
+    "filters": "Filters",
     "home": {
         "latest_products": "Latest Products",
         "no_homepage_found": "No homepage found."
@@ -115,5 +121,225 @@
             "whatsapp": "WhatsApp",
             "chatNow": "Chat Now"
         }
+    },
+    "cartPage": {
+        "yourCart": "Your Cart",
+        "youMayAlsoLike": "You may also like"
+    },
+    "emptyCart": {
+        "title": "Your cart is empty",
+        "startShopping": "Start Shopping"
+    },
+    "cartSummary": {
+        "orderSummary": "Order Summary",
+        "subtotal": "Subtotal",
+        "proceedToCheckout": "Proceed to Checkout",
+        "continueShopping": "Continue Shopping"
+    },
+    "cartItem": {
+        "remove": "Remove"
+    },
+    "checkout": {
+        "checkoutTitle": "Checkout",
+        "shippingAddress": "Shipping Address",
+        "paymentMethod": "Payment Method",
+        "cashOnDelivery": "Cash on Delivery",
+        "orderSummary": "Order Summary",
+        "subtotal": "Subtotal",
+        "shipping": "Shipping",
+        "total": "Total",
+        "placeOrder": "Place Order",
+        "placingOrder": "Placing Order…",
+        "loginRequired": "Login required.",
+        "loading": "Loading checkout…",
+        "cartEmpty": "Your cart is empty.",
+        "continueShopping": "Continue Shopping",
+
+        "fullName": "Full Name *",
+        "phone": "Phone *",
+        "country": "Country *",
+        "city": "City *",
+        "state": "State / Region *",
+        "zip": "ZIP / Postal Code (optional)",
+        "street": "Street Address *",
+
+        "errFullName": "Full name is required.",
+        "errPhone": "Phone number is required.",
+        "errCountry": "Country is required.",
+        "errCity": "City is required.",
+        "errStreet": "Street address is required.",
+        "errState": "State / Region is required.",
+        "orderError": "Could not place order. Please try again."
+    },
+    "orderSuccess": {
+        "loading": "Loading your order…",
+        "orderNotFound": "Order Not Found",
+        "orderNotFoundMessage": "We could not find this order.",
+        "backToHome": "Back to Home",
+
+        "thankYou": "Thank you! 🎉",
+        "orderPlaced": "Your order has been placed successfully.",
+        "orderId": "Order ID",
+
+        "orderSummary": "Order Summary",
+        "subtotal": "Subtotal",
+        "shipping": "Shipping",
+        "total": "Total",
+
+        "shippingAddress": "Shipping Address",
+
+        "viewMyOrders": "View My Orders",
+        "continueShopping": "Continue Shopping"
+    },
+    "addressPage": {
+        "loading": "Loading address...",
+        "success": "Address updated successfully!",
+        "failed": "Failed to update address.",
+
+        "title": "Shipping Address",
+
+        "fullName": "Full Name",
+        "phone": "Phone",
+        "street": "Street Address",
+        "city": "City",
+        "state": "State / Region",
+        "country": "Country",
+        "zip": "ZIP / Postal Code",
+
+        "save": "Save Address"
+    },
+    "settingsPage": {
+        "loading": "Loading settings...",
+        
+        "successProfile": "Profile updated successfully!",
+        "failedProfile": "Failed to update profile.",
+
+        "successEmail": "Email updated successfully!",
+        "failedEmail": "Failed to update email (requires recent login).",
+
+        "successPassword": "Password updated successfully!",
+        "failedPassword": "Failed to update password (check your current password).",
+
+        "title": "Account Settings",
+        "profileInfo": "Profile Information",
+        "fullName": "Full Name",
+        "phone": "Phone Number",
+        "saveChanges": "Save Changes",
+
+        "changeEmail": "Change Email",
+        "emailWarning": "Updating email may require re-authentication.",
+        "updateEmail": "Update Email",
+
+        "changePassword": "Change Password",
+        "currentPassword": "Current Password",
+        "newPassword": "New Password",
+        "updatePassword": "Update Password"
+    },
+    "wishlistPage": {
+        "loading": "Loading your wishlist...",
+        "empty": "Your wishlist is empty.",
+        "browseProducts": "Browse Products",
+        "title": "Your Wishlist"
+    },
+    "ordersPage": {
+        "loading": "Loading your orders...",
+        "empty": "You have no orders yet.",
+        "startShopping": "Start Shopping",
+        "title": "Your Orders",
+        "order": "Order",
+        "date": "Date",
+        "items": "Items",
+        "total": "Total",
+        "details": "View Order Details →",
+        "status": {
+            "pending": "Pending",
+            "paid": "Paid",
+            "shipped": "Shipped",
+            "delivered": "Delivered"
+        }
+    },
+     "orderDetailsPage": {
+        "loading": "Loading order...",
+        "notFound": "Order not found.",
+        "unauthorized": "You cannot view this order.",
+        "back": "← Back to Orders",
+        "order": "Order",
+        "placedOn": "Placed on",
+        "items": "Items",
+        "subtotal": "Subtotal:",
+        "shipping": "Shipping:",
+        "total": "Total:",
+        "shippingAddress": "Shipping Address",
+        "noAddress": "No address provided.",
+        "qty": "Quantity",
+        "unitPrice": "Unit Price",
+        "lineTotal": "Line Total",
+        "status": {
+            "pending": "Pending",
+            "confirmed": "Confirmed",
+            "shipped": "Shipped",
+            "delivered": "Delivered",
+            "cancelled": "Cancelled"
+        }
+    },
+    "customerDashboard": {
+        "yourAccount": "Your Account",
+        "orders": {
+            "title": "Your Orders",
+            "desc": "View all your purchases, statuses, and details."
+        },
+        "wishlist": {
+            "title": "Wishlist",
+            "desc": "Your saved items."
+        },
+        "settings": {
+            "title": "Settings",
+            "desc": "Update your profile and login details."
+        },
+        "address": {
+            "title": "Address",
+            "desc": "Manage your shipping address."
+        }
+    },
+    "customerLayout": {
+        "loading": "Loading your account...",
+        "accountMenu": "Account Menu",
+        "hello": "Hello",
+        "dashboard": "Dashboard",
+        "orders": "Orders",
+        "wishlist": "Wishlist",
+        "settings": "Settings",
+        "address": "Address",
+        "logout": "Logout"
+    },
+    "login": {
+        "login": "Login",
+        "email": "Email",
+        "password": "Password",
+        "loggingIn": "Logging in...",
+        "enterEmailPassword": "Please enter email and password.",
+        "emailNotFound": "Email not found.",
+        "incorrectPassword": "Incorrect password.",
+        "loginFailed": "Login failed. Please try again.",
+        "googleFailed": "Google login failed.",
+        "or": "— OR —",
+        "continueGoogle": "Continue with Google",
+        "noAccount": "Don't have an account?",
+        "register": "Register here"
+    },
+    "register": {
+        "register": "Register",
+        "fullName": "Full Name",
+        "email": "Email",
+        "password": "Password",
+        "confirmPassword": "Confirm Password",
+        "allRequired": "All fields are required.",
+        "passwordNotMatch": "Passwords do not match.",
+        "registerFailed": "Registration failed.",
+        "googleFailed": "Google signup failed.",
+        "or": "— OR —",
+        "continueGoogle": "Sign up with Google",
+        "haveAccount": "Already have an account?",
+        "loginHere": "Login here"
     }
 }

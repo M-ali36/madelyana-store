@@ -10,11 +10,12 @@ import { doc, getDoc, setDoc } from "firebase/firestore";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "@/components/Ui/Link";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 export default function LoginPage() {
   const locale = useLocale();
   const router = useRouter();
+  const t = useTranslations("login");
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -29,7 +30,7 @@ export default function LoginPage() {
     setError("");
 
     if (!email || !password) {
-      setError("Please enter email and password.");
+      setError(t("enterEmailPassword"));
       return;
     }
 
@@ -41,7 +42,6 @@ export default function LoginPage() {
 
       const token = await user.getIdToken(true);
 
-      // Fetch role
       const ref = doc(db, "users", user.uid);
       const snap = await getDoc(ref);
 
@@ -60,9 +60,9 @@ export default function LoginPage() {
     } catch (err) {
       console.error(err);
 
-      if (err.code === "auth/user-not-found") setError("Email not found.");
-      else if (err.code === "auth/wrong-password") setError("Incorrect password.");
-      else setError("Login failed. Please try again.");
+      if (err.code === "auth/user-not-found") setError(t("emailNotFound"));
+      else if (err.code === "auth/wrong-password") setError(t("incorrectPassword"));
+      else setError(t("loginFailed"));
     }
 
     setLoading(false);
@@ -79,14 +79,12 @@ export default function LoginPage() {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
 
-      // Fetch or create user document
       const ref = doc(db, "users", user.uid);
       const snap = await getDoc(ref);
 
       let role = "user";
 
       if (!snap.exists()) {
-        // If first time Google login → create user doc
         await setDoc(ref, {
           fullName: user.displayName || "",
           email: user.email,
@@ -97,30 +95,30 @@ export default function LoginPage() {
         role = snap.data().role || "user";
       }
 
-      // Set cookies
       const token = await user.getIdToken(true);
+
       document.cookie = `firebase_id_token=${token}; path=/; max-age=86400; secure`;
       document.cookie = `auth_role=${role}; path=/; max-age=86400; secure`;
 
-      // Redirect
       router.replace(
         locale === "ar"
           ? `/ar${role === "admin" ? "/admin" : "/customer"}`
           : role === "admin"
-            ? "/admin"
-            : "/customer"
+          ? "/admin"
+          : "/customer"
       );
     } catch (err) {
       console.error(err);
-      setError("Google login failed.");
+      setError(t("googleFailed"));
     }
   };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-50">
       <div className="w-full max-w-md p-8 bg-white rounded-xl shadow-md">
+        
         <h1 className="text-2xl font-semibold mb-6 text-center text-gray-800">
-          Login
+          {t("login")}
         </h1>
 
         {error && (
@@ -132,7 +130,7 @@ export default function LoginPage() {
         {/* Email */}
         <div className="mb-4">
           <label className="block mb-1 text-sm font-medium text-gray-700">
-            Email
+            {t("email")}
           </label>
           <input
             type="email"
@@ -145,7 +143,7 @@ export default function LoginPage() {
         {/* Password */}
         <div className="mb-6">
           <label className="block mb-1 text-sm font-medium text-gray-700">
-            Password
+            {t("password")}
           </label>
           <input
             type="password"
@@ -159,15 +157,17 @@ export default function LoginPage() {
           onClick={handleLogin}
           disabled={loading}
           className={`w-full py-2 rounded-md font-medium transition ${
-            loading ? "bg-gray-400" : "bg-primary text-neutral-900 shadow hover:bg-primary-dark"
+            loading
+              ? "bg-gray-400"
+              : "bg-primary text-neutral-900 shadow hover:bg-primary-dark"
           }`}
         >
-          {loading ? "Logging in..." : "Login"}
+          {loading ? t("loggingIn") : t("login")}
         </button>
 
         {/* Separator */}
         <div className="flex items-center justify-center my-4">
-          <span className="text-gray-400 text-sm">— OR —</span>
+          <span className="text-gray-400 text-sm">{t("or")}</span>
         </div>
 
         {/* Google Login */}
@@ -180,14 +180,14 @@ export default function LoginPage() {
             alt="Google"
             className="w-5 h-5"
           />
-          Continue with Google
+          {t("continueGoogle")}
         </button>
 
         {/* Register Link */}
         <p className="text-sm text-center text-gray-600 mt-6">
-          Don&apos;t have an account?{" "}
+          {t("noAccount")}{" "}
           <Link href="/register" locale={locale} className="text-primary font-medium hover:underline">
-            Register here
+            {t("register")}
           </Link>
         </p>
       </div>

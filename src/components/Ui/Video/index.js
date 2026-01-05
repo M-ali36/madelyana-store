@@ -15,7 +15,7 @@ export default function Video({ vimeoId, image, title, subTitle }) {
         image?.description || "Background video thumbnail for About Us section";
 
     return (
-        <div className="relative flex items-center justify-center aspect-[16/7] mb-10 overflow-hidden">
+        <div className="relative flex items-center justify-center aspect-video lg:aspect-[16/7] mb-10 overflow-hidden">
 
             {/* Background */}
             <div className="absolute min-w-full">
