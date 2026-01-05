@@ -341,5 +341,13 @@
         "continueGoogle": "Sign up with Google",
         "haveAccount": "Already have an account?",
         "loginHere": "Login here"
-    }
+    },
+    "byPrice": "By Price",
+    "from": "From",
+    "to": "To",
+    "inStock": "In Stock",
+    "colors": "Colors",
+    "sizes": "Sizes",
+    "materials": "Materials",
+    "features": "Features"
 }

@@ -9,19 +9,18 @@ import { useLocale, useTranslations } from "next-intl";
 import gsap from "gsap";
 import { HiMenu, HiX } from "react-icons/hi";
 import { createPortal } from "react-dom";
-import Head from "next/head"; // ⭐ ADD THIS
+import Head from "next/head";
 
 export default function CustomerLayout({ children }) {
   const router = useRouter();
   const pathname = usePathname();
   const locale = useLocale();
   const t = useTranslations("customerLayout");
-
   const dir = locale === "ar" ? "rtl" : "ltr";
 
-  // -------------------------
-  // AUTH / USER LOADING
-  // -------------------------
+  // ----------------------------------------------------------
+  // AUTH
+  // ----------------------------------------------------------
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -31,96 +30,116 @@ export default function CustomerLayout({ children }) {
 
       const snap = await getDoc(doc(db, "users", user.uid));
       if (snap.exists()) setUserData(snap.data());
-
       setLoading(false);
     });
+
     return () => unsub();
   }, []);
 
-  // -------------------------
-  // HYDRATION READY
-  // -------------------------
+  // ----------------------------------------------------------
+  // HYDRATION FLAG
+  // ----------------------------------------------------------
   const [hydrated, setHydrated] = useState(false);
   useEffect(() => setHydrated(true), []);
 
-  // -------------------------
-  // MOBILE DETECTOR (SSR safe)
-  // -------------------------
+  // ----------------------------------------------------------
+  // MOBILE DETECTOR
+  // ----------------------------------------------------------
   const [isMobile, setIsMobile] = useState(false);
-
   useEffect(() => {
-    if (typeof matchMedia === "undefined") return;
-    const mq = matchMedia("(max-width: 1024px)");
+    const mq = window.matchMedia("(max-width: 1024px)");
     const update = () => setIsMobile(mq.matches);
     update();
     mq.addEventListener("change", update);
     return () => mq.removeEventListener("change", update);
   }, []);
 
-  // -------------------------
-  // DRAWER STATE + REFS
-  // -------------------------
+  // ----------------------------------------------------------
+  // DRAWER REFS & STATE
+  // ----------------------------------------------------------
   const [isOpen, setIsOpen] = useState(false);
   const drawerRef = useRef(null);
   const overlayRef = useRef(null);
 
   const toggleDrawer = () => setIsOpen((v) => !v);
 
-  // -------------------------
-  // INITIAL POSITION
-  // -------------------------
+  // ----------------------------------------------------------
+  // MEASURE DRAWER WIDTH ONCE (prevents forced reflow)
+  // ----------------------------------------------------------
+  const [drawerWidth, setDrawerWidth] = useState(420);
+
   useEffect(() => {
-    if (!hydrated || !drawerRef.current) return;
-
-    const drawer = drawerRef.current;
-    const width = drawer.offsetWidth || 420;
-    const fromX = dir === "rtl" ? width : -width;
-
-    gsap.set(drawer, { x: fromX });
-  }, [hydrated, dir]);
-
-  // -------------------------
-  // OPEN / CLOSE ANIMATION
-  // -------------------------
-  useEffect(() => {
-    if (!hydrated) return;
-    if (!drawerRef.current || !overlayRef.current) return;
-
-    const drawer = drawerRef.current;
-    const overlay = overlayRef.current;
-    const width = drawer.offsetWidth || 420;
-    const fromX = dir === "rtl" ? width : -width;
-
-    if (isOpen) {
-      gsap.to(overlay, {
-        autoAlpha: 1,
-        backdropFilter: "blur(6px)",
-        duration: 0.3,
-      });
-
-      gsap.to(drawer, {
-        x: 0,
-        duration: 0.45,
-        ease: "power3.out",
-      });
-    } else {
-      gsap.to(drawer, {
-        x: fromX,
-        duration: 0.45,
-        ease: "power3.inOut",
-      });
-
-      gsap.to(overlay, {
-        autoAlpha: 0,
-        backdropFilter: "blur(0px)",
-        duration: 0.3,
-      });
+    if (drawerRef.current) {
+      setDrawerWidth(drawerRef.current.offsetWidth || 420);
     }
-  }, [isOpen, hydrated, dir]);
+  }, [hydrated]);
 
-  // -------------------------
-  // LOADING SCREEN
-  // -------------------------
+  // ----------------------------------------------------------
+  // GSAP ANIMATION (optimized, safe)
+  // ----------------------------------------------------------
+  useEffect(() => {
+    if (!hydrated || !drawerRef.current || !overlayRef.current) return;
+
+    const ctx = gsap.context(() => {
+      const drawer = drawerRef.current;
+      const overlay = overlayRef.current;
+
+      const offscreenX = dir === "rtl" ? drawerWidth : -drawerWidth;
+
+      if (isOpen) {
+        gsap.to(overlay, {
+          autoAlpha: 1,
+          backdropFilter: "blur(6px)",
+          duration: 0.3,
+          ease: "power2.out",
+        });
+
+        gsap.to(drawer, {
+          x: 0,
+          duration: 0.45,
+          ease: "power3.out",
+        });
+      } else {
+        gsap.to(drawer, {
+          x: offscreenX,
+          duration: 0.45,
+          ease: "power3.inOut",
+        });
+
+        gsap.to(overlay, {
+          autoAlpha: 0,
+          backdropFilter: "blur(0px)",
+          duration: 0.3,
+        });
+      }
+    });
+
+    return () => ctx.revert();
+  }, [isOpen, hydrated, drawerWidth, dir]);
+
+  // ----------------------------------------------------------
+  // LOGOUT
+  // ----------------------------------------------------------
+  const handleLogout = async () => {
+    await auth.signOut();
+    document.cookie = "firebase_id_token=; path=/; max-age=0;";
+    document.cookie = "auth_role=; path=/; max-age=0;";
+    localStorage.clear();
+    sessionStorage.clear();
+    router.replace(`${locale === "ar" ? "/ar" : ""}/login`);
+  };
+
+  // ----------------------------------------------------------
+  // UI LAYER
+  // ----------------------------------------------------------
+  const uiLayer =
+    typeof document !== "undefined"
+      ? document.getElementById("ui-layer")
+      : null;
+
+  // ----------------------------------------------------------
+  // LOADING STATE
+  // ----------------------------------------------------------
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen text-gray-600">
@@ -129,9 +148,9 @@ export default function CustomerLayout({ children }) {
     );
   }
 
-  // -------------------------
+  // ----------------------------------------------------------
   // NAV ITEMS
-  // -------------------------
+  // ----------------------------------------------------------
   const navItems = [
     { label: t("dashboard"), href: "/customer" },
     { label: t("orders"), href: "/customer/orders" },
@@ -140,30 +159,17 @@ export default function CustomerLayout({ children }) {
     { label: t("address"), href: "/customer/address" },
   ];
 
-  const handleLogout = async () => {
-    await auth.signOut();
-    document.cookie = "firebase_id_token=; path=/; max-age=0;";
-    document.cookie = "auth_role=; path=/; max-age=0;";
-    localStorage.clear();
-    sessionStorage.clear();
-    router.replace(`${locale === "ar" ? '/ar' : ''}/login`);
-  };
-
-  const uiLayer =
-    typeof document !== "undefined"
-      ? document.getElementById("ui-layer")
-      : null;
-
-  // -------------------------
+  // ----------------------------------------------------------
   // RENDER
-  // -------------------------
+  // ----------------------------------------------------------
   return (
     <>
       <Head>
-          <title>{t("dashboard")}</title>
+        <title>{t("dashboard")}</title>
       </Head>
+
       <div className="lg:flex min-h-screen bg-gray-100 pt-12 lg:pt-0">
-        {/* ⭐ MOBILE MENU BUTTON */}
+        {/* MOBILE MENU BUTTON */}
         <div className="lg:hidden w-full p-4">
           <button
             onClick={toggleDrawer}
@@ -174,7 +180,7 @@ export default function CustomerLayout({ children }) {
           </button>
         </div>
 
-        {/* ⭐ DESKTOP SIDEBAR */}
+        {/* DESKTOP SIDEBAR */}
         <aside className="hidden lg:flex lg:w-64 flex-col bg-white border-r border-gray-200 p-6">
           <div className="mb-8">
             <h2 className="text-lg font-semibold">
@@ -191,12 +197,11 @@ export default function CustomerLayout({ children }) {
                   key={item.href}
                   href={item.href}
                   locale={locale}
-                  className={`px-4 py-2 rounded-md text-sm font-medium transition
-                    ${
-                      active
-                        ? "bg-neutral-900 text-white"
-                        : "text-gray-700 hover:bg-gray-200"
-                    }`}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition ${
+                    active
+                      ? "bg-neutral-900 text-white"
+                      : "text-gray-700 hover:bg-gray-200"
+                  }`}
                 >
                   {item.label}
                 </Link>
@@ -212,13 +217,13 @@ export default function CustomerLayout({ children }) {
           </button>
         </aside>
 
-        {/* ⭐ MOBILE DRAWER */}
+        {/* MOBILE DRAWER */}
         {hydrated &&
           isMobile &&
           uiLayer &&
           createPortal(
             <>
-              {/* Overlay */}
+              {/* OVERLAY */}
               <div
                 ref={overlayRef}
                 onClick={toggleDrawer}
@@ -226,21 +231,18 @@ export default function CustomerLayout({ children }) {
                 style={{ visibility: "hidden" }}
               />
 
-              {/* Drawer */}
+              {/* DRAWER */}
               <div
                 ref={drawerRef}
-                className={`fixed top-0 h-full bg-white shadow-2xl z-[9999] p-6 overflow-y-auto
-                  ${dir === "rtl" ? "right-0" : "left-0"}`}
+                className={`fixed top-0 h-full bg-white shadow-2xl z-[9999] p-6 overflow-y-auto ${
+                  dir === "rtl" ? "right-0" : "left-0"
+                }`}
                 style={{
                   width: "420px",
-                  minWidth: "420px",
-                  maxWidth: "420px",
                   transform:
-                    isOpen || !hydrated
-                      ? undefined
-                      : dir === "rtl"
-                      ? "translateX(420px)"
-                      : "translateX(-420px)",
+                    dir === "rtl"
+                      ? `translateX(${drawerWidth}px)`
+                      : `translateX(-${drawerWidth}px)`,
                 }}
               >
                 <div className="flex items-center justify-between mb-6">
@@ -250,7 +252,7 @@ export default function CustomerLayout({ children }) {
                   </button>
                 </div>
 
-                {/* User Info */}
+                {/* USER INFO */}
                 <div className="mb-6">
                   <h2 className="text-lg font-semibold">{userData?.fullName}</h2>
                   <p className="text-sm text-gray-500">{userData?.email}</p>
@@ -266,12 +268,11 @@ export default function CustomerLayout({ children }) {
                         href={item.href}
                         locale={locale}
                         onClick={() => setIsOpen(false)}
-                        className={`px-4 py-2 rounded-md text-sm font-medium transition
-                          ${
-                            active
-                              ? "bg-neutral-900 text-white"
-                              : "text-gray-700 hover:bg-gray-200"
-                          }`}
+                        className={`px-4 py-2 rounded-md text-sm font-medium transition ${
+                          active
+                            ? "bg-neutral-900 text-white"
+                            : "text-gray-700 hover:bg-gray-200"
+                        }`}
                       >
                         {item.label}
                       </Link>

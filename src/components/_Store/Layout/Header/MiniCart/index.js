@@ -11,264 +11,268 @@ import { createPortal } from "react-dom";
 import gsap from "gsap";
 
 export default function MiniCart() {
-	const { cart, setCart, navState, setNavState } = useAppContext();
-	const { format } = useCurrency();
-	const locale = useLocale();
-	const t = useTranslations("MiniCart");
-	const dir = locale === "ar" ? "rtl" : "ltr";
+  const { cart, setCart, navState, setNavState } = useAppContext();
+  const { format } = useCurrency();
+  const locale = useLocale();
+  const t = useTranslations("MiniCart");
+  const dir = locale === "ar" ? "rtl" : "ltr";
 
-	// ---------------------------------------
-	// HYDRATION SAFE GUARD
-	// ---------------------------------------
-	const [hydrated, setHydrated] = useState(false);
-	useEffect(() => setHydrated(true), []);
+  // -----------------------------------------------------
+  // HYDRATION
+  // -----------------------------------------------------
+  const [hydrated, setHydrated] = useState(false);
+  useEffect(() => setHydrated(true), []);
 
-	// ---------------------------------------
-	// DESKTOP-ONLY CHECK (SSR SAFE)
-	// ---------------------------------------
-	const [isDesktop, setIsDesktop] = useState(false);
+  // -----------------------------------------------------
+  // DESKTOP ONLY
+  // -----------------------------------------------------
+  const [isDesktop, setIsDesktop] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 1024px)");
+    const update = () => setIsDesktop(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
 
-	useEffect(() => {
-		if (typeof matchMedia === "undefined") return;
+  const isOpen = navState === "cart";
+  const toggleCart = () => setNavState(isOpen ? "" : "cart");
 
-		const mq = matchMedia("(min-width: 1024px)");
-		const update = () => setIsDesktop(mq.matches);
+  // -----------------------------------------------------
+  // CART LOGIC
+  // -----------------------------------------------------
+  const removeItem = (variantId) => {
+    setCart(cart.filter((item) => item.variantId !== variantId));
+  };
 
-		update();
-		mq.addEventListener("change", update);
-		return () => mq.removeEventListener("change", update);
-	}, []);
+  const changeQty = (variantId, value) => {
+    setCart(
+      cart.map((item) =>
+        item.variantId === variantId
+          ? {
+              ...item,
+              qty: Math.max(1, Math.min(item.qty + value, item.maxQty)),
+            }
+          : item
+      )
+    );
+  };
 
-	// ---------------------------------------
-	// DRAWER TOGGLE
-	// ---------------------------------------
-	const isOpen = navState === "cart";
-	const toggleCart = () => setNavState(isOpen ? "" : "cart");
+  const subtotal = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
 
-	// ---------------------------------------
-	// CART OPERATIONS
-	// ---------------------------------------
-	const removeItem = (variantId) => {
-		setCart(cart.filter((item) => item.variantId !== variantId));
-	};
+  // -----------------------------------------------------
+  // DRAWER REFS
+  // -----------------------------------------------------
+  const drawerRef = useRef(null);
+  const overlayRef = useRef(null);
 
-	const changeQty = (variantId, value) => {
-		setCart(
-			cart.map((item) =>
-				item.variantId === variantId
-					? {
-							...item,
-							qty: Math.max(1, Math.min(item.qty + value, item.maxQty)),
-					  }
-					: item
-			)
-		);
-	};
+  // -----------------------------------------------------
+  // MEASURE DRAWER WIDTH ONCE (NO FORCED REFLOW DURING ANIM)
+  // -----------------------------------------------------
+  const [drawerWidth, setDrawerWidth] = useState(420);
 
-	const subtotal = cart.reduce(
-		(sum, item) => sum + item.price * item.qty,
-		0
-	);
+  useEffect(() => {
+    if (drawerRef.current) {
+      setDrawerWidth(drawerRef.current.offsetWidth || 420);
+    }
+  }, [hydrated]);
 
-	// ---------------------------------------
-	// DRAWER REFS
-	// ---------------------------------------
-	const drawerRef = useRef(null);
-	const overlayRef = useRef(null);
+  // -----------------------------------------------------
+  // GSAP ANIMATION — SAFE + CLEAN + MATCHING ALL DRAWERS
+  // -----------------------------------------------------
+  useEffect(() => {
+    if (!hydrated || !isDesktop) return;
+    if (!drawerRef.current || !overlayRef.current) return;
 
-	// ---------------------------------------
-	// GSAP ANIMATION — MATCHES YOUR OTHER DRAWERS
-	// ---------------------------------------
-	useEffect(() => {
-		if (!hydrated || !isDesktop) return;
-		if (!drawerRef.current || !overlayRef.current) return;
+    const ctx = gsap.context(() => {
+      const drawer = drawerRef.current;
+      const overlay = overlayRef.current;
 
-		const drawer = drawerRef.current;
-		const overlay = overlayRef.current;
+      const offX = dir === "rtl" ? drawerWidth : -drawerWidth;
 
-		// Detect actual rendered width (fixed at 420px)
-		let drawerWidth = drawer.offsetWidth || 420;
+      if (isOpen) {
+        gsap.to(overlay, {
+          autoAlpha: 1,
+          backdropFilter: "blur(6px)",
+          duration: 0.3,
+          ease: "power2.out",
+        });
 
-		const fromX = dir === "rtl" ? drawerWidth : -drawerWidth;
+        gsap.to(drawer, {
+          x: 0,
+          duration: 0.45,
+          ease: "power3.out",
+        });
+      } else {
+        gsap.to(drawer, {
+          x: offX,
+          duration: 0.45,
+          ease: "power3.inOut",
+        });
 
-		if (isOpen) {
-			gsap.to(overlay, {
-				autoAlpha: 1,
-				backdropFilter: "blur(6px)",
-				duration: 0.3,
-				ease: "power2.out",
-			});
+        gsap.to(overlay, {
+          autoAlpha: 0,
+          backdropFilter: "blur(0px)",
+          duration: 0.3,
+        });
+      }
+    });
 
-			gsap.to(drawer, {
-				x: 0,
-				duration: 0.45,
-				ease: "power3.out",
-			});
-		} else {
-			gsap.to(drawer, {
-				x: fromX,
-				duration: 0.45,
-				ease: "power3.inOut",
-			});
+    return () => ctx.revert();
+  }, [isOpen, hydrated, isDesktop, drawerWidth, dir]);
 
-			gsap.to(overlay, {
-				autoAlpha: 0,
-				backdropFilter: "blur(0px)",
-				duration: 0.3,
-			});
-		}
-	}, [hydrated, isDesktop, isOpen, dir]);
+  // -----------------------------------------------------
+  // DO NOT RENDER UNTIL HYDRATED
+  // -----------------------------------------------------
+  if (!hydrated) return null;
 
-	// ---------------------------------------
-	// DO NOT RENDER BEFORE HYDRATION
-	// ---------------------------------------
-	if (!hydrated) return null;
+  // -----------------------------------------------------
+  // RENDER
+  // -----------------------------------------------------
+  return (
+    <div className="relative hidden lg:block">
+      {/* ICON */}
+      <button className="relative control-btn" onClick={toggleCart}>
+        <HiOutlineShoppingBag className="w-6 h-6" />
 
-	// ---------------------------------------
-	// RETURN
-	// ---------------------------------------
-	return (
-		<div className="relative hidden lg:block">
-			{/* CART ICON */}
-			<button className="relative control-btn" type="button" onClick={toggleCart}>
-				<HiOutlineShoppingBag className="w-6 h-6" />
+        {cart.length > 0 && (
+          <span className="absolute -top-2 -right-2 bg-primary text-neutral-900 text-xs w-5 h-5 flex items-center justify-center rounded-full">
+            {cart.length}
+          </span>
+        )}
+      </button>
 
-				{cart.length > 0 && (
-					<span className="absolute -top-2 -right-2 bg-primary text-neutral-900 text-xs w-5 h-5 flex items-center justify-center rounded-full">
-						{cart.length}
-					</span>
-				)}
-			</button>
+      {/* DRAWER PORTAL */}
+      {isDesktop &&
+        createPortal(
+          <>
+            {/* OVERLAY */}
+            <div
+              ref={overlayRef}
+              onClick={toggleCart}
+              className="fixed inset-0 bg-black/30 backdrop-blur-sm opacity-0 z-40"
+              style={{ visibility: "hidden" }}
+            />
 
-			{/* PORTALED DRAWER + OVERLAY */}
-			{isDesktop &&
-				createPortal(
-					<>
-						{/* OVERLAY — MATCHES NAVIGATION */}
-						<div
-							ref={overlayRef}
-							onClick={toggleCart}
-							className="
-								fixed inset-0 
-								bg-black/30 
-								backdrop-blur-sm
-								opacity-0 
-								pointer-events-auto 
-								z-40
-							"
-							style={{ visibility: "hidden" }}
-						/>
+            {/* DRAWER */}
+            <div
+              ref={drawerRef}
+              className={`
+                fixed top-0 h-full bg-white shadow-2xl z-50 p-4 overflow-y-auto
+                ${dir === "rtl" ? "right-0" : "left-0"}
+              `}
+              style={{
+                width: "420px",
+                transform:
+                  dir === "rtl"
+                    ? `translateX(${drawerWidth}px)`
+                    : `translateX(-${drawerWidth}px)`,
+              }}
+            >
+              {/* HEADER */}
+              <div className="p-4 flex justify-between items-center border-b">
+                <h2 className="text-lg font-semibold">{t("yourCart")}</h2>
+                <button onClick={toggleCart} className="text-gray-500 text-xl">
+                  ✕
+                </button>
+              </div>
 
-						{/* DRAWER */}
-						<div
-							ref={drawerRef}
-							className={`
-								fixed top-0 h-full bg-white shadow-2xl z-50 p-4 overflow-y-auto
-								${dir === "rtl" ? "right-0" : "left-0"}
-							`}
-							style={{
-								width: "420px",
-								minWidth: "420px",
-								maxWidth: "420px",
-								transform: "translateX(0)", // hydration-safe initial position
-							}}
-						>
-							{/* HEADER */}
-							<div className="p-4 flex justify-between items-center border-b">
-								<h2 className="text-lg font-semibold">{t("yourCart")}</h2>
-								<button onClick={toggleCart} className="text-gray-500 text-xl">
-									✕
-								</button>
-							</div>
+              {/* ITEMS */}
+              <div className="p-4 space-y-4 overflow-y-auto max-h-[70vh]">
+                {cart.length === 0 && (
+                  <p className="text-gray-500 text-center">{t("empty")}</p>
+                )}
 
-							{/* ITEMS */}
-							<div className="p-4 space-y-4 overflow-y-auto max-h-[70vh]">
-								{cart.length === 0 && (
-									<p className="text-gray-500 text-center">{t("empty")}</p>
-								)}
+                {cart.map((item) => (
+                  <div
+                    key={item.variantId}
+                    className="flex items-start gap-4 border-b pb-3"
+                  >
+                    <Image
+                      src={item.image}
+                      width={64}
+                      height={64}
+                      alt={item.title}
+                      className="rounded-md"
+                    />
 
-								{cart.map((item) => (
-									<div key={item.variantId} className="flex items-start gap-4 border-b pb-3">
-										<Image
-											src={item.image}
-											width={64}
-											height={64}
-											alt={item.title}
-											className="rounded-md"
-										/>
+                    <div className="flex-1">
+                      <h3 className="text-sm font-medium">{item.title}</h3>
 
-										<div className="flex-1">
-											<h3 className="text-sm font-medium">{item.title}</h3>
+                      {/* PRICE */}
+                      <p className="text-gray-600 text-xs mt-1">
+                        {format(item.price)} {t("perOne")}
+                      </p>
 
-											{/* PRICE */}
-											<p className="text-gray-600 text-xs mt-1">
-												{format(item.price)} {t("perOne")}
-											</p>
+                      {/* QTY */}
+                      <div className="flex items-center gap-2 mt-2">
+                        <button
+                          className="border px-2 rounded"
+                          onClick={() => changeQty(item.variantId, -1)}
+                        >
+                          -
+                        </button>
 
-											{/* QUANTITY */}
-											<div className="flex items-center gap-2 mt-2">
-												<button
-													className="border px-2 rounded"
-													onClick={() => changeQty(item.variantId, -1)}
-												>
-													-
-												</button>
+                        <span>{item.qty}</span>
 
-												<span>{item.qty}</span>
+                        <button
+                          className={`border px-2 rounded ${
+                            item.qty >= item.maxQty
+                              ? "opacity-50 cursor-not-allowed"
+                              : ""
+                          }`}
+                          onClick={() => {
+                            if (item.qty < item.maxQty) {
+                              changeQty(item.variantId, 1);
+                            }
+                          }}
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
 
-												<button
-													className={`border px-2 rounded ${item.qty >= item.maxQty ? "opacity-50 cursor-not-allowed" : ""}`}
-													onClick={() =>
-														item.qty < item.maxQty &&
-														changeQty(item.variantId, 1)
-													}
-													disabled={item.qty >= item.maxQty}
-												>
-													+
-												</button>
-											</div>
-										</div>
+                    <button
+                      className="text-red-500 text-sm"
+                      onClick={() => removeItem(item.variantId)}
+                    >
+                      {t("remove")}
+                    </button>
+                  </div>
+                ))}
+              </div>
 
-										<button className="text-red-500 text-sm" onClick={() => removeItem(item.variantId)}>
-											{t("remove")}
-										</button>
-									</div>
-								))}
-							</div>
+              {/* FOOTER */}
+              {cart.length > 0 && (
+                <div className="p-4 border-t space-y-3">
+                  <div className="flex justify-between mb-3">
+                    <span className="font-semibold">{t("subtotal")}:</span>
+                    <span className="font-semibold">{format(subtotal)}</span>
+                  </div>
 
-							{/* FOOTER */}
-							{cart.length > 0 && (
-								<div className="p-4 border-t space-y-3">
-									<div className="flex justify-between mb-3">
-										<span className="font-semibold">{t("subtotal")}:</span>
-										<span className="font-semibold">
-											{format(subtotal.toFixed(2))}
-										</span>
-									</div>
+                  <Link
+                    href="/cart"
+                    locale={locale}
+                    onClick={() => setNavState("")}
+                    className="block w-full py-2 text-center bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200"
+                  >
+                    {t("viewCart")}
+                  </Link>
 
-									<Link
-										href="/cart"
-										locale={locale}
-										onClick={() => setNavState("")}
-										className="block w-full py-2 text-center bg-gray-100 border border-gray-300 text-gray-800 rounded-md font-medium hover:bg-gray-200 transition"
-									>
-										{t("viewCart")}
-									</Link>
-
-									<Link
-										href="/checkout"
-										locale={locale}
-										onClick={() => setNavState("")}
-										className="block w-full py-2 text-center bg-primary text-neutral-900 rounded-md font-medium hover:bg-primary-dark transition"
-									>
-										{t("checkout")}
-									</Link>
-								</div>
-							)}
-						</div>
-					</>,
-					document.getElementById("ui-layer")
-				)}
-		</div>
-	);
+                  <Link
+                    href="/checkout"
+                    locale={locale}
+                    onClick={() => setNavState("")}
+                    className="block w-full py-2 text-center bg-primary text-neutral-900 rounded-md hover:bg-primary-dark"
+                  >
+                    {t("checkout")}
+                  </Link>
+                </div>
+              )}
+            </div>
+          </>,
+          document.getElementById("ui-layer")
+        )}
+    </div>
+  );
 }

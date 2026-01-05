@@ -341,5 +341,13 @@
         "continueGoogle": "التسجيل باستخدام Google",
         "haveAccount": "لديك حساب بالفعل؟",
         "loginHere": "سجل الدخول من هنا"
-    }
+    },
+    "byPrice": "حسب السعر",
+    "from": "من",
+    "to": "إلى",
+    "inStock": "متوفر في المخزون",
+    "colors": "الألوان",
+    "sizes": "المقاسات",
+    "materials": "الخامات",
+    "features": "الميزات"
 }
