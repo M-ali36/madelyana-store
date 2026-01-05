@@ -25,6 +25,8 @@ export default function Video({ vimeoId, image, title, subTitle }) {
                     <div className="absolute z-0 min-h-full w-full">
                         <Image
                             image={thumbnailUrl}
+                            height={image.height}
+                            width={image.width}
                             alt={altText}
                             fill
                             className="w-full"
