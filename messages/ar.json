@@ -41,9 +41,11 @@
         "materials": "الخامات",
         "features": "المميزات"
     },
-    "relatedProducts": {
+    "productDetails": {
         "title": "منتجات قد تعجبك",
-        "subTitle": "مختارات بعناية تتناسق مع هذا المنتج"
+        "subTitle": "مختارات بعناية تتناسق مع هذا المنتج",
+        "addedToWishlist": "تمت الإضافة إلى قائمة الرغبات",
+        "removedFromWishlist": "تمت الإزالة من قائمة الرغبات"
     },
     "categories": {
         "discoverTitle": "<b>اكتشف</b><linebreak></linebreak>أسلوبك"
@@ -341,6 +343,13 @@
         "continueGoogle": "التسجيل باستخدام Google",
         "haveAccount": "لديك حساب بالفعل؟",
         "loginHere": "سجل الدخول من هنا"
+    },
+    "AddToCartButton": {
+        "add": "أضف إلى السلة",
+        "loading": "جاري التحميل…",
+        "outOfStock": "غير متوفر",
+        "addedSuccess": "تمت الإضافة إلى السلة!",
+        "errorAdding": "فشل في الإضافة"
     },
     "byPrice": "حسب السعر",
     "from": "من",

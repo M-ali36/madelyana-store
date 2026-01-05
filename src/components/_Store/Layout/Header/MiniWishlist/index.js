@@ -101,7 +101,7 @@ export default function MiniWishlist() {
             <div
               ref={overlayRef}
               onClick={() => setNavState("")}
-              className="fixed inset-0 bg-black/30 opacity-0 pointer-events-auto z-40"
+              className="fixed inset-0 backdrop-blur-sm bg-black/30 opacity-0 pointer-events-auto z-40"
               style={{ visibility: "hidden" }}
             />
 

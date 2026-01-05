@@ -41,9 +41,11 @@
         "materials": "Materials",
         "features": "Features"
     },
-    "relatedProducts": {
+    "productDetails": {
         "title": "You may also like",
-        "subTitle": "Handpicked items that perfectly match this product"
+        "subTitle": "Handpicked items that perfectly match this product",
+        "addedToWishlist": "Added to wishlist",
+        "removedFromWishlist": "Removed from wishlist"
     },
     "categories": {
         "discoverTitle": "<b>Discover</b><linebreak></linebreak>Your Style"
@@ -341,6 +343,13 @@
         "continueGoogle": "Sign up with Google",
         "haveAccount": "Already have an account?",
         "loginHere": "Login here"
+    },
+    "AddToCartButton": {
+        "add": "Add to Cart",
+        "loading": "Loading…",
+        "outOfStock": "Out of Stock",
+        "addedSuccess": "Added to cart!",
+        "errorAdding": "Failed to add item"
     },
     "byPrice": "By Price",
     "from": "From",

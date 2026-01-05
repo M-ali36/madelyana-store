@@ -275,9 +275,25 @@ export function AppProvider({ children }) {
   const [currency, setCurrency] = useState("USD");
   const currencyRates = { USD: 1, AED: 3.67, EGP: 50 };
 
+  // Notification shape:
+  // { id, message, type, duration }
+
+  const [notifications, setNotifications] = useState([]);
+
+  const pushNotification = (message, type = "success", duration = 3000) => {
+    const id = Date.now();
+    setNotifications((prev) => [...prev, { id, message, type, duration }]);
+  };
+
+  const removeNotification = (id) => {
+    setNotifications((prev) => prev.filter((n) => n.id !== id));
+  };
+
+
   // ----------------------------------------
   // PROVIDER VALUE
   // ----------------------------------------
+  
   const value = {
     user,
     cart,
@@ -297,6 +313,9 @@ export function AppProvider({ children }) {
     updateCartQty,
     removeFromCart,
     clearCart,
+    notifications,
+    pushNotification,
+    removeNotification
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

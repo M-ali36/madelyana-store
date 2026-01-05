@@ -8,7 +8,7 @@ import { collection, query, where, getDocs } from "firebase/firestore";
 import AnimatedImage from "@/components/Ui/AnimatedImage";
 import Link from "@/components/Ui/Link";
 import useCurrency from "@/components/hooks/useCurrency";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { HiOutlineHeart } from "react-icons/hi";
 
 /* -----------------------------------------
@@ -19,10 +19,11 @@ const SkeletonBox = ({ className = "" }) => (
 );
 
 export default function ProductCardRelated({ product }) {
+  const t = useTranslations("productDetails");
   const [merged, setMerged] = useState(product);
   const [loading, setLoading] = useState(true);
 
-  const { wishlist, setWishlist } = useAppContext();
+  const { wishlist, setWishlist, pushNotification } = useAppContext();
   const { format } = useCurrency();
   const locale = useLocale();
 
@@ -68,27 +69,32 @@ export default function ProductCardRelated({ product }) {
   /* -----------------------------------------
      2️⃣ Wishlist
   ------------------------------------------ */
-  const isInWishlist = wishlist.some(
-    (w) => w.id === merged.firebaseId
-  );
+  const isInWishlist = wishlist.some((w) => w.id === merged.firebaseId);
 
   const toggleWishlist = () => {
     if (loading) return;
 
     if (isInWishlist) {
+      // REMOVE
       setWishlist(wishlist.filter((w) => w.id !== merged.firebaseId));
-    } else {
-      setWishlist([
-        ...wishlist,
-        {
-          id: merged.firebaseId,
-          slug: merged.slug,
-          title: merged.title,
-          image: merged.images?.[0]?.url,
-          price: merged.price,
-        },
-      ]);
+      pushNotification(t("removedFromWishlist", "productdetails"), "info");
+      return false;
     }
+
+    // ADD
+    setWishlist([
+      ...wishlist,
+      {
+        id: merged.firebaseId,
+        slug: merged.slug,
+        title: merged.title,
+        image: merged.images?.[0]?.url,
+        price: merged.price,
+      },
+    ]);
+
+    pushNotification(t("addedToWishlist", "productdetails"), "success");
+    return true;
   };
 
   /* -----------------------------------------

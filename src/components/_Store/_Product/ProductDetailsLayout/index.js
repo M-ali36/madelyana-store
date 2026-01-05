@@ -13,16 +13,15 @@ import { useProductVariantEngine } from "@/components/products/ProductCardWithVa
 import ProductTrust from "./ProductTrust";
 import { HiOutlineHeart } from "react-icons/hi";
 import ProductDetails from "./ProductDetails";
-import ProductCarouselStatic from "@/components/ContentTypes/ProductSlider";
 import { useTranslations } from "next-intl";
 import RelatedProductsSlider from "@/components/products/RelatedProductsSlider";
 
 export default function ProductDetailsLayout({ product, related }) {
-    const t = useTranslations("relatedProducts");
+    const t = useTranslations("productDetails");
   const [merged, setMerged] = useState(product);
   const [loading, setLoading] = useState(true);
 
-  const { cart, setCart, wishlist, setWishlist } = useAppContext();
+  const { cart, setCart, wishlist, setWishlist, pushNotification} = useAppContext();
   const { format } = useCurrency();
 
   // --------------------------------------
@@ -78,23 +77,29 @@ export default function ProductDetailsLayout({ product, related }) {
 
     if (exists) {
       setWishlist(wishlist.filter((w) => w.id !== merged.firebaseId));
-    } else {
-      setWishlist([
-        ...wishlist,
-        {
-          id: merged.firebaseId,
-          title: merged.title,
-          image: merged.images?.[0]?.url,
-          price: merged.price,
-          slug: merged.slug,
-        },
-      ]);
+
+      pushNotification(t("removedFromWishlist"), "info"); // 🔵 notification
+      return false; // ❌ now removed
     }
+
+    setWishlist([
+      ...wishlist,
+      {
+        id: merged.firebaseId,
+        title: merged.title,
+        image: merged.images?.[0]?.url,
+        price: merged.price,
+        slug: merged.slug,
+      },
+    ]);
+
+    pushNotification(t("addedToWishlist"), "success"); // 🟢 notification
+    return true; // ✅ added
   };
 
   // Add to Cart
   const addToCart = () => {
-    if (!canAddToCart) return;
+    if (!canAddToCart) return false; // ❌ cannot add
 
     const vid = hasVariants
       ? `${merged.firebaseId}-${Object.values(selected).join("-")}`
@@ -103,6 +108,11 @@ export default function ProductDetailsLayout({ product, related }) {
     const existing = cart.find((i) => i.variantId === vid);
 
     if (existing) {
+      // If quantity is already at max, do NOT increase
+      if (existing.qty >= existing.maxQty) {
+        return false; // ❌ cannot add more
+      }
+
       setCart(
         cart.map((i) =>
           i.variantId === vid
@@ -110,23 +120,29 @@ export default function ProductDetailsLayout({ product, related }) {
             : i
         )
       );
-    } else {
-      setCart([
-        ...cart,
-        {
-          id: merged.firebaseId,
-          slug: merged.slug,
-          title: merged.title,
-          price: merged.price,
-          qty: 1,
-          maxQty: hasVariants ? Number(variantStock) : 99,
-          image: merged.images?.[0]?.url,
-          selectedAttributes: selected,
-          variantId: vid,
-        },
-      ]);
+
+      return true; // ✅ updated qty
     }
+
+    // NEW ITEM
+    setCart([
+      ...cart,
+      {
+        id: merged.firebaseId,
+        slug: merged.slug,
+        title: merged.title,
+        price: merged.price,
+        qty: 1,
+        maxQty: hasVariants ? Number(variantStock) : 99,
+        image: merged.images?.[0]?.url,
+        selectedAttributes: selected,
+        variantId: vid,
+      },
+    ]);
+
+    return true; // ✅ added item
   };
+
 
   const variantImageMap = {};
 
