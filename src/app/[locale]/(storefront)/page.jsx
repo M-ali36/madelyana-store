@@ -7,7 +7,7 @@ import About from "@/components/_Store/_Home/About";
 import RelatedProductsSlider from "@/components/products/RelatedProductsSlider";
 import LatestArticles from "@/components/LatestArticles";
 
-export const revalidate = 60; 
+export const revalidate = false; // on-demand ISR triggered by Contentful
 // ISR enabled → page regenerates every 60 seconds
 
 export default async function Home(props) {

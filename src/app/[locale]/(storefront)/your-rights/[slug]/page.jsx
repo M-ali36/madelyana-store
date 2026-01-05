@@ -6,7 +6,7 @@ import {
 } from "@/lib/contentfulClient";
 import { documentToReactComponents } from "@contentful/rich-text-react-renderer";
 
-export const revalidate = 60;
+export const revalidate = 600;
 
 /**
  * 🔹 Generate all policy routes statically:

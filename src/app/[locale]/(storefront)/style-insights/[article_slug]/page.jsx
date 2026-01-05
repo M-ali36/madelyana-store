@@ -8,14 +8,12 @@ import {
 } from "@/lib/contentfulClient";
 
 import Seo from "@/components/Seo";
-import AnimatedImage from "@/components/Ui/AnimatedImage";
-import Link from "@/components/Ui/Link";
 import LatestArticles from "@/components/LatestArticles";
 import MainBanner from "@/components/_Store/_Article/MainBanner";
 import ArticleContent from "@/components/_Store/_Article/Content";
 import ArticleMeta from "@/components/_Store/_Article/ArticleMeta";
 
-export const revalidate = 60;
+export const revalidate = false; // best
 
 /**
  * 🔹 Generate all article routes statically

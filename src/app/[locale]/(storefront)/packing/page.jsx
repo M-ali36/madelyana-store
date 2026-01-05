@@ -8,7 +8,7 @@ import ScentSection from "@/components/_Store/_Packing/ScentSection";
 import ExtrasSection from "@/components/_Store/_Packing/ExtrasSection";
 import MainBanner from "@/components/_Store/_Packing/MainBanner";
 
-export const revalidate = 60;
+export const revalidate = 3600; // 1 hour
 
 
 export default async function PackingPage(props) {

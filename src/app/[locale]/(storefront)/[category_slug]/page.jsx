@@ -11,7 +11,7 @@ import MainBanner from "@/components/_Store/_Category/MainBanner";
 import { documentToReactComponents } from "@contentful/rich-text-react-renderer";
 import RelatedCategories from "@/components/_Store/_Category/RelatedCategories";
 
-export const revalidate = 60;
+export const revalidate = 600; // 10 minutes
 
 /**
  * 🔹 Generate all category routes statically:

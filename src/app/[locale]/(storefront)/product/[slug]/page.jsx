@@ -9,7 +9,7 @@ import Seo from "@/components/Seo";
 import ProductDetailsLayout from "@/components/_Store/_Product/ProductDetailsLayout";
 import { documentToReactComponents } from "@contentful/rich-text-react-renderer";
 
-export const revalidate = 60;
+export const revalidate = false; // use On-demand ISR for static content
 
 /**
  * -------------------------------------------------------------

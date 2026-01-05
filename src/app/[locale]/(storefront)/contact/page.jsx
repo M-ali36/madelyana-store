@@ -5,7 +5,7 @@ import ContactInfo from "@/components/_Store/_Contact/ContactInfo";
 import ContactForm from "@/components/_Store/_Contact/ContactForm";
 import { notFound } from "next/navigation";
 
-export const revalidate = 60;
+export const revalidate = 3600; // 1 hour (or more)
 
 export default async function ContactPage(props) {
   const { locale } = await props.params;

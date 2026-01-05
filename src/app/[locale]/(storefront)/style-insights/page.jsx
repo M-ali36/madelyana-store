@@ -6,7 +6,7 @@ import MainBanner from "@/components/_Store/_Insights/MainBanner";
 import TikTokSlider from "@/components/_Store/_Insights/TikTokSlider";
 import ArticlesList from "@/components/_Store/_Insights/ArticlesList";
 
-export const revalidate = 60;
+export const revalidate = 300; // 5 minutes
 
 export default async function StyleInsightsPage(props) {
   const { locale } = await props.params;

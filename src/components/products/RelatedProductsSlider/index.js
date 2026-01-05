@@ -42,6 +42,7 @@ export default function RelatedProductsSlider({ products, title, subTitle, ...pr
             modules={[Navigation]}
             spaceBetween={24}
             slidesPerView={2}
+            className="swiper-products"
             onSwiper={(swiper) => {
             // Bind navigation AFTER refs exist
             setTimeout(() => {
