@@ -12,7 +12,7 @@ const MainBanner = ({image, title, featuredTitle, descriptions}) => {
                 <h1 className={classes.title}>{featuredTitle}</h1>
                 <span className={classes.description}>{descriptions}</span>
             </div>
-            <AnimatedImage image={image.url} className={classes.image} priority={true} />
+            <AnimatedImage image={image} className={classes.image} priority={true} />
         </div>
     );
 };

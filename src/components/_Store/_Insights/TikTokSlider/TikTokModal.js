@@ -1,16 +1,26 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { HiX } from "react-icons/hi";
 
+function parseTikTokUrl(url) {
+  const m = url.match(/tiktok\.com\/@([^/]+)\/video\/(\d+)/);
+  return m ? { username: m[1], videoId: m[2] } : null;
+}
+
 export default function TikTokModal({ videoUrl, open, onClose }) {
+  const containerRef = useRef(null);
+  const [mounted, setMounted] = useState(false);
+
+  const parsed = parseTikTokUrl(videoUrl);
+
   if (!open) return null;
 
-  // Disable scroll & smoother while modal open
   useEffect(() => {
-    document.body.style.overflow = "hidden";
+    setMounted(true);
 
+    document.body.style.overflow = "hidden";
     const smoother = window.ScrollSmoother?.get();
     smoother?.paused(true);
 
@@ -20,7 +30,29 @@ export default function TikTokModal({ videoUrl, open, onClose }) {
     };
   }, []);
 
-  const embedUrl = videoUrl.replace("/video/", "/embed/");
+  useEffect(() => {
+    if (!parsed || !containerRef.current) return;
+
+    const { username, videoId } = parsed;
+
+    containerRef.current.innerHTML = `
+      <blockquote 
+        class="tiktok-embed"
+        cite="https://www.tiktok.com/@${username}/video/${videoId}"
+        data-video-id="${videoId}"
+        style="max-width: 605px; min-width: 325px;">
+      </blockquote>
+    `;
+
+    // force TikTok script to scan again
+    setTimeout(() => {
+      if (window.tiktokEmbedLoad) {
+        window.tiktokEmbedLoad();
+      }
+    }, 50);
+  }, [parsed]);
+
+  if (!mounted) return null;
 
   return createPortal(
     <div
@@ -31,35 +63,22 @@ export default function TikTokModal({ videoUrl, open, onClose }) {
         className="relative bg-white rounded-2xl overflow-hidden shadow-xl max-w-2xl w-full animate-[pop_0.25s_ease]"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Close */}
         <button
           onClick={onClose}
-          className="absolute top-3 end-3 text-neutral-700 hover:text-neutral-900 transition"
+          className="absolute top-3 right-3 text-neutral-700 hover:text-neutral-900"
         >
           <HiX className="w-7 h-7" />
         </button>
 
-        {/* TikTok iframe */}
-        <div className="aspect-[9/16] w-full bg-black">
-          <iframe
-            src={embedUrl}
-            allow="autoplay"
-            className="w-full h-full"
-          />
+        <div className="w-full flex justify-center p-4">
+          <div ref={containerRef} className="w-full flex justify-center" />
         </div>
       </div>
 
-      {/* Animation */}
       <style jsx>{`
         @keyframes pop {
-          from {
-            opacity: 0;
-            transform: scale(0.9);
-          }
-          to {
-            opacity: 1;
-            transform: scale(1);
-          }
+          from { opacity: 0; transform: scale(0.9); }
+          to { opacity: 1; transform: scale(1); }
         }
       `}</style>
     </div>,

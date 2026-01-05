@@ -40,6 +40,7 @@ export default async function RootLocaleLayout({ children, params }) {
           </SmoothScrollWrapper>
 
         </NextIntlClientProvider>
+        <script src="https://www.tiktok.com/embed.js" async></script>
       </body>
     </html>
   );

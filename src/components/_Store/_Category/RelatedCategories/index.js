@@ -58,7 +58,7 @@ export default function RelatedCategories({ categories, currentSlug }) {
           className="pb-8 categories-swiper"
         >
           {filteredCategories.map((cat) => {
-            const imageSrc = cat.mainBanner?.url ?? null;
+            const imageSrc = cat.mainBanner ?? null;
 
             return (
               <SwiperSlide key={cat.id} className="flex flex-col items-center">

@@ -11,7 +11,7 @@ const ContactHero = ({image, title, subTitle}) => {
                 <h1 className={classes.title}>{documentToReactComponents(title)}</h1>
                 <span className='text-lg text-white text-center mx-auto block w-full'>{subTitle}</span>
             </div>
-            <AnimatedImage image={image.url} className={classes.image} priority={true} />
+            <AnimatedImage image={image} className={classes.image} priority={true} />
         </div>
     );
 };

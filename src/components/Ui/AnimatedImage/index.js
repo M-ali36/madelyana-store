@@ -62,8 +62,8 @@ export default function AnimatedImage({
         <Image
           image={image.url ? image.url : image}
           alt={alt}
-          width={width}
-          height={height}
+          width={image.url ? image.width : width}
+          height={image.url ? image.height : height}
             priority={priority}
           className="absolute top-0 left-0 w-full h-full object-cover"
         />

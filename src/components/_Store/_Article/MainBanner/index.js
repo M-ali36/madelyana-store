@@ -10,7 +10,7 @@ const MainBanner = ({image, featuredTitle}) => {
             <div className={classes.cont}>
                 <h1 className={classes.title}>{documentToReactComponents(featuredTitle)}</h1>
             </div>
-            <AnimatedImage image={image.url} className={classes.image} priority={true} />
+            <AnimatedImage image={image} className={classes.image} priority={true} />
         </div>
     );
 };

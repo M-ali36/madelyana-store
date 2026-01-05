@@ -34,7 +34,7 @@ export default function HomeCategories({ title, subTitle, items }) {
             documentToReactComponents(item?.content) || "";
           const categoryText =
             documentToReactComponents(item?.subContent) || "";
-          const imageUrl = item?.image?.url;
+          const imageUrl = item?.image;
           const href = item?.link?.url || "#";
 
           const Card = (
