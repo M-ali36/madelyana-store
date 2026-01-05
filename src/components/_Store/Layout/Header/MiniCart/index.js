@@ -132,7 +132,7 @@ export default function MiniCart() {
   return (
     <div className="relative hidden lg:block">
       {/* ICON */}
-      <button className="relative control-btn" onClick={toggleCart}>
+      <button className="relative control-btn" onClick={toggleCart} aria-label="My Cart">
         <HiOutlineShoppingBag className="w-6 h-6" />
 
         {cart.length > 0 && (

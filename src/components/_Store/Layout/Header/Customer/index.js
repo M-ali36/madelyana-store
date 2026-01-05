@@ -64,9 +64,11 @@ export default function MiniAccount() {
 	// If NOT logged in → show login button
 	if (!user) {
 		return (
-			<Link href="/login" locale={locale} className="control-btn">
-				<HiOutlineUser className="w-6 h-6" />
-			</Link>
+			<div className="block relative h-8">
+				<Link href="/login" locale={locale} className="control-btn relative">
+					<HiOutlineUser className="w-6 h-6" />
+				</Link>
+			</div>
 		);
 	}
 

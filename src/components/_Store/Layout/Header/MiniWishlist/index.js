@@ -83,7 +83,7 @@ export default function MiniWishlist() {
   return (
     <div className="relative hidden lg:block">
       {/* HEART */}
-      <button className="relative control-btn" onClick={() =>
+      <button aria-label="My Wishlist" className="relative control-btn" onClick={() =>
         setNavState(navState === "wishlist" ? "" : "wishlist")
       }>
         <HiOutlineHeart className="w-6 h-6" />
