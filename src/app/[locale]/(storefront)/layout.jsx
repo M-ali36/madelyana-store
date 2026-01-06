@@ -5,7 +5,6 @@ import { NextIntlClientProvider } from "next-intl";
 import { elMessiri, playfair } from "@/app/fonts/fonts";
 import { fetchFooter } from "@/lib/contentfulClient";
 import NotificationContainer from "@/components/Ui/NotificationContainer";
-import FloatingChatButton from "@/components/assistant/FloatingChatButton";
 
 export default async function RootLocaleLayout({ children, params }) {
   const locale = (await params).locale;
@@ -40,7 +39,6 @@ export default async function RootLocaleLayout({ children, params }) {
 
             <Footer locale={locale} footer={footer} />
           </SmoothScrollWrapper>
-          <FloatingChatButton />
         </NextIntlClientProvider>
         <NotificationContainer locale={locale}/>
         <script src="https://www.tiktok.com/embed.js" async></script>

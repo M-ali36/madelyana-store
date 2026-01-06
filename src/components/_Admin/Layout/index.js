@@ -16,12 +16,10 @@ import {
 import { signOut, onAuthStateChanged } from "firebase/auth";
 import { auth, db } from "@/lib/firebaseClient";
 import { doc, getDoc } from "firebase/firestore";
-import { useLocale } from "next-intl";
 
-export default function AdminLayoutPage({ children }) {
+export default function AdminLayoutPage({ children, locale }) {
   const pathname = usePathname();
   const router = useRouter();
-  const locale = useLocale();
 
   const [checking, setChecking] = useState(true);
   const [allowed, setAllowed] = useState(false);

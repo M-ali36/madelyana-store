@@ -1,62 +1,66 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { db } from "@/lib/firebaseClient";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import {
+  doc,
+  getDoc,
+  updateDoc,
+  increment
+} from "firebase/firestore";
 import { useParams } from "next/navigation";
 
 import StatusBadge from "../StatusBadge";
 import OrderTimeline from "../OrderTimeline";
 import TrackingLinks from "../TrackingLinks";
+import { useTranslations, useLocale } from "next-intl";
 
-// --------------------------------------------
-// STOCK DEDUCTION LOGIC (corrected)
-// --------------------------------------------
-async function deductStockForOrder(order) {
-  if (order.stockDeducted) {
-    return { ok: true, message: "Stock already deducted" };
-  }
+/* ============================================================
+   DEDUCT STOCK
+============================================================ */
+async function deductStock(order) {
+  if (order.stockDeducted) return { ok: true };
 
-  const items = order.items || [];
+  for (const item of order.items) {
+    const ref = doc(db, "products_dynamic", item.productId);
+    const snap = await getDoc(ref);
 
-  // Validate stock
-  for (const item of items) {
-    const productRef = doc(db, "products_dynamic", item.productId);
-    const productSnap = await getDoc(productRef);
-
-    if (!productSnap.exists()) {
+    if (!snap.exists())
       return { ok: false, error: `Product not found: ${item.productId}` };
-    }
 
-    const product = productSnap.data();
+    const product = snap.data();
     const variants = product.variants || [];
 
-    // Your variant only has color, no size
-    const variantMatch = variants.find((v) => v.color === item.variant.color);
+    // find variant
+    const match = variants.find(
+      (v) =>
+        v.color?.toLowerCase() === item.variant.color?.toLowerCase() &&
+        (v.size?.toLowerCase() || "") ===
+          (item.variant.size?.toLowerCase() || "")
+    );
 
-    if (!variantMatch) {
+    if (!match)
+      return { ok: false, error: `Variant not found: ${item.variant.color} ${item.variant.size || ""}` };
+
+    if (match.quantity < item.qty)
       return {
         ok: false,
-        error: `Variant not found: ${item.variant.color}`,
+        error: `Not enough stock for ${item.title}. Required: ${item.qty}, Available: ${match.quantity}`
       };
-    }
-
-    if (variantMatch.quantity < item.qty) {
-      return {
-        ok: false,
-        error: `Insufficient stock for ${item.title} (${item.variant.color}) — Requested ${item.qty}, Available ${variantMatch.quantity}`,
-      };
-    }
   }
 
-  // Deduct stock
-  for (const item of items) {
+  // deduct
+  for (const item of order.items) {
     const ref = doc(db, "products_dynamic", item.productId);
     const snap = await getDoc(ref);
     const product = snap.data();
 
     const updatedVariants = product.variants.map((v) => {
-      if (v.color === item.variant.color) {
+      if (
+        v.color?.toLowerCase() === item.variant.color?.toLowerCase() &&
+        (v.size?.toLowerCase() || "") ===
+          (item.variant.size?.toLowerCase() || "")
+      ) {
         return { ...v, quantity: v.quantity - item.qty };
       }
       return v;
@@ -68,41 +72,135 @@ async function deductStockForOrder(order) {
   return { ok: true };
 }
 
+/* ============================================================
+   MAIN PAGE
+============================================================ */
 export default function OrderDetailsPage() {
   const { id } = useParams();
+  const t = useTranslations("Order");
+  const locale = useLocale();
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-
   const [order, setOrder] = useState(null);
 
-  // Editable fields
   const [status, setStatus] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("");
   const [tracking, setTracking] = useState("");
   const [notes, setNotes] = useState("");
 
-  // Refunds do not exist in your schema BUT kept optional for future extension
-  const [refundReason, setRefundReason] = useState("");
+  const [items, setItems] = useState([]);
+  const [stockInfo, setStockInfo] = useState([]); // NEW
+  const [insufficient, setInsufficient] = useState([]);
 
-  // Shipping address (mapped from order.address)
-  const [shipping, setShipping] = useState({
-    fullName: "",
-    phone: "",
-    street: "",
-    city: "",
-    state: "",
-    country: "",
-    zip: "",
-  });
-
+  const [shipping, setShipping] = useState({});
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  // Load order
+  /* ============================================================
+     TOTAL
+============================================================ */
+  const total = useMemo(() => {
+    return items.reduce(
+      (sum, item) => sum + Number(item.price) * Number(item.qty),
+      0
+    );
+  }, [items]);
+
+  /* ============================================================
+     FETCH STOCK FOR EACH ITEM
+============================================================ */
+  async function loadStockInfo(currentItems = items) {
+    const info = [];
+    const insufficientList = [];
+
+    for (let i = 0; i < currentItems.length; i++) {
+      const item = currentItems[i];
+      const ref = doc(db, "products_dynamic", item.productId);
+      const snap = await getDoc(ref);
+
+      if (!snap.exists()) {
+        info.push({ available: 0 });
+        insufficientList.push(i);
+        continue;
+      }
+
+      const product = snap.data();
+      const variants = product.variants || [];
+
+      const match = variants.find(
+        (v) =>
+          v.color?.toLowerCase() === item.variant.color?.toLowerCase() &&
+          (v.size?.toLowerCase() || "") ===
+            (item.variant.size?.toLowerCase() || "")
+      );
+
+      if (!match) {
+        info.push({ available: 0 });
+        insufficientList.push(i);
+        continue;
+      }
+
+      const available = match.quantity;
+      info.push({ available });
+
+      if (available < item.qty) insufficientList.push(i);
+    }
+
+    setStockInfo(info);
+    setInsufficient(insufficientList);
+
+    return info;
+  }
+
+  /* ============================================================
+     AUTO-ADJUST QTY TO MAX AVAILABLE
+============================================================ */
+  async function autoAdjustQty(index) {
+    const available = stockInfo[index]?.available ?? 0;
+    if (available <= 0) return;
+
+    const updated = [...items];
+    updated[index].qty = available;
+    setItems(updated);
+    await loadStockInfo(updated);
+  }
+
+  /* ============================================================
+     RESTOCK ITEM (ADMIN ACTION)
+============================================================ */
+  async function restockItem(index, amount = 1) {
+    const item = items[index];
+
+    const ref = doc(db, "products_dynamic", item.productId);
+    const snap = await getDoc(ref);
+    if (!snap.exists()) return;
+
+    const product = snap.data();
+
+    const updatedVariants = product.variants.map((v) => {
+      if (
+        v.color?.toLowerCase() === item.variant.color?.toLowerCase() &&
+        (v.size?.toLowerCase() || "") ===
+          (item.variant.size?.toLowerCase() || "")
+      ) {
+        return { ...v, quantity: Number(v.quantity) + Number(amount) };
+      }
+      return v;
+    });
+
+    await updateDoc(ref, { variants: updatedVariants });
+
+    await loadStockInfo(items);
+  }
+
+  /* ============================================================
+     LOAD ORDER
+============================================================ */
   useEffect(() => {
     const load = async () => {
       const snap = await getDoc(doc(db, "orders", id));
+
       if (!snap.exists()) return;
 
       const data = snap.data();
@@ -112,8 +210,8 @@ export default function OrderDetailsPage() {
       setPaymentMethod(data.paymentMethod || "COD");
       setTracking(data.trackingNumber || "");
       setNotes(data.notes || "");
+      setItems(data.items || []);
 
-      // Shipping = order.address
       setShipping({
         fullName: data.address?.fullName || "",
         phone: data.address?.phone || "",
@@ -121,26 +219,62 @@ export default function OrderDetailsPage() {
         city: data.address?.city || "",
         state: data.address?.state || "",
         country: data.address?.country || "",
-        zip: data.address?.zip || "",
+        zip: data.address?.zip || ""
       });
 
       setLoading(false);
+
+      await loadStockInfo(data.items || []);
     };
 
     load();
   }, [id]);
 
-  // Save changes
+  /* ============================================================
+     UPDATE QUANTITY
+============================================================ */
+  const updateQty = async (index, qty) => {
+    if (qty < 1) qty = 1;
+
+    const updated = [...items];
+    updated[index].qty = qty;
+
+    setItems(updated);
+    await loadStockInfo(updated);
+  };
+
+  /* ============================================================
+     REMOVE ITEM
+============================================================ */
+  const removeItem = async (index) => {
+    const updated = items.filter((_, i) => i !== index);
+    setItems(updated);
+    await loadStockInfo(updated);
+  };
+
+  /* ============================================================
+     SAVE ORDER
+============================================================ */
   const handleSave = async () => {
     setSaving(true);
     setError("");
     setSuccess("");
 
-    const mustDeduct = status === "Completed" && !order.stockDeducted;
+    // re-check stock
+    const info = await loadStockInfo();
 
-    if (mustDeduct) {
-      const result = await deductStockForOrder(order);
+    const wantsDeduction =
+      status.toLowerCase() === "shipped" ||
+      status.toLowerCase() === "completed";
 
+    if (wantsDeduction && insufficient.length > 0) {
+      setError(t("insufficientStockError"));
+      setSaving(false);
+      return;
+    }
+
+    if (wantsDeduction && !order.stockDeducted) {
+      const result = await deductStock({ ...order, items });
       if (!result.ok) {
         setError(result.error);
         setSaving(false);
@@ -151,11 +285,11 @@ export default function OrderDetailsPage() {
     try {
       const ref = doc(db, "orders", id);
 
-      const updatedActivity = {
-        message: "Order updated",
-        detail: `Status: ${order.status} → ${status}`,
+      const activity = {
+        message: t("activityUpdated"),
+        detail: `${order.status} → ${status}`,
         at: new Date(),
-        admin: "admin",
+        admin: "admin"
       };
 
       await updateDoc(ref, {
@@ -163,178 +297,211 @@ export default function OrderDetailsPage() {
         paymentMethod,
         trackingNumber: tracking,
         notes,
+        items,
+        total,
         address: shipping,
         updatedAt: new Date(),
-        stockDeducted: mustDeduct ? true : order.stockDeducted || false,
-        activities: [...(order.activities || []), updatedActivity],
+        stockDeducted:
+          wantsDeduction ? true : order.stockDeducted || false,
+        activities: [...(order.activities || []), activity]
       });
 
-      setSuccess("Order updated successfully!");
-      setTimeout(() => setSuccess(""), 1200);
+      setSuccess(t("saved"));
+      setTimeout(() => setSuccess(""), 1500);
+
     } catch (err) {
       console.error(err);
-      setError("Error updating order.");
+      setError(t("saveError"));
     }
 
     setSaving(false);
   };
 
-  if (loading) return <p>Loading…</p>;
-  if (!order) return <p className="text-red-500">Order not found</p>;
+  /* ============================================================
+     UI
+============================================================ */
+  if (loading) return <p>{t("loading")}...</p>;
+  if (!order) return <p className="text-red-500">{t("notFound")}</p>;
 
   return (
     <div className="space-y-6">
 
-      {/* Header */}
-      <div className="flex justify-between">
-        <h1 className="text-2xl font-semibold">Order Details</h1>
+      {/* ========================= CUSTOMER PANEL ========================= */}
+      <div className="bg-white shadow p-6 rounded-xl border space-y-4">
+        <h1 className="text-2xl font-bold">{t("title")}</h1>
 
-        <a
-          href={`/admin/orders/${id}/invoice`}
-          className="px-4 py-2 bg-neutral-900 text-white rounded hover:bg-gray-800"
-        >
-          Print Invoice
-        </a>
+        <div className="grid md:grid-cols-2 gap-6">
+          <div className="space-y-2">
+            <p><b>{t("customer")}:</b> {shipping.fullName}</p>
+            <p><b>{t("phone")}:</b> {shipping.phone}</p>
+            <p><b>{t("address")}:</b> {shipping.street}, {shipping.city}</p>
+            <p><b>{t("country")}:</b> {shipping.country}</p>
+          </div>
+
+          <div className="flex flex-col justify-center">
+            <a
+              href={`https://wa.me/${shipping.phone}?text=Hello ${shipping.fullName}, regarding your order #${id}`}
+              target="_blank"
+              className="px-5 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 text-center"
+            >
+              {t("whatsapp")}
+            </a>
+          </div>
+        </div>
       </div>
 
-      <div className="bg-white border rounded-xl shadow-card p-6 space-y-6">
 
-        {/* Notifications */}
+      {/* ========================= SUMMARY ========================= */}
+      <div className="bg-white shadow p-6 rounded-xl border space-y-4">
+
         {error && <p className="text-red-600">{error}</p>}
         {success && <p className="text-green-600">{success}</p>}
 
-        {/* Summary */}
-        <div>
-          <h2 className="text-lg font-semibold mb-2">Order Summary</h2>
-          <p><b>Order ID:</b> {id}</p>
-          <p><b>Customer:</b> {shipping.fullName}</p>
-          <p><b>Total:</b> ${order.total}</p>
-          <p><b>Status:</b> <StatusBadge status={order.status} /></p>
-          <p><b>Payment Method:</b> {order.paymentMethod}</p>
-        </div>
+        <h2 className="text-xl font-semibold">{t("summary")}</h2>
+        <p><b>{t("orderId")}:</b> {id}</p>
+        <p><b>{t("total")}:</b> ${total}</p>
 
-        {/* Timeline */}
         <OrderTimeline status={status} />
 
-        {/* Order Status */}
         <div>
-          <label className="font-medium">Order Status</label>
+          <label>{t("status")}</label>
           <select
             value={status}
             onChange={(e) => setStatus(e.target.value)}
-            className="w-full border px-4 py-2 rounded mt-1"
+            className="w-full border rounded px-4 py-2 mt-1"
           >
-            <option>pending</option>
-            <option>paid</option>
-            <option>shipped</option>
-            <option>completed</option>
-            <option>cancelled</option>
+            <option value="pending">{t("st_pending")}</option>
+            <option value="paid">{t("st_paid")}</option>
+            <option value="shipped">{t("st_shipped")}</option>
+            <option value="completed">{t("st_completed")}</option>
+            <option value="cancelled">{t("st_cancelled")}</option>
           </select>
         </div>
 
-        {/* Payment Method */}
         <div>
-          <label className="font-medium">Payment Method</label>
+          <label>{t("payment")}</label>
           <select
             value={paymentMethod}
             onChange={(e) => setPaymentMethod(e.target.value)}
-            className="w-full border px-4 py-2 rounded mt-1"
+            className="w-full border rounded px-4 py-2 mt-1"
           >
-            <option value="COD">Cash on Delivery</option>
-            <option value="Card">Card</option>
+            <option value="COD">{t("pay_cod")}</option>
+            <option value="Card">{t("pay_card")}</option>
           </select>
         </div>
 
-        {/* Tracking */}
         <div>
-          <label className="font-medium">Tracking Number</label>
+          <label>{t("tracking")}</label>
           <input
             value={tracking}
             onChange={(e) => setTracking(e.target.value)}
-            className="w-full border px-4 py-2 rounded mt-1"
+            className="w-full border rounded px-4 py-2 mt-1"
           />
           <TrackingLinks tracking={tracking} />
         </div>
 
-        {/* Notes */}
         <div>
-          <label className="font-medium">Admin Notes</label>
+          <label>{t("notes")}</label>
           <textarea
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
-            className="w-full border px-4 py-2 rounded mt-1 h-20"
+            className="w-full border rounded px-4 py-2 mt-1 h-20"
           />
         </div>
-
-        {/* Shipping */}
-        <div>
-          <h3 className="text-lg font-semibold mb-2">Shipping Info</h3>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {Object.keys(shipping).map((field) => (
-              <div key={field}>
-                <label className="font-medium capitalize">{field}</label>
-                <input
-                  value={shipping[field]}
-                  onChange={(e) =>
-                    setShipping({ ...shipping, [field]: e.target.value })
-                  }
-                  className="w-full border px-3 py-2 rounded mt-1"
-                />
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Items */}
-        <div>
-          <h3 className="text-lg font-semibold mb-2">Items</h3>
-          <div className="bg-gray-50 p-4 rounded border space-y-4">
-            {order.items.map((item, i) => (
-              <div key={i} className="border-b pb-3">
-                <p className="font-medium">{item.title}</p>
-                <p className="text-sm text-gray-700">
-                  Color: {item.variant.color}
-                </p>
-                <p>Qty: {item.qty}</p>
-                <p>${item.price} each</p>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Activity Log */}
-        <div>
-          <h3 className="text-lg font-semibold mb-2">Activity Log</h3>
-
-          <div className="bg-gray-50 border rounded p-4 space-y-2">
-            {order.activities?.length ? (
-              order.activities.map((a, i) => (
-                <div key={i} className="text-sm">
-                  <p className="font-semibold">{a.message}</p>
-                  <p className="text-gray-700">{a.detail}</p>
-                  <p className="text-gray-600 text-xs">
-                    {a.at?.seconds
-                      ? new Date(a.at.seconds * 1000).toLocaleString()
-                      : new Date(a.at).toLocaleString()}
-                  </p>
-                </div>
-              ))
-            ) : (
-              <p className="text-gray-500 text-sm">No activity yet.</p>
-            )}
-          </div>
-        </div>
-
-        {/* Save Button */}
-        <button
-          onClick={handleSave}
-          className="w-full mt-4 py-2 bg-neutral-900 text-white rounded hover:bg-gray-800"
-        >
-          {saving ? "Saving…" : "Save Changes"}
-        </button>
-
       </div>
+
+
+      {/* ========================= ITEMS ========================= */}
+      <div className="bg-white shadow p-6 rounded-xl border space-y-4">
+        <h2 className="text-xl font-semibold">{t("items")}</h2>
+
+        {insufficient.length > 0 && (
+          <div className="bg-red-100 text-red-700 border border-red-400 px-4 py-3 rounded">
+            {t("insufficientWarning")}
+          </div>
+        )}
+
+        {items.map((item, index) => {
+          const stock = stockInfo[index]?.available ?? 0;
+          const low = insufficient.includes(index);
+
+          return (
+            <div
+              key={index}
+              className={`border p-4 rounded-lg space-y-2 ${
+                low ? "border-red-500 bg-red-50" : "border-gray-300 bg-gray-50"
+              }`}
+            >
+              <p className="font-bold">{item.title}</p>
+              <p className="text-gray-700">
+                {t("color")}: {item.variant.color}
+                {item.variant.size && <> | {t("size")}: {item.variant.size}</>}
+              </p>
+
+              {/* LIVE STOCK */}
+              <p className="text-sm">
+                <b>{t("stock")}:</b>{" "}
+                {stock > 0 ? (
+                  <span className="text-green-600">{stock} {t("available")}</span>
+                ) : (
+                  <span className="text-red-600">{t("outOfStock")}</span>
+                )}
+              </p>
+
+              {/* QTY EDIT */}
+              <div className="flex items-center gap-3 mt-2">
+                <label>{t("qty")}</label>
+
+                <input
+                  type="number"
+                  min="1"
+                  value={item.qty}
+                  onChange={(e) => updateQty(index, Number(e.target.value))}
+                  className="w-20 border rounded px-2 py-1"
+                />
+
+                {/* AUTO-ADJUST */}
+                {low && stock > 0 && (
+                  <button
+                    onClick={() => autoAdjustQty(index)}
+                    className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
+                  >
+                    {t("adjust")}
+                  </button>
+                )}
+
+                {/* RESTOCK */}
+                <button
+                  onClick={() => restockItem(index, 1)}
+                  className="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600"
+                >
+                  {t("restock")}
+                </button>
+
+                {/* REMOVE ITEM */}
+                <button
+                  onClick={() => removeItem(index)}
+                  className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
+                >
+                  {t("removeItem")}
+                </button>
+              </div>
+
+              <p className="font-semibold">
+                {t("subtotal")}: ${item.qty * item.price}
+              </p>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* SAVE BUTTON */}
+      <button
+        onClick={handleSave}
+        className="w-full py-3 bg-neutral-900 text-white rounded-lg text-lg hover:bg-gray-800"
+      >
+        {saving ? t("saving") : t("save")}
+      </button>
     </div>
   );
 }
