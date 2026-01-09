@@ -114,7 +114,7 @@ export default function Navigation() {
     <nav className="relative w-full flex justify-end lg:block">
       {/* MOBILE MENU BUTTON */}
       <button
-        className="max-lg:inline-flex hidden p-2 rounded-md text-white hover:bg-gray-100"
+        className="max-lg:inline-flex items-center justify-center hidden p-2 h-12 w-12 bg-white text-neutral-900 rounded-full"
         onClick={toggleMenu}
       >
         <HiMenu className="w-6 h-6" />
@@ -159,65 +159,71 @@ export default function Navigation() {
         }}
       >
         {/* HEADER (mobile only) */}
-        <div className="max-lg:flex hidden items-center justify-between w-full px-2 mb-4">
+        <div className="max-lg:flex hidden items-center justify-between w-full py-4">
           <span className="text-lg font-semibold">{t("menu")}</span>
 
           <button
-            className="p-2 text-gray-600 hover:text-gray-800"
+            className="p-2 bg-neutral-800 text-white h-8 w-8 rounded-full"
             onClick={toggleMenu}
           >
-            <HiX className="w-7 h-7" />
+            <HiX className="w-4 h-4" />
           </button>
         </div>
 
         {/* NAV LINKS */}
-        <li className="py-3 max-lg:w-full border-b max-lg:border-gray-200 lg:border-none">
-          <Link locale={locale} href="/women" className="">
+        <li className="py-4 lg:py-3 max-lg:w-full border-b max-lg:border-gray-200 lg:border-none">
+          <Link locale={locale} href="/women" className="lg:underline">
             {t("women_bags")}
           </Link>
         </li>
 
-        <li className="py-3 border-b max-lg:border-gray-200 lg:border-none">
-          <Link locale={locale} href="/style-insights" className="">
-            {t("styleInsights")}
-          </Link>
-        </li>
-
-        <li className="py-3 border-b max-lg:border-gray-200 lg:border-none">
-          <Link locale={locale} href="/packing" className="">
+        <li className="py-4 lg:py-3 border-b max-lg:border-gray-200 lg:border-none">
+          <Link locale={locale} href="/packing" className="lg:underline">
             {t("gifts")}
           </Link>
         </li>
 
+        <li className="py-4 lg:py-3 border-b max-lg:border-gray-200 lg:border-none">
+          <Link locale={locale} href="/style-insights" className="lg:underline">
+            {t("styleInsights")}
+          </Link>
+        </li>
+
         {/* MOBILE ICON MENU */}
-        <div className="max-lg:flex max-lg:flex-col max-lg:gap-4 hidden mt-4">
+
+        <li className="py-4 lg:py-3 border-b max-lg:border-gray-200 lg:border-none lg:hidden">
           <Link
             locale={locale}
             href="/cart"
-            className="flex items-center gap-3  py-3 border-b border-t"
+            className="flex items-center gap-3"
           >
             <HiOutlineShoppingCart className="w-6 h-6" />
             <span>{t("cart")}</span>
           </Link>
+        </li>
+        
 
+        <li className="py-4 lg:py-3 border-b max-lg:border-gray-200 lg:border-none lg:hidden">
           <Link
             locale={locale}
             href="/customer/wishlist"
-            className="flex items-center gap-3  py-3 border-b"
+            className="flex items-center gap-3"
           >
             <HiOutlineHeart className="w-6 h-6" />
             <span>{t("wishlist")}</span>
           </Link>
+        </li>
 
+        <li className="py-4 lg:py-3 max-lg:border-gray-200 lg:border-none lg:hidden">
           <Link
             locale={locale}
             href="/customer"
-            className="flex items-center gap-3  py-3 border-b"
+            className="flex items-center"
           >
             <HiOutlineUser className="w-6 h-6" />
             <span>{t("my_account")}</span>
           </Link>
-        </div>
+        </li>
       </ul>
     </nav>
   );

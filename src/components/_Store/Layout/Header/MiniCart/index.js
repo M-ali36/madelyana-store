@@ -133,7 +133,7 @@ export default function MiniCart() {
         {cart.length > 0 ? (
           <>
           <IoBagHandle className="w-5 h-5 fill-emerald-500" />
-          <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-75"></span>
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-75"></span>
           </>
         ) : (
           <IoBagHandleOutline className="w-5 h-5" />
@@ -167,7 +167,7 @@ export default function MiniCart() {
                     : `translateX(-${drawerWidth}px)`,
               }}
             >
-              <div className="flex flex-column h-full">
+              <div className="flex flex-col h-full">
                 {/* HEADER */}
                 <div className="flex justify-between items-center mb-4 px-4">
                   <h2 className="text-base font-semibold">{t("yourCart")}</h2>
