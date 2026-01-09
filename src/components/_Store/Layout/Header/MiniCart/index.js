@@ -9,6 +9,8 @@ import useCurrency from "@/components/hooks/useCurrency";
 import { useLocale, useTranslations } from "next-intl";
 import { createPortal } from "react-dom";
 import gsap from "gsap";
+import { HiMinus, HiPlus } from "react-icons/hi2";
+import { HiX } from "react-icons/hi";
 
 export default function MiniCart() {
   const { cart, setCart, navState, setNavState } = useAppContext();
@@ -18,13 +20,13 @@ export default function MiniCart() {
   const dir = locale === "ar" ? "rtl" : "ltr";
 
   // -----------------------------------------------------
-  // HYDRATION
+  // Hydration
   // -----------------------------------------------------
   const [hydrated, setHydrated] = useState(false);
   useEffect(() => setHydrated(true), []);
 
   // -----------------------------------------------------
-  // DESKTOP ONLY
+  // Desktop only
   // -----------------------------------------------------
   const [isDesktop, setIsDesktop] = useState(false);
   useEffect(() => {
@@ -39,7 +41,7 @@ export default function MiniCart() {
   const toggleCart = () => setNavState(isOpen ? "" : "cart");
 
   // -----------------------------------------------------
-  // CART LOGIC
+  // Cart Logic
   // -----------------------------------------------------
   const removeItem = (variantId) => {
     setCart(cart.filter((item) => item.variantId !== variantId));
@@ -61,14 +63,11 @@ export default function MiniCart() {
   const subtotal = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
 
   // -----------------------------------------------------
-  // DRAWER REFS
+  // Drawer Refs
   // -----------------------------------------------------
   const drawerRef = useRef(null);
   const overlayRef = useRef(null);
 
-  // -----------------------------------------------------
-  // MEASURE DRAWER WIDTH ONCE (NO FORCED REFLOW DURING ANIM)
-  // -----------------------------------------------------
   const [drawerWidth, setDrawerWidth] = useState(420);
 
   useEffect(() => {
@@ -78,11 +77,10 @@ export default function MiniCart() {
   }, [hydrated]);
 
   // -----------------------------------------------------
-  // GSAP ANIMATION — SAFE + CLEAN + MATCHING ALL DRAWERS
+  // GSAP drawer animation
   // -----------------------------------------------------
   useEffect(() => {
     if (!hydrated || !isDesktop) return;
-    if (!drawerRef.current || !overlayRef.current) return;
 
     const ctx = gsap.context(() => {
       const drawer = drawerRef.current;
@@ -93,9 +91,8 @@ export default function MiniCart() {
       if (isOpen) {
         gsap.to(overlay, {
           autoAlpha: 1,
-          backdropFilter: "blur(6px)",
-          duration: 0.3,
-          ease: "power2.out",
+          backdropFilter: "blur(8px)",
+          duration: 0.35,
         });
 
         gsap.to(drawer, {
@@ -107,7 +104,7 @@ export default function MiniCart() {
         gsap.to(drawer, {
           x: offX,
           duration: 0.45,
-          ease: "power3.inOut",
+          ease: "power2.inOut",
         });
 
         gsap.to(overlay, {
@@ -121,9 +118,6 @@ export default function MiniCart() {
     return () => ctx.revert();
   }, [isOpen, hydrated, isDesktop, drawerWidth, dir]);
 
-  // -----------------------------------------------------
-  // DO NOT RENDER UNTIL HYDRATED
-  // -----------------------------------------------------
   if (!hydrated) return null;
 
   // -----------------------------------------------------
@@ -132,20 +126,24 @@ export default function MiniCart() {
   return (
     <div className="relative hidden lg:block">
       {/* ICON */}
-      <button className="header-control icons-hover primary-anime" onClick={toggleCart} aria-label="My Cart">
-
-        {cart.length > 0 ?
-          <IoBagHandle className="w-5 h-5 -mt-[2px] fill-emerald-500" />
-          :
-          <IoBagHandleOutline className="w-5 h-5 -mt-[2px]" />
-        }
+      <button
+        className="header-control icons-hover primary-anime relative"
+        onClick={toggleCart}
+      >
+        {cart.length > 0 ? (
+          <>
+          <IoBagHandle className="w-5 h-5 fill-emerald-500" />
+          <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-75"></span>
+          </>
+        ) : (
+          <IoBagHandleOutline className="w-5 h-5" />
+        )}
       </button>
 
-      {/* DRAWER PORTAL */}
+      {/* PORTAL */}
       {isDesktop &&
         createPortal(
           <>
-            {/* OVERLAY */}
             <div
               ref={overlayRef}
               onClick={toggleCart}
@@ -153,12 +151,13 @@ export default function MiniCart() {
               style={{ visibility: "hidden" }}
             />
 
-            {/* DRAWER */}
+            {/* DRAWER — minimal, flat style */}
             <div
               ref={drawerRef}
               className={`
-                fixed top-0 h-full bg-white shadow-2xl z-50 p-4 overflow-y-auto
+                fixed top-0 h-full bg-white z-50
                 ${dir === "rtl" ? "right-0" : "left-0"}
+                 pt-4 pb-4 shadow-xl
               `}
               style={{
                 width: "420px",
@@ -168,106 +167,120 @@ export default function MiniCart() {
                     : `translateX(-${drawerWidth}px)`,
               }}
             >
-              {/* HEADER */}
-              <div className="p-4 flex justify-between items-center border-b">
-                <h2 className="text-lg font-semibold">{t("yourCart")}</h2>
-                <button onClick={toggleCart} className="text-gray-500 text-xl">
-                  ✕
-                </button>
-              </div>
+              <div className="flex flex-column h-full">
+                {/* HEADER */}
+                <div className="flex justify-between items-center mb-4 px-4">
+                  <h2 className="text-base font-semibold">{t("yourCart")}</h2>
+                  <button onClick={toggleCart} className="text-xl text-white h-6 w-6 rounded-full bg-neutral-900 cursor-pointer flex items-center justify-center">
+                    <HiX className="h-3 w-3"/>
+                  </button>
+                </div>
 
-              {/* ITEMS */}
-              <div className="p-4 space-y-4 overflow-y-auto max-h-[70vh]">
-                {cart.length === 0 && (
-                  <p className="text-gray-500 text-center">{t("empty")}</p>
-                )}
+                {/* ITEM LIST */}
+                <div className="space-y-6 overflow-y-auto flex-1 p-6 border-y border-slate-300 rounded">
+                  {cart.length === 0 && (
+                    <p className="text-gray-500 text-center">{t("empty")}</p>
+                  )}
 
-                {cart.map((item) => (
-                  <div
-                    key={item.variantId}
-                    className="flex items-start gap-4 border-b pb-3"
-                  >
-                    <Image
-                      src={item.image}
-                      width={64}
-                      height={64}
-                      alt={item.title}
-                      className="rounded-md"
-                    />
+                  {cart.map((item) => (
+                    <div
+                      key={item.variantId}
+                      className="flex items-center justify-between pb-5 border-b border-slate-300 last:border-0"
+                    >
+                      {/* LEFT: Image */}
+                      <Image
+                        src={item.image}
+                        width={72}
+                        height={72}
+                        alt={item.title}
+                        className="rounded-lg"
+                      />
 
-                    <div className="flex-1">
-                      <h3 className="text-sm font-medium">{item.title}</h3>
-
-                      {/* PRICE */}
-                      <p className="text-gray-600 text-xs mt-1">
-                        {format(item.price)} {t("perOne")}
-                      </p>
-
-                      {/* QTY */}
-                      <div className="flex items-center gap-2 mt-2">
+                      {/* MIDDLE */}
+                      <div className="flex-1 mx-4">
+                        <h3 className="text-sm font-semibold">{item.title}</h3>
+                        <p className="text-base text-gray-500 mt-1">
+                          {format(item.price)}
+                        </p>
                         <button
-                          className="border px-2 rounded"
-                          onClick={() => changeQty(item.variantId, -1)}
+                          onClick={() => removeItem(item.variantId)}
+                          className="text-xs text-red-500"
                         >
-                          -
+                          {t("remove")}
                         </button>
 
-                        <span>{item.qty}</span>
-
-                        <button
-                          className={`border px-2 rounded ${
-                            item.qty >= item.maxQty
-                              ? "opacity-50 cursor-not-allowed"
-                              : ""
-                          }`}
-                          onClick={() => {
-                            if (item.qty < item.maxQty) {
-                              changeQty(item.variantId, 1);
-                            }
-                          }}
-                        >
-                          +
-                        </button>
+                        {/* QTY */}
                       </div>
+                        <div className="flex items-center gap-3 mt-2">
+                          <span className="text-3xl me-2 font-sans font-thin">{item.qty} ×</span>
+                          <div className="block">
+                            <button
+                              disabled={item.qty >= item.maxQty}
+                              onClick={() =>
+                                item.qty < item.maxQty &&
+                                changeQty(item.variantId, 1)
+                              }
+                              className={`w-8 h-8 mb-2 flex items-center justify-center rounded cursor-pointer border border-neutral-900 bg-white text-neutral-900 hover:text-white hover:bg-neutral-900 
+                                ${
+                                  item.qty >= item.maxQty
+                                    ? "cursor-not-allowed"
+                                    : ""
+                                }
+                              `}
+                            >
+                              <HiPlus />
+                            </button>
+                            <button
+                              onClick={() => changeQty(item.variantId, -1)}
+                              className="w-8 h-8 flex items-center justify-center rounded cursor-pointer border border-neutral-900 bg-white text-neutral-900 hover:text-white hover:bg-neutral-900"
+                            >
+                              <HiMinus />
+                            </button>
+
+                          </div>
+                        </div>
+                      
+                    </div>
+                  ))}
+                </div>
+
+                {/* FOOTER */}
+                {cart.length > 0 && (
+                  <div className="px-4 mt-6">
+                    <div className="flex justify-between mb-4">
+                      <span className="text-sm text-gray-500">{t("subtotal")}</span>
+                      <span className="text-lg font-semibold">
+                        {format(subtotal)}
+                      </span>
                     </div>
 
-                    <button
-                      className="text-red-500 text-sm"
-                      onClick={() => removeItem(item.variantId)}
+                    <Link
+                      href="/checkout"
+                      locale={locale}
+                      onClick={() => setNavState("")}
+                      className="
+                        block w-full text-center py-3 rounded-full border border-neutral-900
+                        bg-neutral-900 text-white font-semibold hover:bg-neutral-700
+                        transition mb-4
+                      "
                     >
-                      {t("remove")}
-                    </button>
+                      {t("checkout")}
+                    </Link>
+                    <Link
+                      href="/cart"
+                      locale={locale}
+                      onClick={() => setNavState("")}
+                      className="
+                        block w-full text-center py-3 rounded-full  border border-neutral-900
+                        bg-white text-neutral-900 font-semibold hover:text-neutral-700
+                        transition
+                      "
+                    >
+                      {t("viewCart")}
+                    </Link>
                   </div>
-                ))}
+                )}
               </div>
-
-              {/* FOOTER */}
-              {cart.length > 0 && (
-                <div className="p-4 border-t space-y-3">
-                  <div className="flex justify-between mb-3">
-                    <span className="font-semibold">{t("subtotal")}:</span>
-                    <span className="font-semibold">{format(subtotal)}</span>
-                  </div>
-
-                  <Link
-                    href="/cart"
-                    locale={locale}
-                    onClick={() => setNavState("")}
-                    className="block w-full py-2 text-center bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200"
-                  >
-                    {t("viewCart")}
-                  </Link>
-
-                  <Link
-                    href="/checkout"
-                    locale={locale}
-                    onClick={() => setNavState("")}
-                    className="block w-full py-2 text-center bg-primary text-neutral-900 rounded-md hover:bg-primary-dark"
-                  >
-                    {t("checkout")}
-                  </Link>
-                </div>
-              )}
             </div>
           </>,
           document.getElementById("ui-layer")

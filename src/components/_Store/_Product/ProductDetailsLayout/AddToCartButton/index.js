@@ -40,8 +40,8 @@ export default function AddToCartButton({
       className={`
         w-full py-3 rounded-lg border border-black text-white bg-neutral-900
         transition-all duration-200 cursor-pointer
-        disabled:bg-gray-400 disabled:text-gray-700
-        hover:bg-white hover:text-neutral-900
+        disabled:bg-neutral-400 disabled:text-neutral-700
+        hover:bg-neutral-700
       `}
     >
       {label}
