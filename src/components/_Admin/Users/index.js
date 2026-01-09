@@ -1,9 +1,10 @@
-// /components/_Admin/Users/index.js
-
+// /components/_Admin/Users/index.tsx
 "use client";
 
 import React from "react";
+import { useTranslations } from "next-intl";
 
+// Hooks
 import useUsers from "./Hooks/useUsers";
 import usePagination from "./Hooks/usePagination";
 import useSearch from "./Hooks/useSearch";
@@ -27,6 +28,8 @@ import BulkBanModal from "./Modals/BulkBanModal";
 import BulkPasswordResetModal from "./Modals/BulkPasswordResetModal";
 
 export default function UsersPage() {
+  const t = useTranslations("admin.users");
+
   /** -------------------------------
    * Hooks
    * ------------------------------- */
@@ -40,6 +43,7 @@ export default function UsersPage() {
   } = useUsers(10);
 
   const { page, nextPage, prevPage, resetPagination } = usePagination();
+
   const { input, setInput, clearSearch } = useSearch((q) => {
     runSearch(q);
     resetPagination();
@@ -57,8 +61,6 @@ export default function UsersPage() {
   const {
     modal,
     modalData,
-    openModal,
-    closeModal,
     openAddUser,
     openEditUser,
     openUserDetails,
@@ -66,36 +68,46 @@ export default function UsersPage() {
     openBulkDelete,
     openBulkBan,
     openBulkPasswordReset,
+    closeModal,
   } = useModals();
 
   /** -------------------------------
-   * UI Rendering
+   * UI
    * ------------------------------- */
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-semibold mb-4">Users Management</h1>
-
-      {/* ACTION BAR */}
-      <div className="flex items-center justify-between">
-        {/* Search */}
-        <div className="flex-1">
-          <SearchBar
-            searchValue={input}
-            setSearchValue={setInput}
-            clearSearch={clearSearch}
-          />
+    <section className="space-y-6">
+      {/* HEADER */}
+      <header className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-2xl font-semibold text-gray-900">
+            {t("title")}
+          </h1>
+          <p className="text-sm text-gray-500">
+            {t("subtitle")}
+          </p>
         </div>
 
-        {/* Add User */}
         <button
           onClick={openAddUser}
-          className="ml-4 px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 text-sm"
+          className="inline-flex items-center justify-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
-          + Add User
+          {t("actions.add")}
         </button>
+      </header>
+
+      {/* TOOLBAR */}
+      <div className="flex flex-col gap-4 rounded-xl border border-gray-200 bg-white p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+        <SearchBar
+          searchValue={input}
+          setSearchValue={setInput}
+          clearSearch={clearSearch}
+          placeholder={t("search")}
+        />
+
+        <ExportButton users={users} />
       </div>
 
-      {/* Bulk Actions */}
+      {/* BULK ACTIONS */}
       {selected.length > 0 && (
         <BulkActions
           selected={selected}
@@ -103,34 +115,36 @@ export default function UsersPage() {
           openBulkDelete={openBulkDelete}
           openBulkBan={openBulkBan}
           openBulkPasswordReset={openBulkPasswordReset}
+          clearSelection={clearSelection}
         />
       )}
 
-      {/* Users Table */}
-      <UsersTable
-        users={users}
-        loading={loading}
-        isSelected={isSelected}
-        toggleUser={toggleUser}
-        allSelected={allSelected}
-        selectAll={selectAll}
-        openEditUser={openEditUser}
-        openDeleteUser={openDeleteUser}
-        openUserDetails={openUserDetails}
-        openBulkPasswordReset={openBulkPasswordReset}
-        banUser={(uid, status) => openBulkBan({ users: [{ id: uid }], ban: status })}
-      />
+      {/* TABLE */}
+      <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm ">
+        <UsersTable
+          users={users}
+          loading={loading}
+          isSelected={isSelected}
+          toggleUser={toggleUser}
+          allSelected={allSelected}
+          selectAll={selectAll}
+          openEditUser={openEditUser}
+          openDeleteUser={openDeleteUser}
+          openUserDetails={openUserDetails}
+          openBulkPasswordReset={openBulkPasswordReset}
+          banUser={(uid, status) =>
+            openBulkBan({ users: [{ id: uid }], ban: status })
+          }
+        />
+      </div>
 
-      {/* Pagination */}
+      {/* PAGINATION */}
       <Pagination
         page={page}
         hasMore={hasMore}
         nextPage={() => nextPage(loadMoreUsers)}
         prevPage={prevPage}
       />
-
-      {/* Export All */}
-      <ExportButton users={users} />
 
       {/* MODALS */}
       <AddUserModal
@@ -179,6 +193,6 @@ export default function UsersPage() {
         closeModal={closeModal}
         users={modalData}
       />
-    </div>
+    </section>
   );
 }

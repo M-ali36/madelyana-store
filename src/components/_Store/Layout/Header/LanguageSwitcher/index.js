@@ -6,8 +6,7 @@ export default function LanguageSwitcher({ locale }) {
   const pathname = usePathname();
   const router = useRouter();
 
-  const handleChange = (e) => {
-    const newLocale = e.target.value;
+  const handleChange = (newLocale) => {
 
     // Remove "/ar" prefix when switching to English
     let newPath = pathname.replace(/^\/ar/, "");
@@ -21,13 +20,14 @@ export default function LanguageSwitcher({ locale }) {
   };
 
   return (
-    <select
-      value={locale}
-      onChange={handleChange}
-      className="rounded-md px-3 py-1 text-sm bg-neutral-900 border-white text-white border cursor-pointer"
-    >
-      <option value="en">English</option>
-      <option value="ar">العربية</option>
-    </select>
+    <>
+    <button aria-label="" className="header-control icons-hover primary-anime" onClick={() =>
+      handleChange(locale === "ar" ? "en" : "ar")
+    }>
+      <span className="h-5 w-5 ltr:leading-[14px]">
+        {locale === "ar" ? "En" : "ع"}
+      </span>
+    </button>
+    </>
   );
 }

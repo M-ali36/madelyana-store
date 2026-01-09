@@ -114,7 +114,7 @@ export default function Navigation() {
     <nav className="relative w-full flex justify-end lg:block">
       {/* MOBILE MENU BUTTON */}
       <button
-        className="max-lg:inline-flex hidden p-2 rounded-md text-gray-700 hover:bg-gray-100"
+        className="max-lg:inline-flex hidden p-2 rounded-md text-white hover:bg-gray-100"
         onClick={toggleMenu}
       >
         <HiMenu className="w-6 h-6" />
@@ -144,7 +144,8 @@ export default function Navigation() {
           max-lg:flex-col max-lg:fixed max-lg:top-0 max-lg:h-full
           max-lg:bg-white max-lg:shadow-2xl max-lg:overflow-y-auto
           max-lg:z-50 max-lg:block
-          max-lg:w-64
+          max-lg:w-64 max-lg:text-neutral-900
+
 
           ${dir === "rtl" ? "max-lg:right-0" : "max-lg:left-0"}
         `}
@@ -171,19 +172,19 @@ export default function Navigation() {
 
         {/* NAV LINKS */}
         <li className="py-3 max-lg:w-full border-b max-lg:border-gray-200 lg:border-none">
-          <Link locale={locale} href="/women" className="text-gray-900">
+          <Link locale={locale} href="/women" className="">
             {t("women_bags")}
           </Link>
         </li>
 
         <li className="py-3 border-b max-lg:border-gray-200 lg:border-none">
-          <Link locale={locale} href="/style-insights" className="text-gray-900">
+          <Link locale={locale} href="/style-insights" className="">
             {t("styleInsights")}
           </Link>
         </li>
 
         <li className="py-3 border-b max-lg:border-gray-200 lg:border-none">
-          <Link locale={locale} href="/packing" className="text-gray-900">
+          <Link locale={locale} href="/packing" className="">
             {t("gifts")}
           </Link>
         </li>
@@ -193,7 +194,7 @@ export default function Navigation() {
           <Link
             locale={locale}
             href="/cart"
-            className="flex items-center gap-3 text-gray-900 py-3 border-b border-t"
+            className="flex items-center gap-3  py-3 border-b border-t"
           >
             <HiOutlineShoppingCart className="w-6 h-6" />
             <span>{t("cart")}</span>
@@ -202,7 +203,7 @@ export default function Navigation() {
           <Link
             locale={locale}
             href="/customer/wishlist"
-            className="flex items-center gap-3 text-gray-900 py-3 border-b"
+            className="flex items-center gap-3  py-3 border-b"
           >
             <HiOutlineHeart className="w-6 h-6" />
             <span>{t("wishlist")}</span>
@@ -211,7 +212,7 @@ export default function Navigation() {
           <Link
             locale={locale}
             href="/customer"
-            className="flex items-center gap-3 text-gray-900 py-3 border-b"
+            className="flex items-center gap-3  py-3 border-b"
           >
             <HiOutlineUser className="w-6 h-6" />
             <span>{t("my_account")}</span>

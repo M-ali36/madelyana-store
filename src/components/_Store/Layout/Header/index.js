@@ -6,6 +6,8 @@ import MiniAccount from './Customer';
 import { getTranslations } from "next-intl/server";
 import HeaderLogo from './HeaderLogo';  // <-- NEW IMPORT
 import TopHeader from './TopHeader';
+import HeaderWrapper from './HeaderWapper';
+import LanguageSwitcher from './LanguageSwitcher';
 
 export default async function Header({ locale }) {
 
@@ -15,9 +17,7 @@ export default async function Header({ locale }) {
     const isHome = false; // placeholder
 
     return (
-        <header className="fixed top-0 left-0 w-full z-50 bg-white shadow">
-            { /* top header */ }
-            <TopHeader  locale={locale} />
+        <HeaderWrapper>
             { /* main header */ }
             <div className="cont">
                 <div className="grid grid-cols-12 items-center py-2">
@@ -33,10 +33,10 @@ export default async function Header({ locale }) {
                         <MiniCart />
                         <MiniWishlist />
                         <MiniAccount />
-                        
+                        <LanguageSwitcher locale={locale}/>
                     </div>
                 </div>
             </div>
-        </header>
+        </HeaderWrapper>
     );
 };

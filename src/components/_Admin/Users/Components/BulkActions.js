@@ -1,8 +1,7 @@
-// /components/_Admin/Users/Components/BulkActions.js
-
 "use client";
 
 import React from "react";
+import { useTranslations } from "next-intl";
 import exportToCsv from "../Tools/exportToCsv";
 
 /**
@@ -22,74 +21,82 @@ export default function BulkActions({
   openBulkBan,
   openBulkPasswordReset,
 }) {
+  const t = useTranslations("admin.users.bulkActions");
+
   const selectedUsers = users.filter((u) => selected.includes(u.id));
   const disabled = selected.length === 0;
 
   return (
-    <div className="flex items-center gap-3 mt-4">
+    <div className="mt-4 flex items-center gap-3">
       {/* Delete */}
       <button
         disabled={disabled}
         onClick={() => openBulkDelete(selectedUsers)}
-        className={`px-4 py-2 rounded-md text-sm border ${
+        className={`rounded-md border px-4 py-2 text-sm ${
           disabled
-            ? "cursor-not-allowed text-gray-400 border-gray-300"
-            : "text-red-600 border-red-400 hover:bg-red-50"
+            ? "cursor-not-allowed border-gray-300 text-gray-400"
+            : "border-red-400 text-red-600 hover:bg-red-50"
         }`}
       >
-        Bulk Delete
+        {t("delete")}
       </button>
 
       {/* Ban */}
       <button
         disabled={disabled}
         onClick={() => openBulkBan({ users: selectedUsers, ban: true })}
-        className={`px-4 py-2 rounded-md text-sm border ${
+        className={`rounded-md border px-4 py-2 text-sm ${
           disabled
-            ? "cursor-not-allowed text-gray-400 border-gray-300"
-            : "text-orange-600 border-orange-400 hover:bg-orange-50"
+            ? "cursor-not-allowed border-gray-300 text-gray-400"
+            : "border-orange-400 text-orange-600 hover:bg-orange-50"
         }`}
       >
-        Bulk Ban
+        {t("ban")}
       </button>
 
       {/* Unban */}
       <button
         disabled={disabled}
         onClick={() => openBulkBan({ users: selectedUsers, ban: false })}
-        className={`px-4 py-2 rounded-md text-sm border ${
+        className={`rounded-md border px-4 py-2 text-sm ${
           disabled
-            ? "cursor-not-allowed text-gray-400 border-gray-300"
-            : "text-green-600 border-green-400 hover:bg-green-50"
+            ? "cursor-not-allowed border-gray-300 text-gray-400"
+            : "border-green-400 text-green-600 hover:bg-green-50"
         }`}
       >
-        Bulk Unban
+        {t("unban")}
       </button>
 
       {/* Password Reset */}
       <button
         disabled={disabled}
         onClick={() => openBulkPasswordReset(selectedUsers)}
-        className={`px-4 py-2 rounded-md text-sm border ${
+        className={`rounded-md border px-4 py-2 text-sm ${
           disabled
-            ? "cursor-not-allowed text-gray-400 border-gray-300"
-            : "text-purple-600 border-purple-400 hover:bg-purple-50"
+            ? "cursor-not-allowed border-gray-300 text-gray-400"
+            : "border-purple-400 text-purple-600 hover:bg-purple-50"
         }`}
       >
-        Bulk Reset
+        {t("reset")}
       </button>
 
       {/* Export CSV */}
       <button
         disabled={disabled}
-        onClick={() => exportToCsv(selectedUsers, "selected_users.csv")}
-        className={`px-4 py-2 rounded-md text-sm border ${
+        onClick={() =>
+          exportToCsv({
+            users: selectedUsers,
+            t,
+            filename: "selected_users.csv",
+          })
+        }
+        className={`rounded-md border px-4 py-2 text-sm ${
           disabled
-            ? "cursor-not-allowed text-gray-400 border-gray-300"
-            : "text-blue-600 border-blue-400 hover:bg-blue-50"
+            ? "cursor-not-allowed border-gray-300 text-gray-400"
+            : "border-blue-400 text-blue-600 hover:bg-blue-50"
         }`}
       >
-        Export Selected
+        {t("export")}
       </button>
     </div>
   );

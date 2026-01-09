@@ -1,5 +1,3 @@
-// /components/_Admin/Users/Tools/banUser.js
-
 import { db } from "@/lib/firebaseClient";
 import { doc, updateDoc, serverTimestamp } from "firebase/firestore";
 
@@ -10,17 +8,31 @@ import { doc, updateDoc, serverTimestamp } from "firebase/firestore";
  * @param {boolean} banStatus - true = ban, false = unban
  */
 export default async function banUser(uid, banStatus) {
-  try {
-    if (!uid) return { success: false, error: "User ID missing" };
+  if (!uid) {
+    return {
+      success: false,
+      messageKey: "admin.users.errors.missingUserId",
+    };
+  }
 
+  try {
     await updateDoc(doc(db, "users", uid), {
       isBanned: banStatus,
       updatedAt: serverTimestamp(),
     });
 
-    return { success: true };
+    return {
+      success: true,
+      messageKey: banStatus
+        ? "admin.users.success.userBanned"
+        : "admin.users.success.userUnbanned",
+    };
   } catch (error) {
     console.error("Error banning user:", error);
-    return { success: false, error: error.message };
+
+    return {
+      success: false,
+      messageKey: "admin.users.errors.banFailed",
+    };
   }
 }

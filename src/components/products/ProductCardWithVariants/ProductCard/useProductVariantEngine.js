@@ -6,37 +6,30 @@ export function useProductVariantEngine(product) {
   const rawVariants = product.variants || [];
 
   // --------------------------------------------------------------
-  // CLEAN VARIANTS
+  // CLEAN VARIANTS (keep out-of-stock)
   // --------------------------------------------------------------
   const variants = useMemo(() => {
-    return (rawVariants || [])
-      .map((v) => {
-        const obj = {};
-        for (const key in v) {
-          obj[key] =
-            typeof v[key] === "string"
-              ? v[key].trim() || null
-              : v[key];
-        }
-        obj.quantity = Number(obj.quantity || 0);
-        return obj;
-      })
-      .filter((v) => v.quantity > 0);
+    return (rawVariants || []).map((v) => {
+      const obj = {};
+      for (const key in v) {
+        obj[key] =
+          typeof v[key] === "string" ? v[key].trim() || null : v[key];
+      }
+      obj.quantity = Number(obj.quantity || 0);
+      return obj;
+    });
   }, [rawVariants]);
 
   const hasVariants = variants.length > 0;
 
   // --------------------------------------------------------------
-  // ATTRIBUTE KEYS (dynamic)
+  // ATTRIBUTE KEYS
   // --------------------------------------------------------------
   const attributeKeys = useMemo(() => {
     if (!hasVariants) return [];
 
-    const keys = Object.keys(variants[0]).filter(
-      (key) => key !== "quantity"
-    );
+    const keys = Object.keys(variants[0]).filter((key) => key !== "quantity");
 
-    // Only keep attributes that have at least 2 value choices
     return keys.filter((key) => {
       const values = [
         ...new Set(
@@ -45,12 +38,12 @@ export function useProductVariantEngine(product) {
             .filter((v) => v !== null && v !== undefined)
         ),
       ];
-      return values.length > 1;
+      return values.length >= 1;
     });
   }, [variants]);
 
   // --------------------------------------------------------------
-  // ATTRIBUTE OPTIONS FOR EACH KEY
+  // ATTRIBUTE OPTIONS
   // --------------------------------------------------------------
   const attributeOptions = useMemo(() => {
     const groups = {};
@@ -73,25 +66,30 @@ export function useProductVariantEngine(product) {
   // --------------------------------------------------------------
   const [selected, setSelected] = useState({});
 
-  // Auto-select attributes with only 1 option
+  // --------------------------------------------------------------
+  // SMART AUTO-SELECTION:
+  // 1. Try to select the FIRST in-stock variant
+  // 2. Else select the FIRST variant (all attributes)
+  // --------------------------------------------------------------
   useEffect(() => {
     if (!hasVariants) return;
 
-    setSelected((prev) => {
-      const updated = { ...prev };
-      let changed = false;
+    // A. Try to get first in-stock
+    let targetVariant =
+      variants.find((v) => v.quantity > 0) || variants[0];
 
-      attributeKeys.forEach((key) => {
-        const values = attributeOptions[key] || [];
-        if (values.length === 1 && !prev[key]) {
-          updated[key] = values[0];
-          changed = true;
-        }
-      });
+    if (!targetVariant) return; // Should never happen
 
-      return changed ? updated : prev;
+    const newSelected = {};
+    attributeKeys.forEach((key) => {
+      newSelected[key] = targetVariant[key];
     });
-  }, [JSON.stringify(attributeOptions), attributeKeys.join(",")]);
+
+    // Only update if changed
+    if (JSON.stringify(newSelected) !== JSON.stringify(selected)) {
+      setSelected(newSelected);
+    }
+  }, [JSON.stringify(variants), attributeKeys.join(",")]);
 
   // --------------------------------------------------------------
   // SELECTED VARIANT
@@ -100,17 +98,13 @@ export function useProductVariantEngine(product) {
     if (!hasVariants) return null;
 
     return variants.find((v) =>
-      attributeKeys.every(
-        (key) => selected[key] === v[key]
-      )
+      attributeKeys.every((key) => selected[key] === v[key])
     );
   }, [selected, variants, attributeKeys]);
 
   const variantStock = selectedVariant?.quantity ?? null;
 
-  const allAttributesSelected = attributeKeys.every(
-    (key) => !!selected[key]
-  );
+  const allAttributesSelected = attributeKeys.every((key) => !!selected[key]);
 
   const canAddToCart = hasVariants
     ? allAttributesSelected && variantStock > 0
@@ -125,6 +119,7 @@ export function useProductVariantEngine(product) {
     setSelected,
     selectedVariant,
     variantStock,
+    allAttributesSelected,
     canAddToCart,
   };
 }

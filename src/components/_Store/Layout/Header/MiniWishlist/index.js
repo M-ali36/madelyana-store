@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { HiOutlineHeart } from "react-icons/hi";
+import { HiHeart, HiOutlineHeart } from "react-icons/hi";
 import { useAppContext } from "@/components/context/AppContext";
 import Image from "next/image";
 import Link from "@/components/Ui/Link";
@@ -10,7 +10,7 @@ import { createPortal } from "react-dom";
 import gsap from "gsap";
 
 export default function MiniWishlist() {
-  const { wishlist, setWishlist, cart, setCart, navState, setNavState } =
+  const { wishlist, setWishlist, pushNotification, navState, setNavState } =
     useAppContext();
 
   const locale = useLocale();
@@ -27,6 +27,14 @@ export default function MiniWishlist() {
 
   const drawerRef = useRef(null);
   const overlayRef = useRef(null);
+
+  const removeItem = (itemId) => {
+    setWishlist((prevWishlist) =>
+      prevWishlist.filter((item) => item.id !== itemId)
+    );
+
+  };
+
 
   // Hydration
   useEffect(() => {
@@ -83,15 +91,15 @@ export default function MiniWishlist() {
   return (
     <div className="relative hidden lg:block">
       {/* HEART */}
-      <button aria-label="My Wishlist" className="relative control-btn" onClick={() =>
+      <button aria-label="My Wishlist" className="header-control icons-hover primary-anime" onClick={() =>
         setNavState(navState === "wishlist" ? "" : "wishlist")
       }>
-        <HiOutlineHeart className="w-6 h-6" />
-        {wishlist.length > 0 && (
-          <span className="absolute -top-2 -right-2 bg-primary text-neutral-900 text-xs w-5 h-5 flex items-center justify-center rounded-full">
-            {wishlist.length}
-          </span>
-        )}
+        
+        {wishlist.length > 0 ?
+          <HiHeart className="w-5 h-5 fill-rose-500"/>
+          :
+          <HiOutlineHeart className="w-5 h-5" />
+        }
       </button>
 
       {/* DRAWER PORTAL */}

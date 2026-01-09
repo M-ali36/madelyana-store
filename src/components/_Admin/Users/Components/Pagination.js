@@ -1,41 +1,42 @@
-// /components/_Admin/Users/Components/Pagination.js
-
 "use client";
 
 import React from "react";
+import { useTranslations } from "next-intl";
 
 export default function Pagination({ page, hasMore, nextPage, prevPage }) {
+  const t = useTranslations("admin.users.pagination");
+
   return (
-    <div className="flex items-center justify-between mt-6">
+    <div className="mt-6 flex items-center justify-between">
       {/* Previous */}
       <button
         onClick={prevPage}
         disabled={page === 1}
-        className={`px-4 py-2 rounded-md border ${
+        className={`rounded-md border px-4 py-2 ${
           page === 1
-            ? "text-gray-400 border-gray-300 cursor-not-allowed"
-            : "hover:bg-gray-100 text-gray-700"
+            ? "cursor-not-allowed border-gray-300 text-gray-400"
+            : "text-gray-700 hover:bg-gray-100"
         }`}
       >
-        Previous
+        {t("previous")}
       </button>
 
       {/* Page Number */}
-      <span className="font-medium text-gray-700 text-sm">
-        Page {page}
+      <span className="text-sm font-medium text-gray-700">
+        {t("page", { page })}
       </span>
 
       {/* Next */}
       <button
         onClick={nextPage}
         disabled={!hasMore}
-        className={`px-4 py-2 rounded-md border ${
+        className={`rounded-md border px-4 py-2 ${
           !hasMore
-            ? "text-gray-400 border-gray-300 cursor-not-allowed"
-            : "hover:bg-gray-100 text-gray-700"
+            ? "cursor-not-allowed border-gray-300 text-gray-400"
+            : "text-gray-700 hover:bg-gray-100"
         }`}
       >
-        Next
+        {t("next")}
       </button>
     </div>
   );

@@ -5,6 +5,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { elMessiri, playfair } from "@/app/fonts/fonts";
 import { fetchFooter } from "@/lib/contentfulClient";
 import NotificationContainer from "@/components/Ui/NotificationContainer";
+import PresenceClient from "@/components/_Store/Layout/PresenceClient";
 
 export default async function RootLocaleLayout({ children, params }) {
   const locale = (await params).locale;
@@ -14,8 +15,6 @@ export default async function RootLocaleLayout({ children, params }) {
   const normalizedLocale = locale === "ar" ? "ar" : "en-US";
   
   const footer = await fetchFooter(normalizedLocale);
-
-  // Choose correct locale font
   const fontVariable = isArabic ? elMessiri.variable : playfair.variable;
 
   return (
@@ -28,18 +27,20 @@ export default async function RootLocaleLayout({ children, params }) {
       <body>
         <NextIntlClientProvider locale={locale} messages={messages}>
 
-          {/* Header above scroll wrapper */}
+          {/* 🔴 Presence observer (client only) */}
+          <PresenceClient locale={locale} />
+
           <Header locale={locale} pathname={pathname} />
 
-          {/* Smooth scroll area */}
           <SmoothScrollWrapper locale={locale}>
-            <main className="pt-[110px]">
+            <main className="pt-[60px]">
               {children}
             </main>
 
             <Footer locale={locale} footer={footer} />
           </SmoothScrollWrapper>
         </NextIntlClientProvider>
+
         <NotificationContainer locale={locale}/>
         <script src="https://www.tiktok.com/embed.js" async></script>
       </body>

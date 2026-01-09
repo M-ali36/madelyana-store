@@ -3,7 +3,6 @@ import { documentToReactComponents } from "@contentful/rich-text-react-renderer"
 
 export default function GiftSection({ title, description, items }) {
 
-    console.log(items)
   return (
     <section className="py-20">
       <div className="max-w-7xl mx-auto px-4">

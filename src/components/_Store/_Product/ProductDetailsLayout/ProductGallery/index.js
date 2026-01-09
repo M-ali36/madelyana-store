@@ -40,8 +40,6 @@ export default function ProductGallery({ product }) {
 
   if (!images.length) return null;
 
-  console.log(images)
-
   // ⭐ PIN CONTROLS LIKE EXTERNAL COMPONENT
   useEffect(() => {
     const filterContainer = document.querySelector(".controls");

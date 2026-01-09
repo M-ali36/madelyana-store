@@ -6,8 +6,6 @@ import NewsletterCta from "../../Newsletter";
 export default function Footer({ footer }) {
   if (!footer) return null;
 
-  console.log("Footer data:", footer);
-
   return (
     <>
       <NewsletterCta />
@@ -16,7 +14,7 @@ export default function Footer({ footer }) {
           <div className="grid grid-cols-2 md:grid-cols-5 gap-12">
             {/* Brand */}
             <div className="col-span-2">
-              <Logo className="w-48"/>
+              <Logo className="w-48 footer-logo"/>
 
               {footer.footerDescription && (
                 <p className="mt-4 text-sm text-gray-500 max-w-xs">

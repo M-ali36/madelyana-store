@@ -257,7 +257,8 @@
             "pending": "Pending",
             "paid": "Paid",
             "shipped": "Shipped",
-            "delivered": "Delivered"
+            "delivered": "Delivered",
+            "completed": "Completed"
         }
     },
      "orderDetailsPage": {
@@ -349,7 +350,8 @@
         "loading": "Loading…",
         "outOfStock": "Out of Stock",
         "addedSuccess": "Added to cart!",
-        "errorAdding": "Failed to add item"
+        "errorAdding": "Failed to add item",
+        "selectOption": "Select an option"
     },
     "AdminChangePassword": {
         "title": "Change Password",
@@ -433,6 +435,308 @@
         "outOfStock": "Out of stock",
         "adjust": "Adjust Qty",
         "restock": "Restock +1"
+    },
+    "admin": {
+        "users": {
+            "title": "Users Management",
+            "subtitle": "Manage users, permissions, and security actions",
+            "search": "Search users...",
+            "actions": {
+                "add": "Add User",
+                "delete": "Delete",
+                "edit": "Edit",
+                "ban": "Ban",
+                "unban": "Unban",
+                "resetPassword": "Reset Password"
+            },
+            "success": {
+                "userBanned": "User has been banned successfully.",
+                "userUnbanned": "User has been unbanned successfully.",
+                "userCreated": "User created successfully.",
+                "exported": "Users exported successfully."
+            },
+            "errors": {
+                "missingUserId": "User ID is missing.",
+                "banFailed": "Failed to update user status. Please try again.",
+                "missingCredentials": "Email and password are required.",
+                "emailInUse": "This email is already in use.",
+                "weakPassword": "Password is too weak.",
+                "createFailed": "Failed to create user. Please try again.",
+                "noUsersToExport": "There are no users to export."
+            },
+            "csv": {
+                "id": "ID",
+                "name": "Name",
+                "email": "Email",
+                "role": "Role",
+                "isBanned": "Banned",
+                "totalOrders": "Total Orders",
+                "completedOrders": "Completed Orders",
+                "totalSpent": "Total Spent",
+                "createdAt": "Created At",
+                "lastLogin": "Last Login",
+                "lastOrderDate": "Last Order Date",
+                "yes": "Yes",
+                "no": "No"
+            },
+            "add": {
+                "title": "Add New User",
+                "subtitle": "Create a new account and assign a role",
+                "fields": {
+                    "name": "Full name",
+                    "email": "Email address",
+                    "password": "Temporary password"
+                },
+                "roles": {
+                    "customer": "Customer",
+                    "manager": "Manager",
+                    "admin": "Admin"
+                },
+                "actions": {
+                    "cancel": "Cancel",
+                    "create": "Create User",
+                    "creating": "Creating..."
+                }
+            },
+            "bulkBan": {
+                "description": "You are about to {count} users.",
+                "actions": {
+                    "ban": "Ban Users",
+                    "unban": "Unban Users",
+                    "cancel": "Cancel",
+                    "processing": "Processing..."
+                },
+                "errors": {
+                    "title": "Some operations failed:"
+                }
+            },
+            "bulkDelete": {
+                "title": "Bulk Delete Users",
+                "description": "You are about to delete {count} users. This action cannot be undone.",
+                "actions": {
+                    "cancel": "Cancel",
+                    "delete": "Delete All",
+                    "deleting": "Deleting..."
+                },
+                "errors": {
+                    "title": "Some deletions failed:"
+                }
+            },
+            "bulkReset": {
+                "title": "Bulk Password Reset",
+                "description": "A password reset email will be sent to {count} users:",
+                "actions": {
+                    "close": "Close",
+                    "send": "Send Reset Emails",
+                    "sending": "Sending..."
+                },
+                "results": {
+                    "title": "Results",
+                    "success": "✓ Reset sent to {email}",
+                    "failed": "✗ Failed for {email}: {error}"
+                }
+            },
+            "edit": {
+                "title": "Edit User",
+                "fields": {
+                    "name": "User Name",
+                    "email": "User Email"
+                },
+                "actions": {
+                    "ban": "Ban User",
+                    "unban": "Unban User",
+                    "resetPassword": "Send Password Reset Email",
+                    "sending": "Sending...",
+                    "cancel": "Cancel",
+                    "save": "Save Changes",
+                    "saving": "Saving..."
+                },
+                "messages": {
+                    "resetSuccess": "Password reset sent!",
+                    "resetFailed": "Failed to send reset email."
+                },
+                "errors": {
+                    "updateFailed": "Error updating user."
+                }
+            },
+            "bulkActions": {
+                "delete": "Bulk Delete",
+                "ban": "Bulk Ban",
+                "unban": "Bulk Unban",
+                "reset": "Bulk Reset",
+                "export": "Export Selected"
+            },
+            "export": {
+                "all": "Export All"
+            },
+            "pagination": {
+                "previous": "Previous",
+                "next": "Next",
+                "page": "Page {page}"
+            },
+            "searchForm": {
+                "placeholder": "Search users by name, email, UID, role...",
+                "clear": "Clear"
+            },
+            "table": {
+                "name": "Name",
+                "email": "Email",
+                "role": "Role",
+                "status": "Status",
+                "created": "Created",
+                "actions": "Actions",
+                "loading": "Loading users...",
+                "empty": "No users found.",
+                "active": "Active",
+                "banned": "Banned",
+                "defaultRole": "customer",
+                "details": "Details",
+                "edit": "Edit",
+                "ban": "Ban",
+                "unban": "Unban",
+                "reset": "Reset",
+                "delete": "Delete"
+            }
+        },
+        "layout": {
+            "title": "Admin Panel",
+            "checking": "Checking access…",
+            "logout": "Logout",
+            "activeUsers": "Active Users",
+            "nav": {
+                "dashboard": "Dashboard",
+                "products": "Products",
+                "orders": "Orders",
+                "users": "Users",
+                "settings": "Settings",
+                "userObserver": "User Observer"
+            }
+        },
+        "products": {
+            "title": "Products",
+            "add": "+ Add Product",
+            "search": "Search by name, slug, color, size...",
+            "loading": "Loading products...",
+            "empty": "No products found.",
+            "confirmDelete": "Are you sure you want to delete “{name}”?",
+            "deleteFailed": "Delete failed.",
+            "edit": "Edit",
+            "delete": "Delete",
+            "deleting": "Deleting…",
+            "noVariants": "No variants",
+            "qty": "Qty: {count}",
+            "table": {
+                "name": "Name",
+                "slug": "Slug",
+                "price": "Price",
+                "variants": "Variants",
+                "actions": "Actions"
+            }
+        },
+        "addProduct": {
+            "title": "Add Product",
+            "subtitle": "Select a Contentful product & add variants.",
+            "fields": {
+                "product": "Select Contentful Product"
+            },
+            "select": "Select product…",
+            "allAssigned": "All Contentful products are already assigned.",
+            "loaded": "Contentful Product Loaded",
+            "titleLabel": "Title",
+            "colors": "Colors",
+            "sizes": "Sizes",
+            "none": "None",
+            "price": "Base Price",
+            "variants": "Variants",
+            "addVariant": "+ Add Variant",
+            "noVariants": "No variants added yet.",
+            "color": "Color",
+            "size": "Size",
+            "quantity": "Quantity",
+            "selectColor": "Select color…",
+            "selectSize": "Select size…",
+            "remove": "Remove",
+            "create": "Create Product",
+            "saving": "Saving...",
+            "success": "Product created successfully!",
+            "errors": {
+                "load": "Failed to load products.",
+                "required": "Please fill all required fields and add at least one variant.",
+                "invalid": "Invalid product selection.",
+                "save": "Failed to save product."
+            }
+        },
+        "editProduct": {
+            "title": "Edit Product",
+            "loading": "Loading product…",
+            "variants": "Variants",
+            "addVariant": "+ Add Variant",
+            "color": "Color",
+            "size": "Size",
+            "quantity": "Quantity",
+            "remove": "Remove",
+            "save": "Save Changes",
+            "saving": "Saving…",
+            "success": "Product updated successfully!",
+            "fields": {
+                "name": "Product Name (from Contentful)",
+                "slug": "Contentful Slug (locked)",
+                "price": "Base Price"
+            },
+            "errors": {
+                "notFound": "Product not found.",
+                "load": "Failed to load product.",
+                "price": "Price is required.",
+                "variants": "Add at least one variant.",
+                "save": "Failed to save product."
+            }
+        },
+        "orders": {
+            "title": "Orders",
+            "search": "Search…",
+            "loading": "Loading…",
+            "empty": "No orders found.",
+            "loadMore": "Load More",
+            "view": "View",
+            "unknown": "Unknown",
+            "cancel": "Cancel",
+            "confirm": "Confirm",
+            "saving": "Saving…",
+            "filters": {
+                "allStatus": "All Status",
+                "allPayments": "All Payments"
+            },
+            "sort": {
+                "newest": "Newest First",
+                "oldest": "Oldest First"
+            },
+            "status": {
+                "pending": "Pending",
+                "paid": "Paid",
+                "shipped": "Shipped",
+                "completed": "Completed",
+                "cancelled": "Cancelled"
+            },
+            "payments": {
+                "cod": "Cash on Delivery",
+                "card": "Card"
+            },
+            "table": {
+                "order": "Order",
+                "customer": "Customer",
+                "total": "Total",
+                "status": "Status",
+                "payment": "Payment",
+                "date": "Date",
+                "actions": "Actions"
+            },
+            "bulk": {
+                "confirm": "Confirm Bulk Action",
+                "message": "You are about to update {count} order(s).",
+                "reason": "Reason (optional)",
+                "error": "Error performing bulk action."
+            }
+        }
     },
     "byPrice": "By Price",
     "from": "From",

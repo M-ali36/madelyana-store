@@ -282,7 +282,7 @@ export default function AdminDashboard() {
         {dashboard.recentOrders.length === 0 ? (
           <p className="text-gray-500">{t("noRecentOrders")}</p>
         ) : (
-          <table className="w-full text-left">
+          <table className="w-full text-start">
             <thead className="bg-gray-100 text-gray-700">
               <tr>
                 <th className="py-3 px-4">{t("orderID")}</th>

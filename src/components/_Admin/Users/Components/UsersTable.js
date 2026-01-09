@@ -1,26 +1,11 @@
-// /components/_Admin/Users/Components/UsersTable.js
-
 "use client";
 
 import React from "react";
+import { useTranslations } from "next-intl";
 
 /**
  * Users Table UI
- *
- * Props:
- * - users (array)
- * - loading (boolean)
- * - isSelected (fn)
- * - toggleUser (fn)
- * - allSelected (fn)
- * - selectAll (fn)
- * - openEditUser (fn)
- * - openDeleteUser (fn)
- * - openUserDetails (fn)
- * - openBulkPasswordReset (fn)
- * - banUser (fn)
  */
-
 export default function UsersTable({
   users,
   loading,
@@ -34,42 +19,43 @@ export default function UsersTable({
   openBulkPasswordReset,
   banUser,
 }) {
+  const t = useTranslations("admin.users.table");
+
   return (
-    <div className="overflow-x-auto border rounded-lg shadow-sm mt-6">
-      <table className="w-full text-sm text-left text-gray-700">
-        <thead className="bg-gray-100 text-gray-700 uppercase text-xs">
+    <div className="mt-6 overflow-x-auto rounded-lg border shadow-sm">
+      <table className="w-full text-start text-sm text-gray-700">
+        <thead className="bg-gray-100 text-xs uppercase text-gray-700">
           <tr>
             <th className="p-3">
               <input
                 type="checkbox"
                 checked={allSelected(users)}
                 onChange={() => selectAll(users)}
-                className="w-4 h-4"
+                className="h-4 w-4"
               />
             </th>
-
-            <th className="p-3">Name</th>
-            <th className="p-3">Email</th>
-            <th className="p-3">Role</th>
-            <th className="p-3">Status</th>
-            <th className="p-3">Created</th>
-            <th className="p-3 text-right">Actions</th>
+            <th className="p-3">{t("name")}</th>
+            <th className="p-3">{t("email")}</th>
+            <th className="p-3">{t("role")}</th>
+            <th className="p-3">{t("status")}</th>
+            <th className="p-3">{t("created")}</th>
+            <th className="p-3 text-right">{t("actions")}</th>
           </tr>
         </thead>
 
         <tbody>
           {loading && (
             <tr>
-              <td colSpan="7" className="text-center p-6 text-gray-500">
-                Loading users...
+              <td colSpan={7} className="p-6 text-start text-gray-500">
+                {t("loading")}
               </td>
             </tr>
           )}
 
           {!loading && users.length === 0 && (
             <tr>
-              <td colSpan="7" className="text-center p-6 text-gray-500">
-                No users found.
+              <td colSpan={7} className="p-6 text-start text-gray-500">
+                {t("empty")}
               </td>
             </tr>
           )}
@@ -78,7 +64,7 @@ export default function UsersTable({
             users.map((user) => (
               <tr
                 key={user.id}
-                className="border-b hover:bg-gray-50 transition"
+                className="border-b transition hover:bg-gray-50"
               >
                 {/* Checkbox */}
                 <td className="p-3">
@@ -86,29 +72,37 @@ export default function UsersTable({
                     type="checkbox"
                     checked={isSelected(user.id)}
                     onChange={() => toggleUser(user.id)}
-                    className="w-4 h-4"
+                    className="h-4 w-4"
                   />
                 </td>
 
                 {/* Name */}
-                <td className="p-3 font-medium">{user.name || "-"}</td>
+                <td className="p-3 font-medium">
+                  {user.fullName || "-"}
+                </td>
 
                 {/* Email */}
                 <td className="p-3">{user.email}</td>
 
                 {/* Role */}
-                <td className="p-3 capitalize">{user.role || "customer"}</td>
+                <td className="p-3 capitalize">
+                  {user.role || t("defaultRole")}
+                </td>
 
                 {/* Status */}
                 <td className="p-3">
                   {user.isBanned ? (
-                    <span className="text-red-600 font-semibold">Banned</span>
+                    <span className="font-semibold text-red-600">
+                      {t("banned")}
+                    </span>
                   ) : (
-                    <span className="text-green-600 font-semibold">Active</span>
+                    <span className="font-semibold text-green-600">
+                      {t("active")}
+                    </span>
                   )}
                 </td>
 
-                {/* Created At */}
+                {/* Created */}
                 <td className="p-3">
                   {user.createdAt?.toDate
                     ? user.createdAt.toDate().toLocaleDateString()
@@ -117,24 +111,20 @@ export default function UsersTable({
 
                 {/* Actions */}
                 <td className="p-3 text-right space-x-2">
-
-                  {/* View Details */}
                   <button
                     onClick={() => openUserDetails(user)}
                     className="px-3 py-1 text-blue-600 hover:underline"
                   >
-                    Details
+                    {t("details")}
                   </button>
 
-                  {/* Edit */}
                   <button
                     onClick={() => openEditUser(user)}
                     className="px-3 py-1 text-amber-600 hover:underline"
                   >
-                    Edit
+                    {t("edit")}
                   </button>
 
-                  {/* Ban/Unban */}
                   <button
                     onClick={() => banUser(user.id, !user.isBanned)}
                     className={`px-3 py-1 ${
@@ -143,23 +133,21 @@ export default function UsersTable({
                         : "text-red-600 hover:underline"
                     }`}
                   >
-                    {user.isBanned ? "Unban" : "Ban"}
+                    {user.isBanned ? t("unban") : t("ban")}
                   </button>
 
-                  {/* Reset Password */}
                   <button
                     onClick={() => openBulkPasswordReset([user])}
                     className="px-3 py-1 text-purple-600 hover:underline"
                   >
-                    Reset
+                    {t("reset")}
                   </button>
 
-                  {/* Delete */}
                   <button
                     onClick={() => openDeleteUser(user)}
                     className="px-3 py-1 text-red-600 hover:underline"
                   >
-                    Delete
+                    {t("delete")}
                   </button>
                 </td>
               </tr>

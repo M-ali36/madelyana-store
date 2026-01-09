@@ -4,14 +4,16 @@ import { useEffect, useState } from "react";
 import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
 import { db } from "@/lib/firebaseClient";
 import Link from "@/components/Ui/Link";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 export default function ProductsPage() {
+  const t = useTranslations("admin.products");
+  const locale = useLocale();
+
   const [products, setProducts] = useState([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState("");
-  const locale = useLocale();
 
   // Fetch products
   const fetchProducts = async () => {
@@ -35,7 +37,7 @@ export default function ProductsPage() {
   // Delete product
   const handleDelete = async (id, name) => {
     const confirmDelete = window.confirm(
-      `Are you sure you want to delete “${name}”?`
+      t("confirmDelete", { name })
     );
 
     if (!confirmDelete) return;
@@ -46,7 +48,7 @@ export default function ProductsPage() {
       await fetchProducts();
     } catch (err) {
       console.error("Error deleting:", err);
-      alert("Delete failed.");
+      alert(t("deleteFailed"));
     } finally {
       setDeleting("");
     }
@@ -59,23 +61,23 @@ export default function ProductsPage() {
       ?.map((v) => `${v.color} ${v.size}`.toLowerCase())
       .join(" ");
 
-    const text = `${base} ${variantText}`.toLowerCase();
-
-    return text.includes(search.toLowerCase());
+    return `${base} ${variantText}`.includes(search.toLowerCase());
   });
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold text-foreground">Products</h1>
+        <h1 className="text-2xl font-semibold text-gray-800">
+          {t("title")}
+        </h1>
 
         <Link
           href="/admin/products/new"
           locale={locale}
-          className="px-4 py-2 bg-neutral-900 text-white rounded-md hover:bg-gray-800 transition"
+          className="rounded-md bg-neutral-900 px-4 py-2 text-white transition hover:bg-gray-800"
         >
-          + Add Product
+          {t("add")}
         </Link>
       </div>
 
@@ -83,97 +85,95 @@ export default function ProductsPage() {
       <div>
         <input
           type="text"
-          placeholder="Search by name, slug, color, size..."
-          className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary outline-none"
+          placeholder={t("search")}
+          className="w-full rounded-md border border-gray-300 px-4 py-2 outline-none focus:ring-2 focus:ring-primary"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
       </div>
 
       {/* Table */}
-      <div className="bg-white border border-gray-200 shadow-card rounded-xl p-6">
+      <div className="rounded-xl">
         {loading ? (
-          <p className="text-gray-500">Loading products...</p>
+          <p className="text-gray-500">{t("loading")}</p>
         ) : filteredProducts.length === 0 ? (
-          <p className="text-gray-500">No products found.</p>
+          <p className="text-gray-500">{t("empty")}</p>
         ) : (
-          <table className="w-full border-collapse">
+          <table className="w-full border-collapse styled-table">
             <thead>
-              <tr className="bg-gray-100 text-gray-700">
-                <th className="px-4 py-3 text-left font-medium">Name</th>
-                <th className="px-4 py-3 text-left font-medium">Slug</th>
-                <th className="px-4 py-3 text-left font-medium">Price</th>
-                <th className="px-4 py-3 text-left font-medium">Variants</th>
-                <th className="px-4 py-3 text-left font-medium">Actions</th>
+              <tr className="">
+                <th className="">{t("table.name")}</th>
+                <th className="">{t("table.slug")}</th>
+                <th className="">{t("table.price")}</th>
+                <th className="">{t("table.variants")}</th>
+                <th className="">{t("table.actions")}</th>
               </tr>
             </thead>
 
             <tbody>
               {filteredProducts.map((product) => (
                 <tr key={product.id} className="border-t align-top">
+                  <td className="font-medium">{product.name}</td>
 
-                  {/* Name */}
-                  <td className="px-4 py-3 font-medium">{product.name}</td>
-
-                  {/* Slug */}
-                  <td className="px-4 py-3 text-sm text-gray-700">
+                  <td className="">
                     {product.contentfulSlug}
                   </td>
 
-                  {/* Price */}
-                  <td className="px-4 py-3">${product.price || 0}</td>
+                  <td className="">
+                    ${product.price || 0}
+                  </td>
 
-                  {/* Variants */}
-                  <td className="px-4 py-3 text-sm">
+                  <td className="">
                     {product.variants?.length > 0 ? (
                       <div className="space-y-1">
                         {product.variants.map((v, i) => (
-                          <div
-                            key={i}
-                            className="flex gap-4 items-center text-gray-700"
-                          >
-                            <span className="px-2 py-1 bg-gray-100 rounded border">
+                          <div key={i} className="flex items-center gap-4 text-gray-700">
+                            {v.color &&
+                            <span className={`rounded border px-2 py-1 ${v.color.toLowerCase()}-badge`}>
                               {v.color}
                             </span>
-                            <span className="px-2 py-1 bg-gray-100 rounded border">
+                            }
+                            {v.size &&
+                            <span className="rounded border bg-gray-100 px-2 py-1">
                               {v.size}
                             </span>
+                            }
                             <span className="font-semibold">
-                              Qty: {v.quantity}
+                              {t("qty", { count: v.quantity })}
                             </span>
                           </div>
                         ))}
                       </div>
                     ) : (
-                      <span className="text-gray-500">No variants</span>
+                      <span className="text-gray-500">
+                        {t("noVariants")}
+                      </span>
                     )}
                   </td>
 
-                  {/* Actions */}
-                  <td className="px-4 py-3">
+                  <td className="">
                     <div className="flex gap-3">
                       <Link
                         href={`/admin/products/edit/${product.id}`}
                         locale={locale}
-                        className="text-primary hover:underline"
+                        className="btn-ui btn-small btn-primary"
                       >
-                        Edit
+                        {t("edit")}
                       </Link>
 
                       <button
-                        onClick={() =>
-                          handleDelete(product.id, product.name)
-                        }
-                        className={`text-red-600 hover:underline ${
+                        onClick={() => handleDelete(product.id, product.name)}
+                        disabled={deleting === product.id}
+                        className={`btn-ui btn-small btn-danger ${
                           deleting === product.id ? "opacity-50" : ""
                         }`}
-                        disabled={deleting === product.id}
                       >
-                        {deleting === product.id ? "Deleting…" : "Delete"}
+                        {deleting === product.id
+                          ? t("deleting")
+                          : t("delete")}
                       </button>
                     </div>
                   </td>
-
                 </tr>
               ))}
             </tbody>

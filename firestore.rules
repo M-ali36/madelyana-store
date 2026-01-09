@@ -1,0 +1,156 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ------------------------------
+    // Helpers
+    // ------------------------------
+    function isLoggedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return request.auth != null && request.auth.uid == uid;
+    }
+
+    function isAdmin() {
+      return request.auth != null &&
+             request.auth.uid == "0cLapPA0IyMHigjGzjEQ0dMLhkG3"; // ADMIN UID
+    }
+
+    // ------------------------------
+    // USERS COLLECTION
+    // Path: /users/{uid}
+    // ------------------------------
+    match /users/{uid} {
+
+      // ⭐ ADMIN: Full permissions
+      allow read, create, update, delete: if isAdmin();
+
+      // ------- USER RULES -------
+      allow read: if isOwner(uid);
+
+      allow create: if isOwner(uid)
+                    && request.resource.data.role == "user";
+
+      allow update: if isOwner(uid)
+                    && request.resource.data.diff(resource.data)
+                      .changedKeys()
+                      .hasOnly([
+                        "fullName",
+                        "email",
+                        "phone",
+                        "address"
+                      ]);
+
+      allow delete: if false;
+
+      // Subcollections
+      match /wishlist/{wid} {
+        allow read, create, update, delete: if isOwner(uid) || isAdmin();
+      }
+
+      match /cart/{cid} {
+        allow read, create, update, delete: if isOwner(uid) || isAdmin();
+      }
+
+      match /settings/{settingId} {
+        allow read, create, update, delete: if isOwner(uid) || isAdmin();
+      }
+    }
+    match /adminSettings/{docId} {
+      allow read, create, update, delete: if isAdmin();
+    }
+
+    // ------------------------------
+    // TOP-LEVEL SETTINGS
+    // ------------------------------
+    match /settings/{uid} {
+      allow read, create, update, delete: if isOwner(uid) || isAdmin();
+    }
+
+    // ------------------------------
+    // ADMIN SETTINGS (NEW)
+    // Path: /adminSettings/global
+    // ------------------------------
+    match /adminSettings/{docId} {
+      allow read, create, update, delete: if isAdmin();
+    }
+
+    // ------------------------------
+    // PRODUCTS_DYNAMIC
+    // ------------------------------
+    match /products_dynamic/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // ------------------------------
+    // CATEGORIES
+    // ------------------------------
+    match /categories/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // =======================================================
+    // ⭐ ORDERS
+    // =======================================================
+    match /orders/{orderId} {
+
+      allow read: if isAdmin()
+                  || (isLoggedIn() && resource.data.userId == request.auth.uid);
+
+      allow create: if isLoggedIn()
+                    && request.resource.data.userId == request.auth.uid;
+
+      allow update: if isAdmin()
+                    || (
+                      isLoggedIn() &&
+                      request.auth.uid == resource.data.userId &&
+                      request.resource.data.userId == resource.data.userId
+                    );
+
+      allow delete: if isAdmin()
+                    || (isLoggedIn() && resource.data.userId == request.auth.uid);
+    }
+    
+    match /sessions/{sessionId} {
+      allow create: if true;
+      allow update: if true;
+      allow read: if request.auth != null
+        && request.auth.token.role == "admin";
+    }
+
+
+
+    // =======================================================
+    // ⭐ CONTACT MESSAGES
+    // =======================================================
+    match /contactMessages/{messageId} {
+
+      allow read, delete: if isAdmin();
+
+      allow create: if
+        request.resource.data.keys().hasAll([
+          "name",
+          "email",
+          "message",
+          "createdAt"
+        ]) &&
+        request.resource.data.name is string &&
+        request.resource.data.email is string &&
+        request.resource.data.message is string;
+
+      allow update: if false;
+    }
+
+    // ------------------------------
+    // DEFAULT DENY
+    // ------------------------------
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

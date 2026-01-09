@@ -31,14 +31,14 @@ export default async function searchUsers(searchTerm = "") {
     // Client-side filtering for partial matching
     const filtered = allUsers.filter((user) => {
       const email = user.email?.toLowerCase() || "";
-      const name = user.name?.toLowerCase() || "";
+      const displayName = user.displayName?.toLowerCase() || "";
       const uid = user.id?.toLowerCase() || "";
       const role = user.role?.toLowerCase() || "";
       const phone = user.phone?.toLowerCase() || "";
 
       return (
         email.includes(term) ||
-        name.includes(term) ||
+        displayName.includes(term) ||
         uid.includes(term) ||
         role.includes(term) ||
         phone.includes(term)

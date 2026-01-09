@@ -5,12 +5,14 @@ import { db } from "@/lib/firebaseClient";
 import { collection, addDoc, getDocs, serverTimestamp } from "firebase/firestore";
 import { fetchProducts } from "@/lib/contentfulClient";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 export default function AddProductPage() {
+  const t = useTranslations("admin.addProduct");
   const router = useRouter();
 
   const [contentfulProducts, setContentfulProducts] = useState([]);
-  const [availableProducts, setAvailableProducts] = useState([]); // filtered list
+  const [availableProducts, setAvailableProducts] = useState([]);
   const [existingDynamicSlugs, setExistingDynamicSlugs] = useState([]);
 
   const [contentfulSlug, setContentfulSlug] = useState("");
@@ -23,36 +25,31 @@ export default function AddProductPage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  // 🔥 Fetch Contentful products + dynamic products to filter
+  // Fetch Contentful + dynamic products
   useEffect(() => {
     const loadData = async () => {
       try {
-        // 1. Fetch all Contentful products
         const list = await fetchProducts();
 
-        // 2. Fetch existing Firebase dynamic product slugs
         const snap = await getDocs(collection(db, "products_dynamic"));
         const dynamic = snap.docs.map((d) => d.data().contentfulSlug);
 
         setContentfulProducts(list);
         setExistingDynamicSlugs(dynamic);
 
-        // 3. Filter out Contentful products already assigned in Firebase
-        const filtered = list.filter(
-          (p) => !dynamic.includes(p.slug)
+        setAvailableProducts(
+          list.filter((p) => !dynamic.includes(p.slug))
         );
-
-        setAvailableProducts(filtered);
       } catch (err) {
         console.error(err);
-        setError("Failed to load products.");
+        setError(t("errors.load"));
       }
     };
 
     loadData();
   }, []);
 
-  // When Contentful product is selected → set product info
+  // Select Contentful product
   useEffect(() => {
     if (!contentfulSlug) return;
 
@@ -63,32 +60,30 @@ export default function AddProductPage() {
     setProductInfo(selected || null);
   }, [contentfulSlug, contentfulProducts]);
 
-  // Add Variant
+  // Variants
   const addVariant = () => {
     setVariants([...variants, { color: "", size: "", quantity: 0 }]);
   };
 
-  // Update Variant
   const updateVariant = (index, field, value) => {
     const updated = [...variants];
     updated[index][field] = value;
     setVariants(updated);
   };
 
-  // Remove Variant
   const removeVariant = (index) => {
     setVariants(variants.filter((_, i) => i !== index));
   };
 
-  // Save product
+  // Save
   const handleSubmit = async () => {
     if (!contentfulSlug || !price || variants.length === 0) {
-      setError("Please fill all required fields and add at least one variant.");
+      setError(t("errors.required"));
       return;
     }
 
     if (!productInfo) {
-      setError("Invalid product selection.");
+      setError(t("errors.invalid"));
       return;
     }
 
@@ -99,17 +94,17 @@ export default function AddProductPage() {
     try {
       await addDoc(collection(db, "products_dynamic"), {
         contentfulSlug,
-        name: productInfo.title,        // 🔥 Add product name
+        name: productInfo.title,
         price: Number(price),
         variants,
         createdAt: serverTimestamp(),
       });
 
-      setSuccess("Product created successfully!");
+      setSuccess(t("success"));
       setTimeout(() => router.push("/admin/products"), 1200);
     } catch (err) {
       console.error(err);
-      setError("Failed to save product.");
+      setError(t("errors.save"));
     }
 
     setLoading(false);
@@ -119,42 +114,37 @@ export default function AddProductPage() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-semibold text-foreground">Add Product</h1>
-        <p className="text-gray-600">
-          Select a Contentful product & add variants.
-        </p>
+        <h1 className="text-2xl font-semibold">{t("title")}</h1>
+        <p className="text-gray-600">{t("subtitle")}</p>
       </div>
 
-      <div className="bg-white border border-gray-200 rounded-xl shadow-card p-6 space-y-6">
-
+      <div className="space-y-6 rounded-xl border border-gray-200 bg-white p-6 shadow-card">
         {/* Error */}
         {error && (
-          <div className="rounded-md bg-red-100 text-red-700 px-4 py-3 text-sm border border-red-300">
+          <div className="rounded-md border border-red-300 bg-red-100 px-4 py-3 text-sm text-red-700">
             {error}
           </div>
         )}
 
         {/* Success */}
         {success && (
-          <div className="rounded-md bg-green-100 text-green-700 px-4 py-3 text-sm border border-green-300">
+          <div className="rounded-md border border-green-300 bg-green-100 px-4 py-3 text-sm text-green-700">
             {success}
           </div>
         )}
 
-        {/* Contentful Product Select */}
+        {/* Contentful Select */}
         <div>
-          <label className="block mb-1 text-sm font-medium text-gray-700">
-            Select Contentful Product *
+          <label className="mb-1 block text-sm font-medium text-gray-700">
+            {t("fields.product")} *
           </label>
 
           <select
-            className="w-full px-4 py-2 border border-gray-300 rounded-md bg-white 
-                       focus:ring-2 focus:ring-primary focus:border-primary outline-none"
+            className="w-full rounded-md border border-gray-300 bg-white px-4 py-2 outline-none focus:ring-2 focus:ring-primary"
             onChange={(e) => setContentfulSlug(e.target.value)}
           >
-            <option value="">Select product…</option>
+            <option value="">{t("select")}</option>
 
-            {/* Show ONLY unassigned Contentful products */}
             {availableProducts.map((item) => (
               <option key={item.slug} value={item.slug}>
                 {item.title} — ({item.slug})
@@ -163,78 +153,77 @@ export default function AddProductPage() {
           </select>
 
           {availableProducts.length === 0 && (
-            <p className="text-sm text-gray-500 mt-2">
-              All Contentful products are already assigned.
+            <p className="mt-2 text-sm text-gray-500">
+              {t("allAssigned")}
             </p>
           )}
         </div>
 
         {/* Contentful Info */}
         {productInfo && (
-          <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 space-y-1">
-            <p className="font-medium text-gray-800">Contentful Product Loaded</p>
-            <p className="text-sm text-gray-700">
-              <span className="font-semibold">Title:</span> {productInfo.title}
+          <div className="space-y-1 rounded-lg border border-gray-200 bg-gray-50 p-4">
+            <p className="font-medium">{t("loaded")}</p>
+            <p className="text-sm">
+              <strong>{t("titleLabel")}:</strong> {productInfo.title}
             </p>
-            <p className="text-sm text-gray-700">
-              <span className="font-semibold">Colors:</span>{" "}
-              {productInfo.colors?.join(", ") || "None"}
+            <p className="text-sm">
+              <strong>{t("colors")}:</strong>{" "}
+              {productInfo.colors?.join(", ") || t("none")}
             </p>
-            <p className="text-sm text-gray-700">
-              <span className="font-semibold">Sizes:</span>{" "}
-              {productInfo.sizes?.join(", ") || "None"}
+            <p className="text-sm">
+              <strong>{t("sizes")}:</strong>{" "}
+              {productInfo.sizes?.join(", ") || t("none")}
             </p>
           </div>
         )}
 
         {/* Price */}
         <div>
-          <label className="block mb-1 text-sm font-medium text-gray-700">
-            Base Price *
+          <label className="mb-1 block text-sm font-medium text-gray-700">
+            {t("price")} *
           </label>
           <input
             type="number"
             min="0"
-            className="w-full px-4 py-2 border border-gray-300 rounded-md 
-                       focus:ring-2 focus:ring-primary focus:border-primary outline-none"
+            className="w-full rounded-md border border-gray-300 px-4 py-2 outline-none focus:ring-2 focus:ring-primary"
             onChange={(e) => setPrice(e.target.value)}
           />
         </div>
 
-        {/* Variants Builder */}
+        {/* Variants */}
         <div className="space-y-4">
-          <div className="flex justify-between items-center">
-            <h3 className="text-lg font-semibold">Variants</h3>
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-semibold">{t("variants")}</h3>
             <button
               onClick={addVariant}
-              className="px-3 py-2 bg-neutral-900 text-white rounded-md hover:bg-gray-800"
+              className="rounded-md bg-neutral-900 px-3 py-2 text-white hover:bg-gray-800"
             >
-              + Add Variant
+              {t("addVariant")}
             </button>
           </div>
 
           {variants.length === 0 && (
-            <p className="text-gray-500 text-sm">No variants added yet.</p>
+            <p className="text-sm text-gray-500">{t("noVariants")}</p>
           )}
 
           {variants.map((variant, index) => (
             <div
               key={index}
-              className="border rounded-lg p-4 grid grid-cols-1 md:grid-cols-4 gap-4 bg-gray-50"
+              className="grid grid-cols-1 gap-4 rounded-lg border bg-gray-50 p-4 md:grid-cols-4"
             >
               {/* Color */}
               <div>
-                <label className="block mb-1 text-sm font-medium text-gray-700">
-                  Color
+                <label className="mb-1 block text-sm font-medium text-gray-700">
+                  {t("color")}
                 </label>
                 <select
-                  className="w-full px-3 py-2 border rounded-md"
+                  className="w-full rounded-md border px-3 py-2"
                   value={variant.color}
                   onChange={(e) =>
                     updateVariant(index, "color", e.target.value)
                   }
                 >
-                  <option value="">Select color…</option>
+                  <option value="">{t("selectColor")}</option>
                   {productInfo?.colors?.map((c) => (
                     <option key={c} value={c}>
                       {c}
@@ -245,17 +234,17 @@ export default function AddProductPage() {
 
               {/* Size */}
               <div>
-                <label className="block mb-1 text-sm font-medium text-gray-700">
-                  Size
+                <label className="mb-1 block text-sm font-medium text-gray-700">
+                  {t("size")}
                 </label>
                 <select
-                  className="w-full px-3 py-2 border rounded-md"
+                  className="w-full rounded-md border px-3 py-2"
                   value={variant.size}
                   onChange={(e) =>
                     updateVariant(index, "size", e.target.value)
                   }
                 >
-                  <option value="">Select size…</option>
+                  <option value="">{t("selectSize")}</option>
                   {productInfo?.sizes?.map((s) => (
                     <option key={s} value={s}>
                       {s}
@@ -266,13 +255,13 @@ export default function AddProductPage() {
 
               {/* Quantity */}
               <div>
-                <label className="block mb-1 text-sm font-medium text-gray-700">
-                  Quantity
+                <label className="mb-1 block text-sm font-medium text-gray-700">
+                  {t("quantity")}
                 </label>
                 <input
                   type="number"
                   min="0"
-                  className="w-full px-3 py-2 border rounded-md"
+                  className="w-full rounded-md border px-3 py-2"
                   value={variant.quantity}
                   onChange={(e) =>
                     updateVariant(index, "quantity", e.target.value)
@@ -284,9 +273,9 @@ export default function AddProductPage() {
               <div className="flex items-end">
                 <button
                   onClick={() => removeVariant(index)}
-                  className="px-3 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 w-full"
+                  className="w-full rounded-md bg-red-500 px-3 py-2 text-white hover:bg-red-600"
                 >
-                  Remove
+                  {t("remove")}
                 </button>
               </div>
             </div>
@@ -297,10 +286,11 @@ export default function AddProductPage() {
         <button
           onClick={handleSubmit}
           disabled={loading}
-          className={`w-full py-2 rounded-md text-white font-medium transition 
-            ${loading ? "bg-gray-400" : "bg-neutral-900 hover:bg-gray-800"}`}
+          className={`w-full rounded-md py-2 font-medium text-white ${
+            loading ? "bg-gray-400" : "bg-neutral-900 hover:bg-gray-800"
+          }`}
         >
-          {loading ? "Saving..." : "Create Product"}
+          {loading ? t("saving") : t("create")}
         </button>
       </div>
     </div>

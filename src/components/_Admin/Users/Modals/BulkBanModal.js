@@ -1,17 +1,25 @@
-// /components/_Admin/Users/Modals/BulkBanModal.js
-
 "use client";
 
 import React, { useState } from "react";
+import { useTranslations } from "next-intl";
 import banUser from "../Tools/banUser";
 
-export default function BulkBanModal({ isOpen, closeModal, users, ban, refreshUsers }) {
-  if (!isOpen || !users || users.length === 0) return null;
+export default function BulkBanModal({
+  isOpen,
+  closeModal,
+  users,
+  ban,
+  refreshUsers,
+}) {
+  const t = useTranslations("admin.users.bulkBan");
 
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState([]);
 
-  const actionLabel = ban ? "Ban Users" : "Unban Users";
+  // ✅ EARLY RETURN MUST BE AFTER HOOKS
+  if (!isOpen || !users || users.length === 0) return null;
+
+  const actionLabel = ban ? t("actions.ban") : t("actions.unban");
   const actionColor = ban ? "text-red-600" : "text-green-600";
   const buttonColor = ban
     ? "bg-red-600 hover:bg-red-700"
@@ -25,11 +33,12 @@ export default function BulkBanModal({ isOpen, closeModal, users, ban, refreshUs
 
     for (const u of users) {
       const result = await banUser(u.id, ban);
+
       if (!result.success) {
         errorList.push({
           id: u.id,
           email: u.email,
-          error: result.error,
+          messageKey: result.messageKey,
         });
       }
     }
@@ -45,19 +54,17 @@ export default function BulkBanModal({ isOpen, closeModal, users, ban, refreshUs
   };
 
   return (
-    <div className="fixed inset-0 bg-neutral-900/40 backdrop-blur-sm flex items-center justify-center z-50">
-      <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-lg">
-        <h2 className={`text-xl font-semibold mb-4 ${actionColor}`}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-neutral-900/40 backdrop-blur-sm">
+      <div className="w-full max-w-lg rounded-lg bg-white p-6 shadow-xl">
+        <h2 className={`mb-4 text-xl font-semibold ${actionColor}`}>
           {actionLabel}
         </h2>
 
-        <p className="text-sm text-gray-700 mb-4">
-          You are about to <strong>{ban ? "ban" : "unban"}</strong> 
-          {" "}
-          <strong>{users.length}</strong> users.
+        <p className="mb-4 text-sm text-gray-700">
+          {t("description", { count: users.length })}
         </p>
 
-        <div className="max-h-40 overflow-y-auto border p-3 rounded-md bg-gray-50 text-sm mb-4">
+        <div className="mb-4 max-h-40 overflow-y-auto rounded-md border bg-gray-50 p-3 text-sm">
           {users.map((u) => (
             <p key={u.id} className="text-gray-600">
               • {u.email}
@@ -66,30 +73,33 @@ export default function BulkBanModal({ isOpen, closeModal, users, ban, refreshUs
         </div>
 
         {errors.length > 0 && (
-          <div className="bg-red-50 p-3 rounded-md text-sm text-red-700 mb-3">
-            <p className="font-semibold mb-1">Some operations failed:</p>
+          <div className="mb-3 rounded-md bg-red-50 p-3 text-sm text-red-700">
+            <p className="mb-1 font-semibold">
+              {t("errors.title")}
+            </p>
             {errors.map((e) => (
               <p key={e.id}>
-                {e.email}: {e.error}
+                {e.email}: {t(e.messageKey)}
               </p>
             ))}
           </div>
         )}
 
-        <div className="flex justify-end mt-6 gap-3">
+        <div className="mt-6 flex justify-end gap-3">
           <button
             onClick={closeModal}
-            className="px-4 py-2 rounded-md bg-gray-200 hover:bg-gray-300"
+            disabled={loading}
+            className="rounded-md bg-gray-200 px-4 py-2 hover:bg-gray-300"
           >
-            Cancel
+            {t("actions.cancel")}
           </button>
 
           <button
             onClick={handleBulkBan}
             disabled={loading}
-            className={`px-4 py-2 rounded-md text-white ${buttonColor} disabled:bg-opacity-50`}
+            className={`rounded-md px-4 py-2 text-white ${buttonColor} disabled:opacity-50`}
           >
-            {loading ? `${ban ? "Banning..." : "Unbanning..."}` : actionLabel}
+            {loading ? t("actions.processing") : actionLabel}
           </button>
         </div>
       </div>

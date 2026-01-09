@@ -1,12 +1,11 @@
-// /components/_Admin/Users/Modals/AddUserModal.js
-
 "use client";
 
 import React, { useState } from "react";
+import { useTranslations } from "next-intl";
 import createUser from "../Tools/createUser";
 
 export default function AddUserModal({ isOpen, closeModal, refreshUsers }) {
-  if (!isOpen) return null;
+  const t = useTranslations("admin.users.add");
 
   const [form, setForm] = useState({
     name: "",
@@ -16,104 +15,95 @@ export default function AddUserModal({ isOpen, closeModal, refreshUsers }) {
   });
 
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(false);
+  const [messageKey, setMessageKey] = useState(null);
+  const [isSuccess, setIsSuccess] = useState(false);
+
+  // ✅ EARLY RETURN MUST BE AFTER HOOKS
+  if (!isOpen) return null;
 
   const handleChange = (e) => {
-    setForm({
-      ...form,
+    setForm((prev) => ({
+      ...prev,
       [e.target.name]: e.target.value,
-    });
+    }));
   };
 
   const handleSubmit = async () => {
     setLoading(true);
-    setError(null);
-    setSuccess(false);
+    setMessageKey(null);
+    setIsSuccess(false);
 
     const result = await createUser(form);
 
-    if (!result.success) {
-      setError(result.error);
-    } else {
-      setSuccess(true);
-      refreshUsers(); // reload user list
-      setTimeout(() => {
-        closeModal();
-      }, 700);
+    setMessageKey(result.messageKey);
+    setIsSuccess(result.success);
+
+    if (result.success) {
+      refreshUsers();
+      setTimeout(closeModal, 700);
     }
 
     setLoading(false);
   };
 
   return (
-    <div className="fixed inset-0 bg-neutral-900/40 backdrop-blur-sm flex items-center justify-center z-50">
-      <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-lg">
-        <h2 className="text-xl font-semibold mb-4">Add New User</h2>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+      <div className="w-full max-w-lg rounded-xl bg-white p-6 shadow-xl ">
+        <h2 className="text-xl font-semibold">
+          {t("title")}
+        </h2>
 
-        {/* Form */}
-        <div className="space-y-3">
-          {/* Name */}
+        <div className="mt-4 space-y-3">
           <input
-            type="text"
             name="name"
-            placeholder="User Name"
             value={form.name}
             onChange={handleChange}
-            className="w-full px-4 py-2 border rounded-md"
+            placeholder={t("fields.name")}
+            className="w-full rounded-md border px-4 py-2"
           />
 
-          {/* Email */}
           <input
-            type="email"
             name="email"
-            placeholder="User Email"
             value={form.email}
             onChange={handleChange}
-            className="w-full px-4 py-2 border rounded-md"
+            placeholder={t("fields.email")}
+            className="w-full rounded-md border px-4 py-2"
           />
 
-          {/* Password */}
           <input
             type="password"
             name="password"
-            placeholder="Temporary Password"
             value={form.password}
             onChange={handleChange}
-            className="w-full px-4 py-2 border rounded-md"
+            placeholder={t("fields.password")}
+            className="w-full rounded-md border px-4 py-2"
           />
 
-          {/* Role */}
           <select
             name="role"
             value={form.role}
             onChange={handleChange}
-            className="w-full px-4 py-2 border rounded-md"
+            className="w-full rounded-md border px-4 py-2"
           >
-            <option value="customer">Customer</option>
-            <option value="manager">Manager</option>
-            <option value="admin">Admin</option>
+            <option value="customer">{t("roles.customer")}</option>
+            <option value="manager">{t("roles.manager")}</option>
+            <option value="admin">{t("roles.admin")}</option>
           </select>
         </div>
 
-        {/* Alerts */}
-        {error && <p className="text-red-600 mt-3">{error}</p>}
-        {success && <p className="text-green-600 mt-3">User created!</p>}
+        {messageKey && (
+          <p className={`mt-3 text-sm ${isSuccess ? "text-green-600" : "text-red-600"}`}>
+            {t(messageKey)}
+          </p>
+        )}
 
-        {/* Buttons */}
-        <div className="flex justify-end mt-6 gap-3">
-          <button
-            onClick={closeModal}
-            className="px-4 py-2 rounded-md bg-gray-200 hover:bg-gray-300"
-          >
-            Cancel
+        <div className="mt-6 flex justify-end gap-3">
+          <button onClick={closeModal} className="btn-primary">
+            {t("actions.cancel")}
           </button>
-          <button
-            onClick={handleSubmit}
-            disabled={loading}
-            className="px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:bg-blue-300"
-          >
-            {loading ? "Creating..." : "Create User"}
+
+          <button onClick={handleSubmit} disabled={loading}>
+            {loading ? t("actions.creating") : t("actions.create")}
           </button>
         </div>
       </div>

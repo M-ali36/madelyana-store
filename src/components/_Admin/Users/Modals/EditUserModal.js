@@ -1,37 +1,44 @@
-// /components/_Admin/Users/Modals/EditUserModal.js
-
 "use client";
 
 import React, { useState } from "react";
+import { useTranslations } from "next-intl";
 import { db } from "@/lib/firebaseClient";
 import { doc, updateDoc, serverTimestamp } from "firebase/firestore";
 import sendPasswordReset from "../Tools/sendPasswordReset";
 import banUser from "../Tools/banUser";
 
-export default function EditUserModal({ isOpen, closeModal, user, refreshUsers }) {
-  if (!isOpen || !user) return null;
+export default function EditUserModal({
+  isOpen,
+  closeModal,
+  user,
+  refreshUsers,
+}) {
+  const t = useTranslations("admin.users.edit");
 
   const [form, setForm] = useState({
-    name: user.name || "",
-    email: user.email || "",
+    name: user?.name || "",
+    email: user?.email || "",
   });
 
   const [loading, setLoading] = useState(false);
   const [resetStatus, setResetStatus] = useState(null);
-  const [error, setError] = useState(null);
+  const [errorKey, setErrorKey] = useState(null);
+
+  // ✅ EARLY RETURN AFTER HOOKS
+  if (!isOpen || !user) return null;
 
   const handleChange = (e) => {
-    setForm({
-      ...form,
+    setForm((prev) => ({
+      ...prev,
       [e.target.name]: e.target.value,
-    });
+    }));
   };
 
   /** Save Updates */
   const handleSave = async () => {
     try {
       setLoading(true);
-      setError(null);
+      setErrorKey(null);
 
       await updateDoc(doc(db, "users", user.id), {
         name: form.name,
@@ -43,18 +50,18 @@ export default function EditUserModal({ isOpen, closeModal, user, refreshUsers }
       closeModal();
     } catch (e) {
       console.error(e);
-      setError("Error updating user");
+      setErrorKey("errors.updateFailed");
     }
+
     setLoading(false);
   };
 
   /** Send Password Reset Email */
   const handleResetPassword = async () => {
     setResetStatus("loading");
-    const result = await sendPasswordReset(user.email);
 
-    if (result.success) setResetStatus("success");
-    else setResetStatus("error");
+    const result = await sendPasswordReset(user.email);
+    setResetStatus(result.success ? "success" : "error");
   };
 
   /** Ban or Unban User */
@@ -65,83 +72,90 @@ export default function EditUserModal({ isOpen, closeModal, user, refreshUsers }
   };
 
   return (
-    <div className="fixed inset-0 bg-neutral-900/40 backdrop-blur-sm flex items-center justify-center z-50">
-      <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-lg">
-        <h2 className="text-xl font-semibold mb-4">Edit User</h2>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-neutral-900/40 backdrop-blur-sm">
+      <div className="w-full max-w-lg rounded-lg bg-white p-6 shadow-xl">
+        <h2 className="mb-4 text-xl font-semibold">
+          {t("title")}
+        </h2>
 
         {/* Form */}
         <div className="space-y-3">
-          {/* Name */}
           <input
             type="text"
             name="name"
-            placeholder="User Name"
+            placeholder={t("fields.name")}
             value={form.name}
             onChange={handleChange}
-            className="w-full px-4 py-2 border rounded-md"
+            className="w-full rounded-md border px-4 py-2"
           />
 
-          {/* Email */}
           <input
             type="email"
             name="email"
-            placeholder="User Email"
+            placeholder={t("fields.email")}
             value={form.email}
             onChange={handleChange}
-            className="w-full px-4 py-2 border rounded-md"
+            className="w-full rounded-md border px-4 py-2"
           />
 
-          {/* Ban/Unban */}
+          {/* Ban / Unban */}
           <button
             onClick={toggleBan}
-            className={`w-full py-2 rounded-md text-sm mt-3 ${
+            className={`mt-3 w-full rounded-md py-2 text-sm text-white ${
               user.isBanned
-                ? "bg-green-600 text-white hover:bg-green-700"
-                : "bg-red-600 text-white hover:bg-red-700"
+                ? "bg-green-600 hover:bg-green-700"
+                : "bg-red-600 hover:bg-red-700"
             }`}
           >
-            {user.isBanned ? "Unban User" : "Ban User"}
+            {user.isBanned ? t("actions.unban") : t("actions.ban")}
           </button>
 
           {/* Password Reset */}
           <button
             onClick={handleResetPassword}
             disabled={resetStatus === "loading"}
-            className="w-full py-2 rounded-md text-sm bg-purple-600 text-white hover:bg-purple-700 disabled:bg-purple-300 mt-3"
+            className="mt-3 w-full rounded-md bg-purple-600 py-2 text-sm text-white hover:bg-purple-700 disabled:bg-purple-300"
           >
             {resetStatus === "loading"
-              ? "Sending..."
-              : "Send Password Reset Email"}
+              ? t("actions.sending")
+              : t("actions.resetPassword")}
           </button>
 
           {resetStatus === "success" && (
-            <p className="text-green-600 text-sm">Password reset sent!</p>
+            <p className="text-sm text-green-600">
+              {t("messages.resetSuccess")}
+            </p>
           )}
 
           {resetStatus === "error" && (
-            <p className="text-red-600 text-sm">
-              Failed to send reset email.
+            <p className="text-sm text-red-600">
+              {t("messages.resetFailed")}
             </p>
           )}
         </div>
 
-        {error && <p className="text-red-600 mt-3">{error}</p>}
+        {errorKey && (
+          <p className="mt-3 text-sm text-red-600">
+            {t(errorKey)}
+          </p>
+        )}
 
-        {/* Buttons */}
-        <div className="flex justify-end mt-6 gap-3">
+        {/* Actions */}
+        <div className="mt-6 flex justify-end gap-3">
           <button
             onClick={closeModal}
-            className="px-4 py-2 rounded-md bg-gray-200 hover:bg-gray-300"
+            disabled={loading}
+            className="rounded-md bg-gray-200 px-4 py-2 hover:bg-gray-300"
           >
-            Cancel
+            {t("actions.cancel")}
           </button>
 
           <button
             onClick={handleSave}
             disabled={loading}
-            className="px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:bg-blue-300"
+            className="rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 disabled:bg-blue-300"
           >
-            {loading ? "Saving..." : "Save Changes"}
+            {loading ? t("actions.saving") : t("actions.save")}
           </button>
         </div>
       </div>

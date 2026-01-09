@@ -42,9 +42,9 @@ export default function RelatedCategories({ categories, currentSlug }) {
         <Swiper
           modules={[Navigation]}
           spaceBetween={18}
-          slidesPerView={6.5}
+          slidesPerView={1.5}
           breakpoints={{
-            440: { slidesPerView: 2.5 },
+            100: { slidesPerView: 1.5 },
             640: { slidesPerView: 2.5 },
             1024: { slidesPerView: 3.5 },
             1280: { slidesPerView: 5.5 },

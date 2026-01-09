@@ -21,11 +21,11 @@ export default function HeaderLogo({ locale }) {
     <div className="col-span-6 lg:col-span-2">
       {isHome ? (
         <h1>
-          <Logo className="w-42 text-neutral-900" />
+          <Logo className="w-42" />
         </h1>
       ) : (
         <Link href={`/`} locale={locale} aria-label="Go to Home">
-          <Logo className="w-42 text-neutral-900" />
+          <Logo className="w-42" />
         </Link>
       )}
     </div>

@@ -64,9 +64,9 @@ export default function MiniAccount() {
 	// If NOT logged in → show login button
 	if (!user) {
 		return (
-			<div className="block relative h-8">
-				<Link href="/login" locale={locale} className="control-btn relative">
-					<HiOutlineUser className="w-6 h-6" />
+			<div className="block relative">
+				<Link href="/login" locale={locale} className="header-control icons-hover primary-anime">
+					<HiOutlineUser className="w-5 h-5" />
 				</Link>
 			</div>
 		);
@@ -77,14 +77,14 @@ export default function MiniAccount() {
 		<div className="relative max-lg:hidden" ref={dropdownRef}>
 			<button
 				onClick={toggleOpen}
-				className="control-btn relative"
+				className="header-control icons-hover primary-anime"
 			>
-				<HiOutlineUser className="w-6 h-6" />
-				<span className="absolute -top-1 -end-1 bg-green-500 w-2.5 h-2.5 rounded-full border border-white"></span>
+				<HiOutlineUser className="w-5 h-5" />
+				<span className="absolute top-0 end-0 bg-green-500 w-2.5 h-2.5 rounded-full border border-white"></span>
 			</button>
 
 			{navState === "user" && (
-				<div className="absolute end-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
+				<div className="absolute end-0 mt-4 w-56 bg-white rounded-2xl shadow-lg border border-gray-200 py-2 z-50">
 					
 					{userNavItems.map((item) => {
 						const Icon = item.icon;

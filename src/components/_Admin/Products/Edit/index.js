@@ -5,8 +5,10 @@ import { db } from "@/lib/firebaseClient";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { fetchProducts } from "@/lib/contentfulClient";
 import { useRouter, useParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 export default function EditProductPage() {
+  const t = useTranslations("admin.editProduct");
   const router = useRouter();
   const params = useParams();
   const productId = params.id;
@@ -31,24 +33,20 @@ export default function EditProductPage() {
   useEffect(() => {
     const loadData = async () => {
       try {
-        // Fetch product from Firestore
         const snap = await getDoc(doc(db, "products_dynamic", productId));
         if (!snap.exists()) {
-          setError("Product not found.");
+          setError(t("errors.notFound"));
           return;
         }
 
         const data = snap.data();
 
-        // Fetch Contentful products list
         const cList = await fetchProducts();
         setContentfulProducts(cList);
 
-        // Find the Contentful product info
         const matched = cList.find((p) => p.slug === data.contentfulSlug);
         setProductInfo(matched || null);
 
-        // Populate form
         setForm({
           name: matched?.title || data.name || "",
           contentfulSlug: data.contentfulSlug || "",
@@ -57,7 +55,7 @@ export default function EditProductPage() {
         });
       } catch (err) {
         console.error(err);
-        setError("Failed to load product.");
+        setError(t("errors.load"));
       }
 
       setLoading(false);
@@ -93,12 +91,12 @@ export default function EditProductPage() {
   // Save form
   const handleSave = async () => {
     if (!form.price) {
-      setError("Price is required.");
+      setError(t("errors.price"));
       return;
     }
 
     if (form.variants.length === 0) {
-      setError("Add at least one variant.");
+      setError(t("errors.variants"));
       return;
     }
 
@@ -113,130 +111,126 @@ export default function EditProductPage() {
         updatedAt: new Date(),
       });
 
-      setSuccess("Product updated successfully!");
-
+      setSuccess(t("success"));
       setTimeout(() => router.push("/admin/products"), 1200);
     } catch (err) {
       console.error(err);
-      setError("Failed to save product.");
+      setError(t("errors.save"));
     }
 
     setSaving(false);
   };
 
   if (loading) {
-    return <p className="text-gray-500">Loading product…</p>;
+    return <p className="text-gray-500">{t("loading")}</p>;
   }
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-semibold text-foreground">Edit Product</h1>
+        <h1 className="text-2xl font-semibold">{t("title")}</h1>
       </div>
 
-      <div className="bg-white p-6 border rounded-xl shadow-card space-y-6">
+      <div className="space-y-6 rounded-xl border bg-white p-6 shadow-card">
         {/* Error */}
         {error && (
-          <div className="bg-red-100 text-red-700 px-4 py-3 rounded border border-red-300">
+          <div className="rounded border border-red-300 bg-red-100 px-4 py-3 text-red-700">
             {error}
           </div>
         )}
 
         {/* Success */}
         {success && (
-          <div className="bg-green-100 text-green-700 px-4 py-3 rounded border border-green-300">
+          <div className="rounded border border-green-300 bg-green-100 px-4 py-3 text-green-700">
             {success}
           </div>
         )}
 
-        {/* NAME (disabled) */}
+        {/* NAME */}
         <div>
-          <label className="block mb-1 text-sm font-semibold text-gray-700">
-            Product Name (from Contentful)
+          <label className="mb-1 block text-sm font-semibold text-gray-700">
+            {t("fields.name")}
           </label>
           <input
             disabled
             value={form.name}
-            className="w-full px-4 py-2 border rounded-md bg-gray-100"
+            className="w-full rounded-md border bg-gray-100 px-4 py-2"
           />
         </div>
 
-        {/* SLUG (disabled) */}
+        {/* SLUG */}
         <div>
-          <label className="block mb-1 text-sm font-semibold text-gray-700">
-            Contentful Slug (locked)
+          <label className="mb-1 block text-sm font-semibold text-gray-700">
+            {t("fields.slug")}
           </label>
           <input
             disabled
             value={form.contentfulSlug}
-            className="w-full px-4 py-2 border rounded-md bg-gray-100"
+            className="w-full rounded-md border bg-gray-100 px-4 py-2"
           />
         </div>
 
         {/* PRICE */}
         <div>
-          <label className="block mb-1 text-sm font-semibold text-gray-700">
-            Base Price *
+          <label className="mb-1 block text-sm font-semibold text-gray-700">
+            {t("fields.price")} *
           </label>
           <input
             type="number"
             min="0"
             value={form.price}
             onChange={(e) => updateField("price", e.target.value)}
-            className="w-full px-4 py-2 border rounded-md focus:ring-primary"
+            className="w-full rounded-md border px-4 py-2"
           />
         </div>
 
         {/* VARIANTS */}
         <div className="space-y-4">
-          <div className="flex justify-between items-center">
-            <h3 className="text-lg font-semibold">Variants</h3>
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-semibold">{t("variants")}</h3>
             <button
               onClick={addVariant}
-              className="px-3 py-2 bg-neutral-900 text-white rounded-md hover:bg-gray-800"
+              className="rounded-md bg-neutral-900 px-3 py-2 text-white hover:bg-gray-800"
             >
-              + Add Variant
+              {t("addVariant")}
             </button>
           </div>
 
           {form.variants.map((variant, index) => (
             <div
               key={index}
-              className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 bg-gray-50 border rounded-lg"
+              className="grid grid-cols-1 gap-4 rounded-lg border bg-gray-50 p-4 md:grid-cols-4"
             >
-              {/* Color */}
               <div>
-                <label className="block mb-1 text-sm text-gray-700">
-                  Color
+                <label className="mb-1 block text-sm text-gray-700">
+                  {t("color")}
                 </label>
                 <input
                   value={variant.color}
                   onChange={(e) =>
                     updateVariant(index, "color", e.target.value)
                   }
-                  className="w-full px-3 py-2 border rounded-md"
+                  className="w-full rounded-md border px-3 py-2"
                 />
               </div>
 
-              {/* Size */}
               <div>
-                <label className="block mb-1 text-sm text-gray-700">
-                  Size
+                <label className="mb-1 block text-sm text-gray-700">
+                  {t("size")}
                 </label>
                 <input
                   value={variant.size}
                   onChange={(e) =>
                     updateVariant(index, "size", e.target.value)
                   }
-                  className="w-full px-3 py-2 border rounded-md"
+                  className="w-full rounded-md border px-3 py-2"
                 />
               </div>
 
-              {/* Quantity */}
               <div>
-                <label className="block mb-1 text-sm text-gray-700">
-                  Quantity
+                <label className="mb-1 block text-sm text-gray-700">
+                  {t("quantity")}
                 </label>
                 <input
                   type="number"
@@ -245,32 +239,31 @@ export default function EditProductPage() {
                   onChange={(e) =>
                     updateVariant(index, "quantity", e.target.value)
                   }
-                  className="w-full px-3 py-2 border rounded-md"
+                  className="w-full rounded-md border px-3 py-2"
                 />
               </div>
 
-              {/* Remove */}
               <div className="flex items-end">
                 <button
                   onClick={() => removeVariant(index)}
-                  className="px-3 py-2 w-full bg-red-500 text-white rounded-md hover:bg-red-600"
+                  className="w-full rounded-md bg-red-500 px-3 py-2 text-white hover:bg-red-600"
                 >
-                  Remove
+                  {t("remove")}
                 </button>
               </div>
             </div>
           ))}
         </div>
 
-        {/* SAVE BUTTON */}
+        {/* SAVE */}
         <button
           onClick={handleSave}
           disabled={saving}
-          className={`w-full py-2 rounded-md text-white transition ${
+          className={`w-full rounded-md py-2 text-white ${
             saving ? "bg-gray-400" : "bg-neutral-900 hover:bg-gray-800"
           }`}
         >
-          {saving ? "Saving…" : "Save Changes"}
+          {saving ? t("saving") : t("save")}
         </button>
       </div>
     </div>

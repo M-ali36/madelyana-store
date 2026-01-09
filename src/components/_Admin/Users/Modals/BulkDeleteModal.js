@@ -1,15 +1,22 @@
-// /components/_Admin/Users/Modals/BulkDeleteModal.js
-
 "use client";
 
 import React, { useState } from "react";
+import { useTranslations } from "next-intl";
 import deleteUser from "../Tools/deleteUser";
 
-export default function BulkDeleteModal({ isOpen, closeModal, users, refreshUsers }) {
-  if (!isOpen || !users || users.length === 0) return null;
+export default function BulkDeleteModal({
+  isOpen,
+  closeModal,
+  users,
+  refreshUsers,
+}) {
+  const t = useTranslations("admin.users.bulkDelete");
 
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState([]);
+
+  // ✅ EARLY RETURN AFTER HOOKS
+  if (!isOpen || !users || users.length === 0) return null;
 
   const handleBulkDelete = async () => {
     setLoading(true);
@@ -24,7 +31,7 @@ export default function BulkDeleteModal({ isOpen, closeModal, users, refreshUser
         errorList.push({
           id: user.id,
           email: user.email,
-          error: result.error,
+          messageKey: result.messageKey,
         });
       }
     }
@@ -40,18 +47,17 @@ export default function BulkDeleteModal({ isOpen, closeModal, users, refreshUser
   };
 
   return (
-    <div className="fixed inset-0 bg-neutral-900/40 flex items-center justify-center backdrop-blur-sm z-50">
-      <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-lg">
-        <h2 className="text-xl font-semibold text-red-600 mb-4">
-          Bulk Delete Users
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-neutral-900/40 backdrop-blur-sm">
+      <div className="w-full max-w-lg rounded-lg bg-white p-6 shadow-xl">
+        <h2 className="mb-4 text-xl font-semibold text-red-600">
+          {t("title")}
         </h2>
 
-        <p className="text-sm text-gray-700 mb-4">
-          You are about to delete <strong>{users.length}</strong> users.  
-          This action cannot be undone.
+        <p className="mb-4 text-sm text-gray-700">
+          {t("description", { count: users.length })}
         </p>
 
-        <div className="max-h-40 overflow-y-auto border p-3 rounded-md bg-gray-50 text-sm mb-4">
+        <div className="mb-4 max-h-40 overflow-y-auto rounded-md border bg-gray-50 p-3 text-sm">
           {users.map((u) => (
             <p key={u.id} className="text-gray-600">
               • {u.email}
@@ -60,30 +66,33 @@ export default function BulkDeleteModal({ isOpen, closeModal, users, refreshUser
         </div>
 
         {errors.length > 0 && (
-          <div className="bg-red-50 p-3 rounded-md text-sm text-red-700 mb-3">
-            <p className="font-semibold mb-1">Some deletions failed:</p>
+          <div className="mb-3 rounded-md bg-red-50 p-3 text-sm text-red-700">
+            <p className="mb-1 font-semibold">
+              {t("errors.title")}
+            </p>
             {errors.map((e) => (
               <p key={e.id}>
-                {e.email}: {e.error}
+                {e.email}: {t(e.messageKey)}
               </p>
             ))}
           </div>
         )}
 
-        <div className="flex justify-end mt-6 gap-3">
+        <div className="mt-6 flex justify-end gap-3">
           <button
             onClick={closeModal}
-            className="px-4 py-2 rounded-md bg-gray-200 hover:bg-gray-300"
+            disabled={loading}
+            className="rounded-md bg-gray-200 px-4 py-2 hover:bg-gray-300"
           >
-            Cancel
+            {t("actions.cancel")}
           </button>
 
           <button
             onClick={handleBulkDelete}
             disabled={loading}
-            className="px-4 py-2 rounded-md bg-red-600 text-white hover:bg-red-700 disabled:bg-red-300"
+            className="rounded-md bg-red-600 px-4 py-2 text-white hover:bg-red-700 disabled:bg-red-300"
           >
-            {loading ? "Deleting..." : "Delete All"}
+            {loading ? t("actions.deleting") : t("actions.delete")}
           </button>
         </div>
       </div>

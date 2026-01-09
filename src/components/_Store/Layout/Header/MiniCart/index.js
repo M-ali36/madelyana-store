@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { HiOutlineShoppingBag } from "react-icons/hi";
+import { IoBagHandleOutline, IoBagHandle } from "react-icons/io5";
 import { useAppContext } from "@/components/context/AppContext";
 import Image from "next/image";
 import Link from "@/components/Ui/Link";
@@ -132,14 +132,13 @@ export default function MiniCart() {
   return (
     <div className="relative hidden lg:block">
       {/* ICON */}
-      <button className="relative control-btn" onClick={toggleCart} aria-label="My Cart">
-        <HiOutlineShoppingBag className="w-6 h-6" />
+      <button className="header-control icons-hover primary-anime" onClick={toggleCart} aria-label="My Cart">
 
-        {cart.length > 0 && (
-          <span className="absolute -top-2 -right-2 bg-primary text-neutral-900 text-xs w-5 h-5 flex items-center justify-center rounded-full">
-            {cart.length}
-          </span>
-        )}
+        {cart.length > 0 ?
+          <IoBagHandle className="w-5 h-5 -mt-[2px] fill-emerald-500" />
+          :
+          <IoBagHandleOutline className="w-5 h-5 -mt-[2px]" />
+        }
       </button>
 
       {/* DRAWER PORTAL */}

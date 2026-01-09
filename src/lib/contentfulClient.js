@@ -1023,7 +1023,6 @@ export async function fetchStandardContent(slug, locale = "en-US") {
 
   const data = await res.json();
 
-  console.log("Single page query result:", data);
 
   if (!data?.items?.length) return null;
 
