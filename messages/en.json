@@ -738,6 +738,80 @@
             }
         }
     },
+    "aiImageGen": {
+        "app": {
+            "title": "AI Product Image Generator",
+            "next": "Next",
+            "back": "Back",
+            "generate": "Generate Images",
+            "review": "Review",
+            "required": "Required"
+        },
+
+        "bagTypes": {
+            "shoulder": "Shoulder Bag",
+            "crossbody": "Crossbody Bag",
+            "handbag": "Handbag",
+            "clutch": "Clutch Bag",
+            "tote": "Tote Bag"
+        },
+
+        "occasions": {
+            "work": "Work",
+            "casual": "Casual",
+            "travel": "Travel",
+            "shopping": "Shopping",
+            "formal": "Formal",
+            "evening": "Evening",
+            "wedding": "Wedding",
+            "party": "Party",
+            "event": "Event"
+        },
+
+        "models": {
+            "title": "Choose a Model",
+            "model_01": "Modern Professional",
+            "model_02": "Casual Urban",
+            "model_03": "Elegant Evening",
+            "model_04": "Elegant Evening"
+        },
+
+        "perspectives": {
+            "product_only": "Product Only",
+            "held_hand": "Held by Hand",
+            "worn_front": "Worn – Front View",
+            "worn_side": "Worn – Side View",
+            "worn_back": "Worn – Back View",
+            "interior": "Interior View"
+        },
+
+        "steps": {
+            "select_bag_type": "Select Bag Type",
+            "select_occasion": "Select Occasion",
+            "select_model": "Select Model",
+            "upload_product": "Upload Product Image",
+            "product_details": "Product Dimensions",
+            "select_perspectives": "Select Perspectives",
+            "review_generate": "Review & Generate"
+        },
+
+        "product": {
+            "upload": "Upload Product Image",
+            "uploadHint": "Use a clear image with a clean background",
+            "width": "Width (cm)",
+            "height": "Height (cm)",
+            "depth": "Depth (cm)"
+        },
+
+        "review": {
+            "bagType": "Bag Type",
+            "occasion": "Occasion",
+            "model": "Model",
+            "dimensions": "Dimensions",
+            "perspectives": "Perspectives",
+            "totalImages": "Total Images"
+        }
+    },
     "byPrice": "By Price",
     "from": "From",
     "to": "To",

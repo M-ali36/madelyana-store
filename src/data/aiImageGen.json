@@ -1,0 +1,304 @@
+{
+  "bagTypes": [
+    {
+      "id": "shoulder",
+      "allowedOccasions": ["work", "casual", "dinner"],
+      "allowedPerspectives": [
+        "product_only",
+        "held_hand",
+        "worn_front",
+        "worn_side",
+        "interior"
+      ],
+      "defaultCarryStyle": "shoulder"
+    },
+    {
+      "id": "crossbody",
+      "allowedOccasions": ["casual", "travel", "shopping"],
+      "allowedPerspectives": [
+        "product_only",
+        "worn_front",
+        "worn_side",
+        "worn_back",
+        "interior"
+      ],
+      "defaultCarryStyle": "crossbody"
+    },
+    {
+      "id": "handbag",
+      "allowedOccasions": ["work", "formal", "event"],
+      "allowedPerspectives": [
+        "product_only",
+        "held_hand",
+        "worn_front",
+        "worn_side",
+        "interior"
+      ],
+      "defaultCarryStyle": "hand_held"
+    },
+    {
+      "id": "clutch",
+      "allowedOccasions": ["evening", "wedding", "party"],
+      "allowedPerspectives": [
+        "product_only",
+        "held_hand"
+      ],
+      "defaultCarryStyle": "hand_held"
+    },
+    {
+      "id": "tote",
+      "allowedOccasions": ["work", "travel", "casual"],
+      "allowedPerspectives": [
+        "product_only",
+        "held_hand",
+        "worn_front",
+        "worn_side",
+        "interior"
+      ],
+      "defaultCarryStyle": "shoulder"
+    }
+  ],
+
+  "occasions": [
+    {
+      "id": "work",
+      "defaultOutfitStyle": "professional",
+      "defaultEnvironment": "office_or_city",
+      "defaultMood": "confident",
+      "lighting": "soft_studio"
+    },
+    {
+      "id": "casual",
+      "defaultOutfitStyle": "casual_chic",
+      "defaultEnvironment": "urban_outdoor",
+      "defaultMood": "relaxed",
+      "lighting": "natural_daylight"
+    },
+    {
+      "id": "travel",
+      "defaultOutfitStyle": "comfortable_stylish",
+      "defaultEnvironment": "travel_scene",
+      "defaultMood": "practical",
+      "lighting": "natural_daylight"
+    },
+    {
+      "id": "shopping",
+      "defaultOutfitStyle": "modern_casual",
+      "defaultEnvironment": "city_street",
+      "defaultMood": "lifestyle",
+      "lighting": "natural_daylight"
+    },
+    {
+      "id": "formal",
+      "defaultOutfitStyle": "elegant",
+      "defaultEnvironment": "luxury_indoor",
+      "defaultMood": "refined",
+      "lighting": "controlled_studio"
+    },
+    {
+      "id": "evening",
+      "defaultOutfitStyle": "evening_wear",
+      "defaultEnvironment": "evening_indoor",
+      "defaultMood": "sophisticated",
+      "lighting": "low_light_luxury"
+    },
+    {
+      "id": "wedding",
+      "defaultOutfitStyle": "formal_evening",
+      "defaultEnvironment": "event_location",
+      "defaultMood": "celebratory",
+      "lighting": "soft_luxury"
+    },
+    {
+      "id": "party",
+      "defaultOutfitStyle": "stylish_evening",
+      "defaultEnvironment": "party_indoor",
+      "defaultMood": "fashion_forward",
+      "lighting": "dramatic"
+    },
+    {
+      "id": "event",
+      "defaultOutfitStyle": "semi_formal",
+      "defaultEnvironment": "hotel_or_event_space",
+      "defaultMood": "polished",
+      "lighting": "controlled_studio"
+    }
+  ],
+
+  "models": [
+    {
+      "id": "model_01",
+      "gender": "female",
+      "ageRange": "25-35",
+      "vibe": "modern_professional",
+      "image": "/models/model_01.webp",
+      "allowedBagTypes": ["shoulder", "handbag", "tote"]
+    },
+    {
+      "id": "model_02",
+      "gender": "female",
+      "ageRange": "20-30",
+      "vibe": "casual_urban",
+      "image": "/models/model_02.webp",
+      "allowedBagTypes": ["crossbody", "tote"]
+    },
+    {
+      "id": "model_03",
+      "gender": "female",
+      "ageRange": "30-45",
+      "vibe": "elegant_evening",
+      "image": "/models/model_03.webp",
+      "allowedBagTypes": ["handbag", "clutch"]
+    },
+    {
+      "id": "model_04",
+      "gender": "female",
+      "ageRange": "30-45",
+      "vibe": "elegant_evening",
+      "image": "/models/model_04.webp",
+      "allowedBagTypes": ["handbag", "clutch"]
+    }
+  ],
+
+  "perspectives": [
+        {
+        "id": "shoulder_back_left",
+        "label": {
+            "en": "Shoulder – Back (Left)",
+            "ar": "على الكتف – خلفي (يسار)"
+        },
+        "image": "/perspectives/shoulder_back_left.webp",
+        "allowedBagTypes": ["shoulder", "tote"]
+        },
+        {
+        "id": "crossbody_front_right_to_left",
+        "label": {
+            "en": "Crossbody – Front (Right to Left)",
+            "ar": "كروس بودي – أمامي (يمين إلى يسار)"
+        },
+        "image": "/perspectives/crossbody_front_right_to_left.webp",
+        "allowedBagTypes": ["crossbody"]
+        },
+        {
+        "id": "hand_held_low_center",
+        "label": {
+            "en": "Handheld – Low Center",
+            "ar": "ممسوك باليد – منخفض في المنتصف"
+        },
+        "image": "/perspectives/hand_held_low_center.webp",
+        "allowedBagTypes": ["handbag", "tote"]
+        },
+        {
+        "id": "shoulder_front_left",
+        "label": {
+            "en": "Shoulder – Front (Left)",
+            "ar": "على الكتف – أمامي (يسار)"
+        },
+        "image": "/perspectives/shoulder_front_left.webp",
+        "allowedBagTypes": ["shoulder", "tote"]
+        },
+        {
+        "id": "crossbody_front_center",
+        "label": {
+            "en": "Crossbody – Front Center",
+            "ar": "كروس بودي – أمامي في المنتصف"
+        },
+        "image": "/perspectives/crossbody_front_center.webp",
+        "allowedBagTypes": ["crossbody"]
+        },
+        {
+        "id": "crossbody_front_right",
+        "label": {
+            "en": "Crossbody – Front Right",
+            "ar": "كروس بودي – أمامي يمين"
+        },
+        "image": "/perspectives/crossbody_front_right.webp",
+        "allowedBagTypes": ["crossbody"]
+        },
+        {
+        "id": "hand_held_extended_right",
+        "label": {
+            "en": "Handheld – Extended Right",
+            "ar": "ممسوك باليد – ممتد إلى اليمين"
+        },
+        "image": "/perspectives/hand_held_extended_right.webp",
+        "allowedBagTypes": ["handbag", "clutch"]
+        },
+        {
+        "id": "hand_held_low_right",
+        "label": {
+            "en": "Handheld – Low Right",
+            "ar": "ممسوك باليد – منخفض يمين"
+        },
+        "image": "/perspectives/hand_held_low_right.webp",
+        "allowedBagTypes": ["handbag", "tote"]
+        },
+        {
+        "id": "hand_held_waist_center",
+        "label": {
+            "en": "Handheld – Waist Center",
+            "ar": "ممسوك باليد – عند الخصر في المنتصف"
+        },
+        "image": "/perspectives/hand_held_waist_center.webp",
+        "allowedBagTypes": ["handbag"]
+        },
+        {
+        "id": "crossbody_front_center_low",
+        "label": {
+            "en": "Crossbody – Front Center (Low)",
+            "ar": "كروس بودي – أمامي منخفض في المنتصف"
+        },
+        "image": "/perspectives/crossbody_front_center_low.webp",
+        "allowedBagTypes": ["crossbody"]
+        }
+    ],
+
+  "steps": [
+    {
+      "id": "select_bag_type",
+      "order": 1,
+      "required": true,
+      "dataSource": "bagTypes",
+      "uiType": "card_select"
+    },
+    {
+      "id": "select_occasion",
+      "order": 2,
+      "required": true,
+      "dataSource": "occasions",
+      "uiType": "card_select"
+    },
+    {
+      "id": "select_model",
+      "order": 3,
+      "required": true,
+      "dataSource": "models",
+      "uiType": "image_checkbox"
+    },
+    {
+      "id": "upload_product",
+      "order": 4,
+      "required": true,
+      "uiType": "file_upload"
+    },
+    {
+      "id": "product_details",
+      "order": 5,
+      "required": true,
+      "uiType": "dimension_input"
+    },
+    {
+      "id": "select_perspectives",
+      "order": 6,
+      "required": true,
+      "dataSource": "perspectives",
+      "uiType": "multi_checkbox"
+    },
+    {
+      "id": "review_generate",
+      "order": 7,
+      "required": true,
+      "uiType": "summary"
+    }
+  ]
+}

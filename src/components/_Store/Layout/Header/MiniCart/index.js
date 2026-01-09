@@ -177,7 +177,7 @@ export default function MiniCart() {
                 </div>
 
                 {/* ITEM LIST */}
-                <div className="space-y-6 overflow-y-auto flex-1 p-6 border-y border-slate-300 rounded">
+                <div className="space-y-6 overflow-y-auto flex-1 p-6 border-y border-slate-300">
                   {cart.length === 0 && (
                     <p className="text-gray-500 text-center">{t("empty")}</p>
                   )}
@@ -204,7 +204,7 @@ export default function MiniCart() {
                         </p>
                         <button
                           onClick={() => removeItem(item.variantId)}
-                          className="text-xs text-red-500"
+                          className="text-xs text-red-500 underline cursor-pointer"
                         >
                           {t("remove")}
                         </button>

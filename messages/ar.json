@@ -738,6 +738,80 @@
             }
         }
     },
+    "aiImageGen": {
+        "app": {
+            "title": "مولّد صور المنتجات بالذكاء الاصطناعي",
+            "next": "التالي",
+            "back": "رجوع",
+            "generate": "إنشاء الصور",
+            "review": "مراجعة",
+            "required": "إلزامي"
+        },
+
+        "bagTypes": {
+            "shoulder": "حقيبة كتف",
+            "crossbody": "حقيبة كروس بودي",
+            "handbag": "حقيبة يد",
+            "clutch": "حقيبة كلتش",
+            "tote": "حقيبة توت"
+        },
+
+        "occasions": {
+            "work": "العمل",
+            "casual": "كاجوال",
+            "travel": "السفر",
+            "shopping": "التسوق",
+            "formal": "رسمي",
+            "evening": "مسائي",
+            "wedding": "زفاف",
+            "party": "حفلة",
+            "event": "مناسبة"
+        },
+
+        "models": {
+            "title": "اختيار العارضة",
+            "model_01": "عصرية – مهنية",
+            "model_02": "كاجوال – حضرية",
+            "model_03": "مسائية – أنيقة",
+            "model_04": "مسائية – أنيقة"
+        },
+
+        "perspectives": {
+            "product_only": "المنتج فقط",
+            "held_hand": "ممسوكة باليد",
+            "worn_front": "ارتداء من الأمام",
+            "worn_side": "ارتداء من الجانب",
+            "worn_back": "ارتداء من الخلف",
+            "interior": "المنظر الداخلي"
+        },
+
+        "steps": {
+            "select_bag_type": "اختيار نوع الحقيبة",
+            "select_occasion": "اختيار المناسبة",
+            "select_model": "اختيار العارضة",
+            "upload_product": "رفع صورة المنتج",
+            "product_details": "أبعاد المنتج",
+            "select_perspectives": "اختيار زوايا العرض",
+            "review_generate": "مراجعة وإنشاء"
+        },
+
+        "product": {
+            "upload": "رفع صورة المنتج",
+            "uploadHint": "يفضّل استخدام صورة واضحة بخلفية نظيفة",
+            "width": "العرض (سم)",
+            "height": "الطول (سم)",
+            "depth": "العمق (سم)"
+        },
+
+        "review": {
+            "bagType": "نوع الحقيبة",
+            "occasion": "المناسبة",
+            "model": "العارضة",
+            "dimensions": "الأبعاد",
+            "perspectives": "زوايا العرض",
+            "totalImages": "عدد الصور"
+        }
+    },
     "byPrice": "حسب السعر",
     "from": "من",
     "to": "إلى",

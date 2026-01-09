@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { HiHeart, HiOutlineHeart } from "react-icons/hi";
+import { HiHeart, HiOutlineHeart, HiX } from "react-icons/hi";
 import { useAppContext } from "@/components/context/AppContext";
 import Image from "next/image";
 import Link from "@/components/Ui/Link";
@@ -127,64 +127,66 @@ export default function MiniWishlist() {
                     : `translateX(-${drawerWidth}px)`
               }}
             >
-              {/* HEADER */}
-              <div className="p-4 flex justify-between items-center border-b">
-                <h2 className="text-lg font-semibold">{t("yourWishlist")}</h2>
-                <button onClick={() => setNavState("")} className="text-gray-500 text-xl">
-                  ✕
-                </button>
-              </div>
+              <div className="flex flex-col h-full">
+                {/* HEADER */}
+                <div className="flex justify-between items-center mb-4 px-4">
+                  <h2 className="text-base font-semibold">{t("yourWishlist")}</h2>
+                  <button onClick={() => setNavState("")} className="text-xl text-white h-6 w-6 rounded-full bg-neutral-900 cursor-pointer flex items-center justify-center">
+                    <HiX className="h-3 w-3"/>
+                  </button>
+                </div>
 
-              {/* ITEMS */}
-              <div className="p-4 space-y-4 max-h-[70vh] overflow-y-auto">
-                {wishlist.length === 0 && (
-                  <p className="text-gray-500 text-center">{t("empty")}</p>
-                )}
+                {/* ITEMS */}
+                <div className="space-y-4 overflow-y-auto flex-1 p-6 border-y border-slate-300">
+                  {wishlist.length === 0 && (
+                    <p className="text-gray-500 text-center">{t("empty")}</p>
+                  )}
 
-                {wishlist.map((item) => (
-                  <div key={item.id} className="flex gap-4 border-b pb-3">
-                    <Image
-                      src={item.image}
-                      width={64}
-                      height={64}
-                      alt={item.title}
-                      className="rounded-md"
-                    />
+                  {wishlist.map((item) => (
+                    <div key={item.id} className="flex items-center justify-between pb-5 border-b border-slate-300 last:border-0">
+                      <Image
+                        src={item.image}
+                        width={64}
+                        height={64}
+                        alt={item.title}
+                        className="rounded-md"
+                      />
 
-                    <div className="flex-1">
-                      <h3 className="text-sm font-medium">{item.title}</h3>
-                      <p className="text-gray-600 text-xs mt-1">${item.price}</p>
+                      <div className="flex-1">
+                        <h3 className="text-sm font-medium">{item.title}</h3>
+                        <p className="text-gray-600 text-xs mt-1">${item.price}</p>
+
+                        <button
+                          onClick={() => addToCart(item)}
+                          className="mt-2 px-3 py-1 bg-primary text-neutral-900 rounded text-sm w-full"
+                        >
+                          {t("addToCart")}
+                        </button>
+                      </div>
 
                       <button
-                        onClick={() => addToCart(item)}
-                        className="mt-2 px-3 py-1 bg-primary text-neutral-900 rounded text-sm w-full"
+                        className="text-red-500 text-sm"
+                        onClick={() => removeItem(item.id)}
                       >
-                        {t("addToCart")}
+                        {t("remove")}
                       </button>
                     </div>
-
-                    <button
-                      className="text-red-500 text-sm"
-                      onClick={() => removeItem(item.id)}
-                    >
-                      {t("remove")}
-                    </button>
-                  </div>
-                ))}
-              </div>
-
-              {wishlist.length > 0 && (
-                <div className="p-4 border-t">
-                  <Link
-                    href="/customer/wishlist"
-                    locale={locale}
-                    onClick={() => setNavState("")}
-                    className="block w-full py-2 text-center bg-gray-100 border border-gray-300 rounded-md"
-                  >
-                    {t("viewWishlist")}
-                  </Link>
+                  ))}
                 </div>
-              )}
+
+                {wishlist.length > 0 && (
+                  <div className="p-4">
+                    <Link
+                      href="/customer/wishlist"
+                      locale={locale}
+                      onClick={() => setNavState("")}
+                      className="block w-full py-2 text-center bg-gray-100 border border-gray-300 rounded-md"
+                    >
+                      {t("viewWishlist")}
+                    </Link>
+                  </div>
+                )}
+              </div>
             </div>
           </>,
           document.getElementById("ui-layer")

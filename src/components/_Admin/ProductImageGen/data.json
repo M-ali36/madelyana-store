@@ -1,0 +1,260 @@
+{
+  "bagTypes": [
+    {
+      "id": "shoulder",
+      "allowedOccasions": ["work", "casual", "dinner"],
+      "allowedPerspectives": [
+        "product_only",
+        "held_hand",
+        "worn_front",
+        "worn_side",
+        "interior"
+      ],
+      "defaultCarryStyle": "shoulder"
+    },
+    {
+      "id": "crossbody",
+      "allowedOccasions": ["casual", "travel", "shopping"],
+      "allowedPerspectives": [
+        "product_only",
+        "worn_front",
+        "worn_side",
+        "worn_back",
+        "interior"
+      ],
+      "defaultCarryStyle": "crossbody"
+    },
+    {
+      "id": "handbag",
+      "allowedOccasions": ["work", "formal", "event"],
+      "allowedPerspectives": [
+        "product_only",
+        "held_hand",
+        "worn_front",
+        "worn_side",
+        "interior"
+      ],
+      "defaultCarryStyle": "hand_held"
+    },
+    {
+      "id": "clutch",
+      "allowedOccasions": ["evening", "wedding", "party"],
+      "allowedPerspectives": [
+        "product_only",
+        "held_hand"
+      ],
+      "defaultCarryStyle": "hand_held"
+    },
+    {
+      "id": "tote",
+      "allowedOccasions": ["work", "travel", "casual"],
+      "allowedPerspectives": [
+        "product_only",
+        "held_hand",
+        "worn_front",
+        "worn_side",
+        "interior"
+      ],
+      "defaultCarryStyle": "shoulder"
+    }
+  ],
+
+  "occasions": [
+    {
+      "id": "work",
+      "defaultOutfitStyle": "professional",
+      "defaultEnvironment": "office_or_city",
+      "defaultMood": "confident",
+      "lighting": "soft_studio"
+    },
+    {
+      "id": "casual",
+      "defaultOutfitStyle": "casual_chic",
+      "defaultEnvironment": "urban_outdoor",
+      "defaultMood": "relaxed",
+      "lighting": "natural_daylight"
+    },
+    {
+      "id": "travel",
+      "defaultOutfitStyle": "comfortable_stylish",
+      "defaultEnvironment": "travel_scene",
+      "defaultMood": "practical",
+      "lighting": "natural_daylight"
+    },
+    {
+      "id": "shopping",
+      "defaultOutfitStyle": "modern_casual",
+      "defaultEnvironment": "city_street",
+      "defaultMood": "lifestyle",
+      "lighting": "natural_daylight"
+    },
+    {
+      "id": "formal",
+      "defaultOutfitStyle": "elegant",
+      "defaultEnvironment": "luxury_indoor",
+      "defaultMood": "refined",
+      "lighting": "controlled_studio"
+    },
+    {
+      "id": "evening",
+      "defaultOutfitStyle": "evening_wear",
+      "defaultEnvironment": "evening_indoor",
+      "defaultMood": "sophisticated",
+      "lighting": "low_light_luxury"
+    },
+    {
+      "id": "wedding",
+      "defaultOutfitStyle": "formal_evening",
+      "defaultEnvironment": "event_location",
+      "defaultMood": "celebratory",
+      "lighting": "soft_luxury"
+    },
+    {
+      "id": "party",
+      "defaultOutfitStyle": "stylish_evening",
+      "defaultEnvironment": "party_indoor",
+      "defaultMood": "fashion_forward",
+      "lighting": "dramatic"
+    },
+    {
+      "id": "event",
+      "defaultOutfitStyle": "semi_formal",
+      "defaultEnvironment": "hotel_or_event_space",
+      "defaultMood": "polished",
+      "lighting": "controlled_studio"
+    }
+  ],
+
+  "models": [
+    {
+      "id": "model_01",
+      "gender": "female",
+      "ageRange": "25-35",
+      "vibe": "modern_professional",
+      "image": "/models/model_01.jpg",
+      "allowedBagTypes": ["shoulder", "handbag", "tote"]
+    },
+    {
+      "id": "model_02",
+      "gender": "female",
+      "ageRange": "20-30",
+      "vibe": "casual_urban",
+      "image": "/models/model_02.jpg",
+      "allowedBagTypes": ["crossbody", "tote"]
+    },
+    {
+      "id": "model_03",
+      "gender": "female",
+      "ageRange": "30-45",
+      "vibe": "elegant_evening",
+      "image": "/models/model_03.jpg",
+      "allowedBagTypes": ["handbag", "clutch"]
+    }
+  ],
+
+  "perspectives": [
+    {
+      "id": "product_only",
+      "cameraAngle": "eye_level",
+      "poseType": "none",
+      "bagVisibility": "full",
+      "bagPriority": "primary",
+      "cropRule": "full_product",
+      "requiresModel": false
+    },
+    {
+      "id": "held_hand",
+      "cameraAngle": "eye_level",
+      "poseType": "standing_hold",
+      "bagVisibility": "full",
+      "bagPriority": "primary",
+      "cropRule": "mid_body",
+      "requiresModel": true
+    },
+    {
+      "id": "worn_front",
+      "cameraAngle": "eye_level",
+      "poseType": "natural_standing",
+      "bagVisibility": "full",
+      "bagPriority": "primary",
+      "cropRule": "mid_body",
+      "requiresModel": true
+    },
+    {
+      "id": "worn_side",
+      "cameraAngle": "three_quarter",
+      "poseType": "walking_or_turn",
+      "bagVisibility": "full",
+      "bagPriority": "primary",
+      "cropRule": "mid_body",
+      "requiresModel": true
+    },
+    {
+      "id": "worn_back",
+      "cameraAngle": "rear_three_quarter",
+      "poseType": "walking_away",
+      "bagVisibility": "full",
+      "bagPriority": "primary",
+      "cropRule": "mid_body",
+      "requiresModel": true
+    },
+    {
+      "id": "interior",
+      "cameraAngle": "top_down",
+      "poseType": "open_bag",
+      "bagVisibility": "interior_focus",
+      "bagPriority": "primary",
+      "cropRule": "close_up",
+      "requiresModel": false
+    }
+  ],
+
+  "steps": [
+    {
+      "id": "select_bag_type",
+      "order": 1,
+      "required": true,
+      "dataSource": "bagTypes",
+      "uiType": "card_select"
+    },
+    {
+      "id": "select_occasion",
+      "order": 2,
+      "required": true,
+      "dataSource": "occasions",
+      "uiType": "card_select"
+    },
+    {
+      "id": "select_model",
+      "order": 3,
+      "required": true,
+      "dataSource": "models",
+      "uiType": "image_checkbox"
+    },
+    {
+      "id": "upload_product",
+      "order": 4,
+      "required": true,
+      "uiType": "file_upload"
+    },
+    {
+      "id": "product_details",
+      "order": 5,
+      "required": true,
+      "uiType": "dimension_input"
+    },
+    {
+      "id": "select_perspectives",
+      "order": 6,
+      "required": true,
+      "dataSource": "perspectives",
+      "uiType": "multi_checkbox"
+    },
+    {
+      "id": "review_generate",
+      "order": 7,
+      "required": true,
+      "uiType": "summary"
+    }
+  ]
+}
