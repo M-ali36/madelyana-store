@@ -1,6 +1,5 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
 import { HiX } from "react-icons/hi";
 import { useAppContext } from "@/components/context/AppContext";
 import Image from "next/image";
@@ -16,10 +15,6 @@ export default function MiniWishlistDrawer() {
   const t = useTranslations("MiniWishlist");
   const dir = locale === "ar" ? "rtl" : "ltr";
 
-  const [isDesktop, setIsDesktop] = useState(false);
-
-  const drawerRef = useRef(null);
-  const overlayRef = useRef(null);
 
   const isOpen = navState === "wishlist";
 
@@ -28,26 +23,12 @@ export default function MiniWishlistDrawer() {
     setWishlist((prev) => prev.filter((item) => item.id !== itemId));
   };
 
-  // Desktop detection
-  useEffect(() => {
-    const mq = window.matchMedia("(min-width: 1024px)");
-    const update = () => setIsDesktop(mq.matches);
-
-    update();
-    mq.addEventListener("change", update);
-    return () => mq.removeEventListener("change", update);
-  }, []);
-
-  if (typeof window === "undefined") return null;
-
   return (
     <>
       {/* OVERLAY */}
       <div
-        ref={overlayRef}
         onClick={() => setNavState("")}
-        className={`
-          fixed inset-0 backdrop-blur-sm bg-black/30 opacity-0 z-40 
+        className={`fixed inset-0 backdrop-blur-sm bg-black/30 opacity-0 z-40 
           transition-opacity duration-300
           ${isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}
         `}
@@ -55,7 +36,6 @@ export default function MiniWishlistDrawer() {
 
       {/* DRAWER */}
       <div
-        ref={drawerRef}
         className={`
           fixed top-0 h-full bg-white shadow-2xl z-50 py-4
           transition-transform duration-300 start-0

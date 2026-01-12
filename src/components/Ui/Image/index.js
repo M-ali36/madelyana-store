@@ -10,6 +10,8 @@ export default function Image({
   priority = false,
   quality = 75,
   rounded = false,
+  width,
+  height
 }) {
   if (!image) return null;
 
@@ -22,7 +24,7 @@ export default function Image({
       .map((w) => `${image}?w=${w}&q=${quality}&fm=${format} ${w}w`)
       .join(", ");
 
-  const baseSrc = `${image}?w=${image.width}&q=${quality}&fm=jpg`;
+  const baseSrc = `${image}?w=${width}&q=${quality}&fm=jpg`;
 
   return (
     <picture>
@@ -44,15 +46,15 @@ export default function Image({
       <img
         src={baseSrc}
         alt={alt}
-        width={image.width}
-        height={image.height}
+        width={width}
+        height={height}
         loading={priority ? "eager" : "lazy"}
         fetchPriority={priority ? "high" : "auto"}
         decoding="async"
         sizes={sizes}
         className={`${className} transition-all duration-700 `}
         style={{
-          backgroundImage: `url(${image.blurDataURL})`,
+          backgroundImage: `url(${image}?w=30&fm=webp)`,
           backgroundSize: "cover",
           backgroundPosition: "center",
           borderRadius: rounded ? "12px" : undefined,
