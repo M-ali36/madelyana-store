@@ -827,5 +827,22 @@
     "colors": "الألوان",
     "sizes": "المقاسات",
     "materials": "الخامات",
-    "features": "الميزات"
+    "features": "الميزات",
+
+    "black": "أسود",
+    "white": "أبيض",
+    "red": "أحمر",
+    "beige": "بيج",
+    "brown": "بني",
+    "grey": "رمادي",
+
+    "large": "كبير",
+    "medium": "متوسط",
+    "small": "صغير",
+
+    "genuine_leather": "جلد طبيعي",
+    "canvas": "قماش",
+
+    "padded_laptop_sleeve": "حافظة لابتوب مبطنة",
+    "dedicated_tablet_sleeve": "حافظة جهاز لوحي"
 }

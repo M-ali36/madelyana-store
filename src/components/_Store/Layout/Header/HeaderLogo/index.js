@@ -18,7 +18,7 @@ export default function HeaderLogo({ locale }) {
   }, [pathname]);
 
   return (
-    <div className="col-span-6 lg:col-span-2">
+    <div className="col-span-8 lg:col-span-3 xl:col-span-2">
       {isHome ? (
         <h1>
           <Logo className="w-42" />

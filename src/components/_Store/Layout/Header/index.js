@@ -25,15 +25,15 @@ export default async function Header({ locale }) {
                     {/* ⬇️ Moved into its own component */}
                     <HeaderLogo locale={locale} />
 
-                    <div className="col-span-6 lg:col-span-8 max-lg:flex">
+                    <div className="col-span-4 max-lg:items-end lg:col-span-6 xl:col-span-8 max-lg:flex">
                         <Navigation />
                     </div>
 
-                    <div className="col-span-4 lg:col-span-2 hidden lg:flex gap-4 items-center justify-end">
+                    <div className="col-span-4 lg:col-span-3 xl:col-span-2 hidden lg:flex gap-4 items-center justify-end">
                         <MiniCart />
                         <MiniWishlist />
                         <MiniAccount />
-                        <LanguageSwitcher locale={locale}/>
+                        <LanguageSwitcher locale={locale} desktop={true}/>
                     </div>
                 </div>
             </div>

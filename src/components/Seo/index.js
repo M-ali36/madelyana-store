@@ -1,12 +1,13 @@
 import { fetchWebsiteConfig } from "@/lib/contentfulClient";
 
-export default async function Seo({ seo, type, slug, product, category, locale = 'en' }) {
+export default async function Seo({ seo, type, slug, product, category, locale = 'en', title }) {
   const config = await fetchWebsiteConfig();
 
   // -----------------------
   // FALLBACK LOGIC
   // -----------------------
   const finalTitle =
+    title ||
     seo?.metaTitle ||
     config.fallbackSeo.metaTitle ||
     config.siteName;
@@ -26,7 +27,6 @@ export default async function Seo({ seo, type, slug, product, category, locale =
     seo?.keywords ||
     config.fallbackSeo.keywords ||
     [];
-  console.log(config.siteUrl)
 
   const canonicalUrl = `${config.siteUrl}${locale === 'ar' ? 'ar/' : ''}${slug !== 'home' ? slug : ''}`.replace(/\/+$/, "");
 
@@ -35,19 +35,29 @@ export default async function Seo({ seo, type, slug, product, category, locale =
   // -----------------------
   let structuredData = [];
 
-  // 1. Store / Organization Schema (GLOBAL)
+  // 1️⃣ GLOBAL ORGANIZATION SCHEMA
   if (config.storeSchema) {
     structuredData.push(config.storeSchema);
   }
 
-  // 2. Breadcrumb Schema
+  // 2️⃣ SITE NAVIGATION SCHEMA (helps Google show sitelinks)
+  if (config.mainMenu) {
+    structuredData.push({
+      "@context": "https://schema.org",
+      "@type": "SiteNavigationElement",
+      "name": config.mainMenu.map(i => i.title),
+      "url": config.mainMenu.map(i => `${config.siteUrl}/${i.slug}`)
+    });
+  }
+
+  // 3️⃣ BREADCRUMB SCHEMA
   if (type === "product" || type === "category") {
     const breadcrumb = [
       {
         "@type": "ListItem",
-        "position": 1,
-        "name": "Home",
-        "item": config.siteUrl
+        position: 1,
+        name: "Home",
+        item: config.siteUrl
       }
     ];
 
@@ -58,6 +68,7 @@ export default async function Seo({ seo, type, slug, product, category, locale =
         name: category.title,
         item: `${config.siteUrl}/${category.slug}`
       });
+
       breadcrumb.push({
         "@type": "ListItem",
         position: 3,
@@ -82,14 +93,14 @@ export default async function Seo({ seo, type, slug, product, category, locale =
     });
   }
 
-  // 3. Product Schema
+  // 4️⃣ PRODUCT SCHEMA
   if (type === "product" && product) {
     structuredData.push({
       "@context": "https://schema.org",
       "@type": "Product",
       name: product.title,
       description: product.shortDescription || finalDescription,
-      image: product.images.map((i) => i.url),
+      image: product.images.map(i => i.url),
       sku: product.id,
       brand: {
         "@type": "Brand",
@@ -105,7 +116,7 @@ export default async function Seo({ seo, type, slug, product, category, locale =
     });
   }
 
-  // 4. Category ItemList Schema
+  // 5️⃣ CATEGORY ITEMLIST SCHEMA
   if (type === "category" && category.products) {
     structuredData.push({
       "@context": "https://schema.org",
@@ -118,9 +129,12 @@ export default async function Seo({ seo, type, slug, product, category, locale =
     });
   }
 
+  // -----------------------
+  // RENDER SEO TAGS
+  // -----------------------
   return (
     <>
-      <title>{finalTitle}</title>
+      <title>{`${config.siteName} | ${finalTitle}`}</title>
 
       {/* META */}
       <meta name="description" content={finalDescription} />

@@ -212,7 +212,7 @@ export default function SidebarFilters({ products, filters, setFilters }) {
                   key={val}
                   checked={filters[group].includes(val)}
                   onChange={() => toggleValue(group, val)}
-                  title={val}
+                  title={t(val.toLowerCase().replace(/ /g, "_"))}
                 />
               ))}
             </div>

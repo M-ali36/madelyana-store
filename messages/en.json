@@ -823,9 +823,26 @@
     "byPrice": "By Price",
     "from": "From",
     "to": "To",
-    "inStock": "In Stock",
+    "inStock": "In stock",
     "colors": "Colors",
     "sizes": "Sizes",
     "materials": "Materials",
-    "features": "Features"
+    "features": "Features",
+
+    "black": "Black",
+    "white": "White",
+    "red": "Red",
+    "beige": "Beige",
+    "brown": "Brown",
+    "grey": "Grey",
+
+    "large": "Large",
+    "medium": "Medium",
+    "small": "Small",
+
+    "genuine_leather": "Genuine leather",
+    "canvas": "Canvas",
+
+    "padded_laptop_sleeve": "Padded Laptop Sleeve",
+    "dedicated_tablet_sleeve": "Dedicated Tablet Sleeve"
 }

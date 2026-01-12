@@ -29,6 +29,14 @@ html[lang="ar"] {
   @apply text-current relative;
 }
 
+.dOnly {
+  @apply max-lg:hidden;
+}
+
+.mOnly {
+  @apply lg:hidden;
+}
+
 .control-btn {
   @apply cursor-pointer;
 }
@@ -539,3 +547,4 @@ html[dir='rtl'] .content ol {
   .preview-svg path:nth-child(3) {
     animation: horizontal-bounce 1s infinite ease-in-out;
   }
+
