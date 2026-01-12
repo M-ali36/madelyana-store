@@ -28,6 +28,7 @@ export default async function Home(props) {
     <Seo
       seo={homepage.seo}
       type="website"
+      locale={locale}
       slug="home"
     />
     <div className="w-full">

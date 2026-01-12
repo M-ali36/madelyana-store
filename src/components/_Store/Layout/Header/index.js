@@ -25,7 +25,7 @@ export default async function Header({ locale }) {
                     {/* ⬇️ Moved into its own component */}
                     <HeaderLogo locale={locale} />
 
-                    <div className="col-span-6 lg:col-span-8">
+                    <div className="col-span-6 lg:col-span-8 max-lg:flex">
                         <Navigation />
                     </div>
 

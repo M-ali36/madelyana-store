@@ -7,6 +7,9 @@ import { fetchFooter } from "@/lib/contentfulClient";
 import NotificationContainer from "@/components/Ui/NotificationContainer";
 import PresenceClient from "@/components/_Store/Layout/PresenceClient";
 import MobileNav from "@/components/_Store/Layout/Header/MobileNav";
+import MiniCartDrawer from "@/components/_Store/Layout/Header/MiniCart/MiniCartDrawer";
+import MiniWishlistDrawer from "@/components/_Store/Layout/Header/MiniWishlist/MiniWishlistDrawer";
+import NavigationMobile from "@/components/_Store/Layout/Header/Navigation/NavigationMobile";
 
 export default async function RootLocaleLayout({ children, params }) {
   const locale = (await params).locale;
@@ -27,9 +30,7 @@ export default async function RootLocaleLayout({ children, params }) {
     >
       <body>
         <NextIntlClientProvider locale={locale} messages={messages}>
-
-          {/* 🔴 Presence observer (client only) */}
-          <PresenceClient locale={locale} />
+          
 
           <Header locale={locale} pathname={pathname} />
 
@@ -41,6 +42,9 @@ export default async function RootLocaleLayout({ children, params }) {
             <Footer locale={locale} footer={footer} />
           </SmoothScrollWrapper>
           <MobileNav locale={locale} pathname={pathname}/>
+          <MiniCartDrawer />
+          <MiniWishlistDrawer />
+          <NavigationMobile />
         </NextIntlClientProvider>
 
         <NotificationContainer locale={locale}/>
