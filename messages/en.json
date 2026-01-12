@@ -765,7 +765,8 @@
             "evening": "Evening",
             "wedding": "Wedding",
             "party": "Party",
-            "event": "Event"
+            "event": "Event",
+            "recommended": "Recommended"
         },
 
         "models": {
@@ -811,6 +812,13 @@
             "perspectives": "Perspectives",
             "totalImages": "Total Images"
         }
+    },
+    "MobileNav": {
+        "home": "Home",
+        "search": "Search",
+        "cart": "Cart",
+        "discover": "Discover",
+        "touch": "Get in touch"
     },
     "byPrice": "By Price",
     "from": "From",

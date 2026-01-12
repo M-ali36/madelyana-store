@@ -6,6 +6,7 @@ import { elMessiri, playfair } from "@/app/fonts/fonts";
 import { fetchFooter } from "@/lib/contentfulClient";
 import NotificationContainer from "@/components/Ui/NotificationContainer";
 import PresenceClient from "@/components/_Store/Layout/PresenceClient";
+import MobileNav from "@/components/_Store/Layout/Header/MobileNav";
 
 export default async function RootLocaleLayout({ children, params }) {
   const locale = (await params).locale;
@@ -39,6 +40,7 @@ export default async function RootLocaleLayout({ children, params }) {
 
             <Footer locale={locale} footer={footer} />
           </SmoothScrollWrapper>
+          <MobileNav locale={locale} pathname={pathname}/>
         </NextIntlClientProvider>
 
         <NotificationContainer locale={locale}/>

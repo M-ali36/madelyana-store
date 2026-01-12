@@ -765,7 +765,8 @@
             "evening": "مسائي",
             "wedding": "زفاف",
             "party": "حفلة",
-            "event": "مناسبة"
+            "event": "مناسبة",
+            "recommended": "موصى به"
         },
 
         "models": {
@@ -811,6 +812,13 @@
             "perspectives": "زوايا العرض",
             "totalImages": "عدد الصور"
         }
+    },
+    "MobileNav": {
+        "home": "الرئيسية",
+        "search": "بحث",
+        "cart": "السلة",
+        "discover": "اكتشف",
+        "touch": "تواصل معنا"
     },
     "byPrice": "حسب السعر",
     "from": "من",

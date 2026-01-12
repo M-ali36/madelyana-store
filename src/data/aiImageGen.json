@@ -3,6 +3,7 @@
     {
       "id": "shoulder",
       "allowedOccasions": ["work", "casual", "dinner"],
+      "recommendedOccasions": ["work", "formal", "dinner", "event"],
       "allowedPerspectives": [
         "product_only",
         "held_hand",
@@ -15,6 +16,7 @@
     {
       "id": "crossbody",
       "allowedOccasions": ["casual", "travel", "shopping"],
+      "recommendedOccasions": ["casual", "travel", "shopping", "day_event"],
       "allowedPerspectives": [
         "product_only",
         "worn_front",
@@ -27,6 +29,7 @@
     {
       "id": "handbag",
       "allowedOccasions": ["work", "formal", "event"],
+      "recommendedOccasions": ["formal", "work", "event", "wedding"],
       "allowedPerspectives": [
         "product_only",
         "held_hand",
@@ -39,6 +42,7 @@
     {
       "id": "clutch",
       "allowedOccasions": ["evening", "wedding", "party"],
+      "recommendedOccasions": ["evening", "wedding", "party", "formal"],
       "allowedPerspectives": [
         "product_only",
         "held_hand"
@@ -48,6 +52,7 @@
     {
       "id": "tote",
       "allowedOccasions": ["work", "travel", "casual"],
+      "recommendedOccasions": ["work", "travel", "casual", "shopping"],
       "allowedPerspectives": [
         "product_only",
         "held_hand",
@@ -161,97 +166,163 @@
   ],
 
   "perspectives": [
-        {
-        "id": "shoulder_back_left",
-        "label": {
-            "en": "Shoulder – Back (Left)",
-            "ar": "على الكتف – خلفي (يسار)"
-        },
-        "image": "/perspectives/shoulder_back_left.webp",
-        "allowedBagTypes": ["shoulder", "tote"]
-        },
-        {
-        "id": "crossbody_front_right_to_left",
-        "label": {
-            "en": "Crossbody – Front (Right to Left)",
-            "ar": "كروس بودي – أمامي (يمين إلى يسار)"
-        },
-        "image": "/perspectives/crossbody_front_right_to_left.webp",
-        "allowedBagTypes": ["crossbody"]
-        },
-        {
-        "id": "hand_held_low_center",
-        "label": {
-            "en": "Handheld – Low Center",
-            "ar": "ممسوك باليد – منخفض في المنتصف"
-        },
-        "image": "/perspectives/hand_held_low_center.webp",
-        "allowedBagTypes": ["handbag", "tote"]
-        },
-        {
-        "id": "shoulder_front_left",
-        "label": {
-            "en": "Shoulder – Front (Left)",
-            "ar": "على الكتف – أمامي (يسار)"
-        },
-        "image": "/perspectives/shoulder_front_left.webp",
-        "allowedBagTypes": ["shoulder", "tote"]
-        },
-        {
-        "id": "crossbody_front_center",
-        "label": {
-            "en": "Crossbody – Front Center",
-            "ar": "كروس بودي – أمامي في المنتصف"
-        },
-        "image": "/perspectives/crossbody_front_center.webp",
-        "allowedBagTypes": ["crossbody"]
-        },
-        {
-        "id": "crossbody_front_right",
-        "label": {
-            "en": "Crossbody – Front Right",
-            "ar": "كروس بودي – أمامي يمين"
-        },
-        "image": "/perspectives/crossbody_front_right.webp",
-        "allowedBagTypes": ["crossbody"]
-        },
-        {
-        "id": "hand_held_extended_right",
-        "label": {
-            "en": "Handheld – Extended Right",
-            "ar": "ممسوك باليد – ممتد إلى اليمين"
-        },
-        "image": "/perspectives/hand_held_extended_right.webp",
-        "allowedBagTypes": ["handbag", "clutch"]
-        },
-        {
-        "id": "hand_held_low_right",
-        "label": {
-            "en": "Handheld – Low Right",
-            "ar": "ممسوك باليد – منخفض يمين"
-        },
-        "image": "/perspectives/hand_held_low_right.webp",
-        "allowedBagTypes": ["handbag", "tote"]
-        },
-        {
-        "id": "hand_held_waist_center",
-        "label": {
-            "en": "Handheld – Waist Center",
-            "ar": "ممسوك باليد – عند الخصر في المنتصف"
-        },
-        "image": "/perspectives/hand_held_waist_center.webp",
-        "allowedBagTypes": ["handbag"]
-        },
-        {
-        "id": "crossbody_front_center_low",
-        "label": {
-            "en": "Crossbody – Front Center (Low)",
-            "ar": "كروس بودي – أمامي منخفض في المنتصف"
-        },
-        "image": "/perspectives/crossbody_front_center_low.webp",
-        "allowedBagTypes": ["crossbody"]
-        }
-    ],
+    {
+      "id": "product_only",
+      "label": {
+        "en": "Product Only",
+        "ar": "المنتج فقط"
+      },
+      "image": "/perspectives/product_only.webp",
+      "allowedBagTypes": ["shoulder", "crossbody", "handbag", "clutch", "tote"]
+    },
+    {
+      "id": "flat_lay",
+      "label": {
+        "en": "Flat Lay",
+        "ar": "عرض مسطح"
+      },
+      "image": "/perspectives/flat_lay.webp",
+      "allowedBagTypes": ["handbag", "clutch", "tote"]
+    },
+    {
+      "id": "detail_closeup",
+      "label": {
+        "en": "Detail Close-up",
+        "ar": "تفاصيل قريبة"
+      },
+      "image": "/perspectives/detail_closeup.webp",
+      "allowedBagTypes": ["shoulder", "crossbody", "handbag", "clutch", "tote"]
+    },
+    {
+      "id": "interior",
+      "label": {
+        "en": "Interior View",
+        "ar": "الجزء الداخلي"
+      },
+      "image": "/perspectives/interior.webp",
+      "allowedBagTypes": ["shoulder", "crossbody", "handbag", "tote"]
+    },
+
+    {
+      "id": "shoulder_front_left",
+      "label": {
+        "en": "Shoulder – Front (Left)",
+        "ar": "على الكتف – أمامي (يسار)"
+      },
+      "image": "/perspectives/shoulder_front_left.webp",
+      "allowedBagTypes": ["shoulder", "tote"]
+    },
+    {
+      "id": "shoulder_side",
+      "label": {
+        "en": "Shoulder – Side View",
+        "ar": "على الكتف – جانبي"
+      },
+      "image": "/perspectives/shoulder_side.webp",
+      "allowedBagTypes": ["shoulder", "tote"]
+    },
+    {
+      "id": "shoulder_back_left",
+      "label": {
+        "en": "Shoulder – Back (Left)",
+        "ar": "على الكتف – خلفي (يسار)"
+      },
+      "image": "/perspectives/shoulder_back_left.webp",
+      "allowedBagTypes": ["shoulder", "tote"]
+    },
+
+    {
+      "id": "crossbody_front_center",
+      "label": {
+        "en": "Crossbody – Front Center",
+        "ar": "كروس بودي – أمامي في المنتصف"
+      },
+      "image": "/perspectives/crossbody_front_center.webp",
+      "allowedBagTypes": ["crossbody"]
+    },
+    {
+      "id": "crossbody_front_center_low",
+      "label": {
+        "en": "Crossbody – Front Center (Low)",
+        "ar": "كروس بودي – أمامي منخفض"
+      },
+      "image": "/perspectives/crossbody_front_center_low.webp",
+      "allowedBagTypes": ["crossbody"]
+    },
+    {
+      "id": "crossbody_front_right",
+      "label": {
+        "en": "Crossbody – Front Right",
+        "ar": "كروس بودي – أمامي يمين"
+      },
+      "image": "/perspectives/crossbody_front_right.webp",
+      "allowedBagTypes": ["crossbody"]
+    },
+    {
+      "id": "crossbody_front_right_to_left",
+      "label": {
+        "en": "Crossbody – Diagonal Front",
+        "ar": "كروس بودي – أمامي قطري"
+      },
+      "image": "/perspectives/crossbody_front_right_to_left.webp",
+      "allowedBagTypes": ["crossbody"]
+    },
+    {
+      "id": "crossbody_back",
+      "label": {
+        "en": "Crossbody – Back View",
+        "ar": "كروس بودي – خلفي"
+      },
+      "image": "/perspectives/crossbody_back.webp",
+      "allowedBagTypes": ["crossbody"]
+    },
+
+    {
+      "id": "hand_held_low_center",
+      "label": {
+        "en": "Handheld – Low Center",
+        "ar": "ممسوك باليد – منخفض في المنتصف"
+      },
+      "image": "/perspectives/hand_held_low_center.webp",
+      "allowedBagTypes": ["handbag", "tote"]
+    },
+    {
+      "id": "hand_held_low_right",
+      "label": {
+        "en": "Handheld – Low Right",
+        "ar": "ممسوك باليد – منخفض يمين"
+      },
+      "image": "/perspectives/hand_held_low_right.webp",
+      "allowedBagTypes": ["handbag", "tote"]
+    },
+    {
+      "id": "hand_held_extended_right",
+      "label": {
+        "en": "Handheld – Extended",
+        "ar": "ممسوك باليد – ممتد"
+      },
+      "image": "/perspectives/hand_held_extended_right.webp",
+      "allowedBagTypes": ["handbag", "clutch"]
+    },
+    {
+      "id": "hand_held_waist_center",
+      "label": {
+        "en": "Handheld – Waist Center",
+        "ar": "ممسوك باليد – عند الخصر"
+      },
+      "image": "/perspectives/hand_held_waist_center.webp",
+      "allowedBagTypes": ["handbag"]
+    },
+    {
+      "id": "hand_held_top_handle",
+      "label": {
+        "en": "Handheld – Top Handle",
+        "ar": "ممسوك باليد – المقبض العلوي"
+      },
+      "image": "/perspectives/hand_held_top_handle.webp",
+      "allowedBagTypes": ["handbag", "clutch"]
+    }
+  ],
 
   "steps": [
     {

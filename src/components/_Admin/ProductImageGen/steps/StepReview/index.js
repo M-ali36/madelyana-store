@@ -11,179 +11,140 @@ export default function StepReview() {
   const [error, setError] = useState(null);
   const [images, setImages] = useState([]);
 
-  // Build prompts (one per perspective)
-  const prompts = useMemo(() => {
+  /**
+   * Prompt is UI-only and independent of API details
+   */
+  const prompt = useMemo(() => {
     if (
       !state.bagType ||
       !state.occasion ||
-      !state.perspectives.length ||
-      !state.productImage?.base64
+      !Array.isArray(state.perspectives) ||
+      state.perspectives.length === 0
     ) {
-      return [];
+      return "";
     }
-    return buildPrompt(state);
-  }, [state]);
 
-  // 🔹 Build FULL request payload preview
-  const requestPreview = useMemo(() => {
-    return prompts.map((prompt, index) => ({
-      index: index + 1,
-      prompt,
-      negativePrompt: `
-        Do not change product color, shape, logo, texture, stitching, or proportions.
-        Do not invent branding or text.
-        Do not add accessories.
-        Do not crop or hide the bag.
-        Do not distort scale.
-        Do not apply dramatic or cinematic lighting.
-        Do not show the model’s face.
-        Do not allow the model to dominate the frame.
-        Do not show uncovered hair.
-        Do not show the neck or chest.
-        Do not show short sleeves or tight clothing.
-        Do not show revealing or transparent outfits.
-        Do not dress the model in western fashion styles.
-      `.trim(),
-      modelImagePath: `/models/${state.model}.webp`,
-      productImage: {
-        name: state.productImage?.name,
-        type: state.productImage?.type,
-        base64Length: state.productImage?.base64?.length
-      },
-      dimensions: state.dimensions,
-      bagType: state.bagType,
-      occasion: state.occasion,
-      perspective: state.perspectives[index]
-    }));
-  }, [prompts, state]);
+    return buildPrompt(state);
+  }, [state.bagType, state.occasion, state.perspectives]);
 
   const handleGenerate = async () => {
-    if (!requestPreview.length) {
-      setError("Please complete all required steps before generating.");
+    setError(null);
+
+    if (!prompt) {
+      setError("Prompt is not ready.");
+      return;
+    }
+
+    if (!state.productImage?.base64) {
+      setError("Product image is missing.");
+      return;
+    }
+
+    if (!state.model) {
+      setError("No model selected.");
       return;
     }
 
     setLoading(true);
-    setError(null);
     setImages([]);
 
     try {
-      const responses = await Promise.all(
-        requestPreview.map((req) =>
-          fetch("/api/ai-image-gen", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              prompt: req.prompt,
-              negativePrompt: req.negativePrompt,
-              productImageBase64: state.productImage.base64,
-              productImageType: state.productImage.type
-            })
-          }).then((res) => res.json())
-        )
-      );
+      // ✅ USE BASE64 EXACTLY AS STORED BY StepUpload
+      const productImageBase64 = state.productImage.base64;
 
-      const generatedImages = [];
-
-      responses.forEach((response) => {
-        const parts =
-          response?.result?.candidates?.[0]?.content?.parts || [];
-
-        parts.forEach((part) => {
-          if (part.inlineData?.data) {
-            generatedImages.push(
-              `data:image/png;base64,${part.inlineData.data}`
-            );
-          }
-        });
+      const res = await fetch("/api/ai-image-gen", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          prompt,
+          productImageBase64,
+          model: state.model,
+        }),
       });
 
-      setImages(generatedImages);
+      if (!res.ok || !res.body) {
+        throw new Error("Failed to start generation.");
+      }
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split("\n");
+        buffer = lines.pop() || "";
+
+        for (const line of lines) {
+          if (!line.trim()) continue;
+
+          const chunk = JSON.parse(line);
+          const parts =
+            chunk?.candidates?.[0]?.content?.parts ?? [];
+
+          for (const part of parts) {
+            if (part.inlineData?.data) {
+              setImages((prev) => [
+                ...prev,
+                `data:image/png;base64,${part.inlineData.data}`,
+              ]);
+            }
+          }
+        }
+      }
     } catch (err) {
       console.error(err);
-      setError("Failed to generate images.");
+      setError(err.message || "Generation failed.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="space-y-10">
-      {/* Title */}
-      <div>
-        <h2 className="text-lg font-semibold text-gray-900">
-          Review Request Data & Generate
-        </h2>
-        <p className="text-sm text-gray-500">
-          Review the exact data that will be sent to the AI API.
-        </p>
-      </div>
+    <div className="space-y-6">
+      <section>
+        <h3 className="text-sm font-medium text-gray-700">
+          Prompt Preview
+        </h3>
 
-      {/* Prompt Preview */}
-      {prompts.length > 0 && (
-        <section className="space-y-4">
-          <h3 className="text-sm font-medium text-gray-700">
-            Prompt Preview
-          </h3>
+        <textarea
+          readOnly
+          value={
+            prompt ||
+            "Complete all previous steps to generate the prompt."
+          }
+          className="mt-2 h-64 w-full rounded border p-3 text-sm"
+        />
+      </section>
 
-          {prompts.map((prompt, index) => (
-            <textarea
-              key={index}
-              readOnly
-              value={prompt}
-              className="h-56 w-full rounded-lg border bg-white p-3 text-sm"
-            />
-          ))}
-        </section>
-      )}
-
-      {/* FULL REQUEST DATA PREVIEW */}
-      {requestPreview.length > 0 && (
-        <section className="space-y-4">
-          <h3 className="text-sm font-medium text-gray-700">
-            Full API Request Payload (Preview)
-          </h3>
-
-          <pre className="max-h-[500px] overflow-auto rounded-xl border bg-gray-50 p-4 text-xs">
-            {JSON.stringify(requestPreview, null, 2)}
-          </pre>
-        </section>
-      )}
-
-      {/* Generate Button */}
       <button
         onClick={handleGenerate}
-        disabled={loading || !requestPreview.length}
-        className="rounded-lg bg-gray-900 px-6 py-3 text-sm font-medium text-white disabled:opacity-50"
+        disabled={loading || !prompt}
+        className="rounded bg-black px-4 py-2 text-white disabled:opacity-50"
       >
-        {loading ? "Generating images..." : "Generate Images"}
+        {loading ? "Generating…" : "Generate Images"}
       </button>
 
-      {/* Error */}
       {error && (
-        <div className="rounded-lg bg-red-50 p-4 text-sm text-red-700">
+        <div className="text-sm text-red-600">
           {error}
         </div>
       )}
 
-      {/* Image Preview */}
       {images.length > 0 && (
-        <section className="space-y-4">
-          <h3 className="text-sm font-medium text-gray-700">
-            Generated Images
-          </h3>
-
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {images.map((src, index) => (
-              <img
-                key={index}
-                src={src}
-                alt={`Generated ${index + 1}`}
-                className="rounded-xl border object-cover"
-              />
-            ))}
-          </div>
-        </section>
+        <div className="grid grid-cols-2 gap-4">
+          {images.map((src, i) => (
+            <img
+              key={i}
+              src={src}
+              alt={`Generated ${i + 1}`}
+              className="rounded border"
+            />
+          ))}
+        </div>
       )}
     </div>
   );

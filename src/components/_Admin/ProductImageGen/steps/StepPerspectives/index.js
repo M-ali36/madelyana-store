@@ -24,8 +24,6 @@ export default function StepPerspectives() {
                 ${
                   active
                     ? "border-gray-900 ring-2 ring-gray-900 bg-gray-50"
-                    : isRecommended
-                    ? "border-gray-900 ring-1 ring-gray-900"
                     : "border-gray-200 hover:border-gray-900"
                 }
               `}
