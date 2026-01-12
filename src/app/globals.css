@@ -530,3 +530,12 @@ html[dir='rtl'] .content ol {
   }
   .btn-black-bordered:focus { @apply bg-[#111827] text-white; }
   .btn-black-bordered:disabled { @apply border-[#D1D5DB] text-[#D1D5DB]; }
+
+  @keyframes horizontal-bounce {
+    0%, 100% { transform: translateX(1px); }
+    50% { transform: translateX(-2px); } /* Bounces left */
+  }
+
+  .preview-svg path:nth-child(3) {
+    animation: horizontal-bounce 1s infinite ease-in-out;
+  }
