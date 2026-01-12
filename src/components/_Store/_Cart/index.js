@@ -48,9 +48,10 @@ export default function CartPage() {
 
   return (
     <div className="px-4 py-6 lg:py-12 lg:px-8 max-w-7xl container mx-auto">
-      <h1 className="text-3xl font-bold mb-6">
+      <h1 className="text-3xl font-bold text-center mb-16">
         {t("cartPage.yourCart")}
       </h1>
+
 
       {cart.length === 0 ? (
         <EmptyCart />
@@ -58,22 +59,24 @@ export default function CartPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
           <div className="lg:col-span-2 space-y-6">
-            {cart.map((item) => (
-              <CartItem
-                key={item.variantId}
-                item={item}
-                updateCartQty={updateCartQty}
-                removeFromCart={removeFromCart}
-                format={format}
-              />
-            ))}
+            <div className="p-6 bg-white rounded-lg shadow-md border border-gray-200">
+              <h3 className="text-xl font-semibold mb-8">
+                {t("cartPage.yourCart")}
+              </h3>
+              {cart.map((item) => (
+                <CartItem
+                  key={item.variantId}
+                  item={item}
+                  updateCartQty={updateCartQty}
+                  removeFromCart={removeFromCart}
+                  format={format}
+                />
+              ))}
+            </div>
 
             {upsellSlugs.length > 0 && (
               <div className="mt-8">
-                <h2 className="text-xl font-semibold mb-4">
-                  {t("cartPage.youMayAlsoLike")}
-                </h2>
-                <ProductCarouselBySlugs slugs={upsellSlugs} />
+                <ProductCarouselBySlugs slugs={upsellSlugs} max={3} title={t("cartPage.youMayAlsoLike")}/>
               </div>
             )}
           </div>

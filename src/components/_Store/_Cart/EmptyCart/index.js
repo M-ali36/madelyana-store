@@ -14,7 +14,7 @@ export default function EmptyCart() {
       </h2>
 
       <Link
-        href="/products"
+        href="/women"
         locale={locale}
         className="inline-block bg-neutral-900 text-white px-6 py-2 rounded-md hover:bg-gray-900 transition"
       >

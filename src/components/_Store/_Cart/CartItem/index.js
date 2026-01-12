@@ -1,8 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import ColorSwatch from "../ColorSwatch";
+import { HiPlus, HiMinus } from "react-icons/hi2";
 import { useTranslations } from "next-intl";
+import ColorSwatch from "../ColorSwatch";
 
 export default function CartItem({
   item,
@@ -13,70 +14,82 @@ export default function CartItem({
   const t = useTranslations("cartItem");
 
   return (
-    <div className="flex gap-4 p-4 bg-white rounded-lg shadow-sm border border-gray-200">
-      {/* Image */}
-      <div className="relative w-28 h-28 rounded-md overflow-hidden">
-        <Image
-          src={item.image}
-          alt={item.title}
-          fill
-          className="object-cover"
-        />
-      </div>
+    <div className="flex items-start justify-between pb-4 mb-4 border-b border-slate-300 last:border-0">
 
-      {/* Info */}
-      <div className="flex flex-col justify-between flex-grow">
-        <div>
-          <h2 className="font-semibold text-lg">{item.title}</h2>
+      {/* IMAGE */}
+      <Image
+        src={item.image}
+        alt={item.title}
+        width={72}
+        height={72}
+        className="rounded-lg"
+      />
 
-          {/* Dynamic attributes */}
-          <div className="flex flex-wrap items-center gap-2 mt-2">
-            {Object.entries(item.selectedAttributes).map(([key, value]) => (
-              <div key={key}>
-                {key.toLowerCase() === "color" ? (
-                  <ColorSwatch label={value} />
-                ) : (
-                  <span className="px-2 py-1 text-xs bg-gray-100 rounded-full border">
-                    {key}: {value}
-                  </span>
-                )}
-              </div>
-            ))}
-          </div>
+      {/* MIDDLE INFO */}
+      <div className="flex-1 mx-4">
+        <h3 className="text-sm font-semibold">{item.title}</h3>
+
+        {/* Variants (color, size, etc) */}
+        <div className="flex flex-wrap items-center gap-2 mt-1">
+          {Object.entries(item.selectedAttributes).map(([key, value]) => (
+            key.toLowerCase() === "color" ? (
+              <ColorSwatch key={key} label={value} />
+            ) : (
+              <span
+                key={key}
+                className="px-2 py-1 text-xs bg-gray-100 rounded-full border border-gray-300"
+              >
+                {key}: {value}
+              </span>
+            )
+          ))}
         </div>
 
-        {/* Price + Qty + Remove */}
-        <div className="flex items-center justify-between mt-4">
+        <p className="text-base text-gray-500 mt-2">
+          {format(item.price)}
+        </p>
 
-          <span className="font-bold">{format(item.price * item.qty)}</span>
+        <button
+          onClick={() => removeFromCart(item.variantId)}
+          className="text-xs text-red-500 underline cursor-pointer mt-1"
+        >
+          {t("remove")}
+        </button>
+      </div>
 
-          <div className="flex items-center gap-3">
-            {/* Quantity */}
-            <select
-              className="px-2 py-1 border border-gray-300 rounded-md text-sm"
-              value={item.qty}
-              onChange={(e) =>
-                updateCartQty(item.variantId, Number(e.target.value))
-              }
-            >
-              {Array.from({ length: item.maxQty }, (_, i) => i + 1).map((q) => (
-                <option key={q} value={q}>
-                  {q}
-                </option>
-              ))}
-            </select>
+      {/* QTY CONTROLS */}
+      <div className="flex items-center gap-3">
+        <span className="text-3xl font-thin font-sans">{item.qty} ×</span>
 
-            {/* Remove */}
-            <button
-              onClick={() => removeFromCart(item.variantId)}
-              className="text-gray-500 hover:text-red-600 transition"
-              aria-label={t("remove")}
-              title={t("remove")}
-            >
-              ✕
-            </button>
-          </div>
+        <div className="block">
+          {/* PLUS */}
+          <button
+            disabled={item.qty >= item.maxQty}
+            onClick={() =>
+              item.qty < item.maxQty &&
+              updateCartQty(item.variantId, item.qty + 1)
+            }
+            className={`
+              w-8 h-8 mb-2 flex items-center justify-center rounded
+              border border-neutral-900 bg-white text-neutral-900
+              hover:bg-neutral-900 hover:text-white
+              ${item.qty >= item.maxQty ? "opacity-40 cursor-not-allowed" : ""}
+            `}
+          >
+            <HiPlus className="h-4 w-4" />
+          </button>
 
+          {/* MINUS */}
+          <button
+            onClick={() => item.qty > 1 && updateCartQty(item.variantId, item.qty - 1)}
+            className="
+              w-8 h-8 flex items-center justify-center rounded
+              border border-neutral-900 bg-white text-neutral-900
+              hover:bg-neutral-900 hover:text-white
+            "
+          >
+            <HiMinus className="h-4 w-4" />
+          </button>
         </div>
       </div>
     </div>

@@ -11,7 +11,7 @@ import "swiper/css";
 
 import { HiArrowLeft } from "react-icons/hi";
 
-export default function ProductCarouselBySlugs({ slugs = [], title, subTitle }) {
+export default function ProductCarouselBySlugs({ slugs = [], title, subTitle, max = 4 }) {
   const [products, setProducts] = useState([]);
 
   const prevRef = useRef(null);
@@ -67,7 +67,7 @@ export default function ProductCarouselBySlugs({ slugs = [], title, subTitle }) 
         breakpoints={{
           640: { slidesPerView: 2 },
           1024: { slidesPerView: 3 },
-          1280: { slidesPerView: 4 },
+          1280: { slidesPerView: max },
         }}
       >
         {products.map((product) => (

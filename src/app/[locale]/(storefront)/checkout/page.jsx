@@ -16,6 +16,7 @@ import {
 } from "firebase/firestore";
 
 import useCurrency from "@/components/hooks/useCurrency";
+import AuthTabs from "@/components/auth/AuthTabs";
 
 export default function CheckoutPage() {
 	const locale = useLocale();
@@ -69,8 +70,11 @@ export default function CheckoutPage() {
   // GUARDS
   if (!user)
     return (
-      <div className="p-6 text-center text-gray-600">
-        {t("loginRequired")}
+      <div className="max-w-md mx-auto mb-8 pt-10 px-4">
+        <p className="bg-yellow-100 text-yellow-800 border border-yellow-300 px-4 py-3 rounded-md text-sm font-medium mb-4">
+          {t("loginRequired")}
+        </p>
+        <AuthTabs redirectTo="/checkout" />
       </div>
     );
 

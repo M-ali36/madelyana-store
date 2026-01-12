@@ -110,7 +110,7 @@ export default function MiniCartDrawer() {
 
                 {/* Quantity */}
                 <div className="flex items-center gap-3 mt-2">
-                  <span className="text-3xl me-2 font-thin">{item.qty} ×</span>
+                  <span className="text-3xl me-2 font-thin font-sans">{item.qty} ×</span>
                   <div>
                     <button
                       disabled={item.qty >= item.maxQty}

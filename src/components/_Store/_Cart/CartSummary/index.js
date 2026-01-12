@@ -24,7 +24,7 @@ export default function CartSummary({ subtotal, format }) {
       <Link
         href="/checkout"
         locale={locale}
-        className="block w-full bg-neutral-900 text-white text-center py-2 rounded-md hover:bg-gray-800 transition"
+        className="block w-full text-center py-3 rounded-full border border-neutral-900 bg-neutral-900 text-white font-semibold hover:bg-neutral-700 transition mb-4"
       >
         {t("proceedToCheckout")}
       </Link>
@@ -32,7 +32,7 @@ export default function CartSummary({ subtotal, format }) {
       <Link
         href="/products"
         locale={locale}
-        className="block text-center text-sm mt-3 text-gray-700 hover:underline"
+        className="block w-full text-center py-3 rounded-full border border-neutral-900 bg-white text-neutral-900 font-semibold hover:text-neutral-700 transition"
       >
         {t("continueShopping")}
       </Link>
