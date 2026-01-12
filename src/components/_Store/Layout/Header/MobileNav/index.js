@@ -82,12 +82,12 @@ export default function MobileNav({locale}) {
             </Link>
         </div>
         <div className="mx-auto text-white px-4 py-3 border-e border-neutral-700 flex w-full items-center justify-center">
-            <Link locale={locale} href='/account' >
+            <Link locale={locale} href='/customer' >
                 <AiOutlineUser className="h-6 w-6" />
             </Link>
         </div>
         <div className="mx-auto text-emerald-500 px-4 py-3 border-e border-neutral-700 flex w-full items-center justify-center">
-            <a href='/https://wa.me/00201092833050' >
+            <a href='https://wa.me/00201092833050' >
                 <PiWhatsappLogoLight className="h-6 w-6" />
             </a>
         </div>
