@@ -17,7 +17,7 @@ export default async function StyleInsightsPage(props) {
 
   return (
     <>
-      <Seo seo={data.seo} type="website" slug="style-insights" />
+      <Seo seo={data.seo} type="website" slug="style-insights" locale={locale} />
 
       <div className="w-full">
         <MainBanner image={data.mainBanner} title={data.featuredTitle}/>

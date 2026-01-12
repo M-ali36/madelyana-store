@@ -165,7 +165,7 @@ export default function ProductGallery({ product }) {
         </div>
 
         {/* The floating arrow */}
-        <MdDoubleArrow className="text-white/80 absolute end-4 h-12 w-12 lg:h-24 lg:w-24 preview-svg z-10 top-[calc(50%-24px)] lg:top-[calc(50%-48px)]" />
+        <MdDoubleArrow className="text-white/80 absolute end-4 h-12 w-12 lg:h-24 lg:w-24 preview-svg z-10 top-[calc(50%-24px)] lg:top-[calc(50%-48px)] rtl:rotate-180" />
 
         {/* MAIN SWIPER */}
         <Swiper

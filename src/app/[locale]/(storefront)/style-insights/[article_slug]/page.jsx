@@ -53,6 +53,7 @@ export default async function ArticlePage({ params }) {
         type="article"
         slug={article.slug}
         seo={article.seo}
+        locale={locale}
         article={{
           title: article.title,
           slug: article.slug,

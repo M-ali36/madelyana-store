@@ -54,6 +54,7 @@ export default async function ProductPage({ params }) {
         slug={product.slug}
         seo={product.seo}
         product={product}
+        locale={locale}
         category={
           product.categoryId
             ? { id: product.categoryId, title: product.categoryTitle, slug: product.categorySlug }

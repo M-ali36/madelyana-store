@@ -14,7 +14,7 @@ export default async function YourRightsPage(props) {
 
   return (
     <>
-      <Seo seo={data.seo} type="website" slug={data.slug} />
+      <Seo seo={data.seo} type="website" slug={data.slug} locale={locale}/>
       <div className="w-full">
 
         <div className="max-w-4xl mx-auto px-4 py-16 space-y-8">

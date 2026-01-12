@@ -1,6 +1,6 @@
 import { fetchWebsiteConfig } from "@/lib/contentfulClient";
 
-export default async function Seo({ seo, type, slug, product, category }) {
+export default async function Seo({ seo, type, slug, product, category, locale = 'en' }) {
   const config = await fetchWebsiteConfig();
 
   // -----------------------
@@ -26,8 +26,9 @@ export default async function Seo({ seo, type, slug, product, category }) {
     seo?.keywords ||
     config.fallbackSeo.keywords ||
     [];
+  console.log(config.siteUrl)
 
-  const canonicalUrl = `${config.siteUrl}/${slug}`.replace(/\/+$/, "");
+  const canonicalUrl = `${config.siteUrl}${locale === 'ar' ? 'ar/' : ''}${slug !== 'home' ? slug : ''}`.replace(/\/+$/, "");
 
   // -----------------------
   // STRUCTURED DATA

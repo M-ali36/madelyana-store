@@ -60,6 +60,7 @@ export default async function CategoryPage({ params }) {
         type="category"
         slug={category.slug}
         seo={category.seo}
+        locale={locale}
         category={{
           title: category.title,
           slug: category.slug,

@@ -20,7 +20,7 @@ export default async function PackingPage(props) {
 
   return (
     <>
-      <Seo seo={data.seo} type="website" slug={data.slug} />
+      <Seo seo={data.seo} type="website" slug={data.slug} locale={locale} />
 
       <div className="w-full">
         <MainBanner 
