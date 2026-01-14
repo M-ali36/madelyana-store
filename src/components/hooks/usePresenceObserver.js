@@ -3,12 +3,16 @@
 import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import { auth, db } from "@/lib/firebaseClient";
-import { doc, setDoc, updateDoc, serverTimestamp } from "firebase/firestore";
+import {
+  doc,
+  setDoc,
+  serverTimestamp,
+} from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 import useSessionId from "./useSessionId";
 import getClientInfo from "./getClientInfo";
 
-const HEARTBEAT = 30000; // 30 seconds
+const HEARTBEAT = 30000; // 30s
 
 export default function usePresenceObserver(locale) {
   const sessionId = useSessionId();
@@ -16,82 +20,96 @@ export default function usePresenceObserver(locale) {
   const heartbeatRef = useRef(null);
   const startedAt = useRef(Date.now());
 
+  // SAFETY: do not run anything until sessionId resolves
+  if (!sessionId) {
+    console.log("[Presence] Waiting for sessionId...");
+  }
+
+  const ref = sessionId ? doc(db, "sessions", sessionId) : null;
+
+  // ---------------------------------------------------------
+  // INIT + AUTH + HEARTBEAT (RUNS ONCE)
+  // ---------------------------------------------------------
   useEffect(() => {
     if (!sessionId) return;
+    if (!ref) return;
 
-    const ref = doc(db, "sessions", sessionId);
     const info = getClientInfo();
+    console.log("[Presence] Initializing session:", sessionId);
 
-    // ---------------------------------------------------------
-    // INITIAL SESSION CREATE
-    // ---------------------------------------------------------
+    // Create session (MERGE avoids missing-doc issues)
     const init = async () => {
-      await setDoc(
-        ref,
-        {
-          sessionId,
-          uid: null,
-          email: null,
-          role: "guest",
-          isGuest: true,
+      await setDoc(ref, {
+        sessionId,
+        uid: null,
+        email: null,
+        role: "guest",
+        isGuest: true,
 
-          entryPage: pathname,
-          page: pathname,
-          locale,
+        entryPage: pathname,
+        page: pathname,
+        locale,
+        ...info,
 
-          ...info,
+        online: true,
+        createdAt: serverTimestamp(),
+        lastSeen: serverTimestamp(),
+        sessionDuration: 0,
+      }, { merge: true });
 
-          online: true,
-          createdAt: serverTimestamp(),
-          lastSeen: serverTimestamp(),
-          sessionDuration: 0,
-        },
-        { merge: true }
-      );
+      console.log("[Presence] Created/merged session");
     };
 
     init();
 
-    // ---------------------------------------------------------
-    // AUTH MERGE (if user logs in during the session)
-    // ---------------------------------------------------------
-    const unsub = onAuthStateChanged(auth, async (user) => {
+    // AUTH MERGE
+    const unsubAuth = onAuthStateChanged(auth, async (user) => {
       if (!user) return;
 
-      await updateDoc(ref, {
+      console.log("[Presence] User logged in → merging...");
+      await setDoc(ref, {
         uid: user.uid,
         email: user.email || null,
         role: "customer",
         isGuest: false,
         lastSeen: serverTimestamp(),
-      });
+      }, { merge: true });
     });
 
-    // ---------------------------------------------------------
-    // HEARTBEAT: updates session every 30s
-    // ---------------------------------------------------------
+    // HEARTBEAT
     heartbeatRef.current = setInterval(async () => {
       const duration = Math.floor((Date.now() - startedAt.current) / 1000);
 
-      await updateDoc(ref, {
-        page: pathname,
-        online: true,
-        lastSeen: serverTimestamp(),
-        sessionDuration: duration,
-      });
+      try {
+        await setDoc(
+          ref,
+          {
+            online: true,
+            lastSeen: serverTimestamp(),
+            sessionDuration: duration,
+          },
+          { merge: true }
+        );
+
+        console.log("[Presence] Heartbeat ✓");
+      } catch (err) {
+        console.error("[Presence] Heartbeat FAILED:", err);
+      }
     }, HEARTBEAT);
 
-    // ---------------------------------------------------------
-    // CLEANUP ON EXIT
-    // ---------------------------------------------------------
+    // UNLOAD
     const onUnload = async () => {
       const duration = Math.floor((Date.now() - startedAt.current) / 1000);
 
-      await updateDoc(ref, {
-        online: false,
-        lastSeen: serverTimestamp(),
-        sessionDuration: duration,
-      });
+      await setDoc(
+        ref,
+        {
+          online: false,
+          lastSeen: serverTimestamp(),
+          sessionDuration: duration,
+        },
+        { merge: true }
+      );
     };
 
     window.addEventListener("beforeunload", onUnload);
@@ -99,7 +117,27 @@ export default function usePresenceObserver(locale) {
     return () => {
       clearInterval(heartbeatRef.current);
       window.removeEventListener("beforeunload", onUnload);
-      unsub();
+      unsubAuth();
     };
-  }, [sessionId, pathname, locale]);
+  }, [sessionId, locale]);
+
+
+  // ---------------------------------------------------------
+  // PAGE CHANGE (RUNS ON EVERY ROUTE CHANGE)
+  // ---------------------------------------------------------
+  useEffect(() => {
+    if (!sessionId || !ref) return;
+
+    console.log("[Presence] Page changed →", pathname);
+
+    setDoc(
+      ref,
+      {
+        page: pathname,
+        lastSeen: serverTimestamp(),
+      },
+      { merge: true }
+    ).catch((err) => console.error("[Presence] Page update FAILED:", err));
+
+  }, [pathname, sessionId]);
 }

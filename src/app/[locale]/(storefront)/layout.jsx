@@ -46,6 +46,7 @@ export default async function RootLocaleLayout({ children, params }) {
           <MiniWishlistDrawer />
           <NavigationMobile />
         </NextIntlClientProvider>
+        <PresenceClient locale={locale}/>
 
         <NotificationContainer locale={locale}/>
         <script src="https://www.tiktok.com/embed.js" async></script>

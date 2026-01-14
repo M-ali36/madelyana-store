@@ -22,7 +22,7 @@ import { auth, db } from "@/lib/firebaseClient";
 import { collection, doc, getDoc, onSnapshot } from "firebase/firestore";
 import { MdOutlinePriceCheck } from "react-icons/md";
 
-import { notifySoundUrl } from "@/app/sounds"; // ✅ SOUND IMPORT
+import { notifySoundUrl } from "@/app/sounds";
 
 export default function AdminLayoutPage({ children, locale }) {
   const pathname = usePathname();
@@ -74,35 +74,36 @@ export default function AdminLayoutPage({ children, locale }) {
   }, []);
 
   // ------------------------------
-  // LIVE ACTIVE USERS OBSERVER
+  // LIVE ACTIVE USERS OBSERVER  ⭐ FIXED
   // ------------------------------
   useEffect(() => {
     if (!allowed) return;
 
-    const unsub = onSnapshot(collection(db, "sessions"), (snap) => {
-      const count = snap.size;
+    const ACTIVE_WINDOW = 60 * 1000; // last 60 seconds
+    const sessionsRef = collection(db, "sessions");
 
-      // 🔊 Play sound only if increased
-      if (count > prevCountRef.current) {
+    const unsub = onSnapshot(sessionsRef, (snap) => {
+      const now = Date.now();
+
+      const activeList = snap.docs
+        .map((d) => ({ id: d.id, ...d.data() }))
+        .filter((user) => {
+          if (!user.lastSeen) return false;
+          const lastSeenMs = user.lastSeen.toMillis();
+          return now - lastSeenMs < ACTIVE_WINDOW;
+        });
+
+      // 🔊 Play sound only when count increases
+      if (activeList.length > prevCountRef.current) {
         audioRef.current?.play().catch(() => {});
       }
 
-      prevCountRef.current = count;
-      setActiveUsers(count);
+      prevCountRef.current = activeList.length;
+      setActiveUsers(activeList.length);
     });
 
     return () => unsub();
   }, [allowed]);
-
-  if (checking) {
-    return (
-      <div className="flex h-screen items-center justify-center text-gray-600">
-        {t("checking")}
-      </div>
-    );
-  }
-
-  if (!allowed) return null;
 
   // ------------------------------
   // LANGUAGE SWITCH
@@ -126,6 +127,7 @@ export default function AdminLayoutPage({ children, locale }) {
     { label: "Image Gen", href: "/admin/ai-image", icon: RiRobot2Line },
     { label: "Image Video Gen", href: "/admin/ai-image-video", icon: RiRobot2Line },
     { label: "Price Cost Settings", href: "/admin/static-data", icon: MdOutlinePriceCheck },
+    { label: "Analytics", href: "/admin/analytics", icon: MdOutlinePriceCheck },
   ];
 
   const handleLogout = async () => {
@@ -136,6 +138,16 @@ export default function AdminLayoutPage({ children, locale }) {
     sessionStorage.clear();
     router.replace("/login");
   };
+
+  if (checking) {
+    return (
+      <div className="flex h-screen items-center justify-center text-gray-600">
+        {t("checking")}
+      </div>
+    );
+  }
+
+  if (!allowed) return null;
 
   return (
     <div className="flex min-h-screen bg-gray-50 text-gray-800">
