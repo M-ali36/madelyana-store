@@ -1,6 +1,7 @@
 "use client";
 
 export default function UsersObserverTable({ sessions }) {
+  console.log(sessions)
   return (
     <div className="overflow-x-auto rounded-lg bg-white">
       <table className="styled-table">

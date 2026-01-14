@@ -844,5 +844,46 @@
     "canvas": "قماش",
 
     "padded_laptop_sleeve": "حافظة لابتوب مبطنة",
-    "dedicated_tablet_sleeve": "حافظة جهاز لوحي"
+    "dedicated_tablet_sleeve": "حافظة جهاز لوحي",
+    "ProductVideoGen": {
+        "title": "مولد فيديو المنتج بالذكاء الاصطناعي",
+        "step": "مراجعة",
+        "selectScenes": "اختر مشاهد الفيديو لإنشاء صور مرجعية",
+        "back": "رجوع",
+        "next": "التالي"
+    },
+    "VideoScenes": {
+        "orbit_360_tabletop": {
+        "title": "دوران 360° على الطاولة",
+        "description": "حركة سينمائية سلسة حول الحقيبة على سطح فاخر."
+        },
+        "slow_push_in_front": {
+        "title": "تقريب بطيء أمامي",
+        "description": "تقريب سينمائي باتجاه الشعار والتفاصيل الأمامية."
+        },
+        "side_to_side_parallax": {
+        "title": "حركة جانبية متوازية",
+        "description": "حركة أفقية تبرز العمق والبنية."
+        },
+        "top_down_rotation": {
+        "title": "دوران من الأعلى",
+        "description": "عرض علوي مع حركة دوران خفيفة."
+        },
+        "detail_macro_reveal": {
+        "title": "كشف تفاصيل مقرّبة",
+        "description": "لقطة قريبة جداً لإظهار النسيج أو المعدن."
+        },
+        "interior_opening_motion": {
+        "title": "كشف الجزء الداخلي",
+        "description": "فتح ناعم لإظهار الأقسام الداخلية."
+        },
+        "luxury_light_sweep": {
+        "title": "انزلاق ضوئي فاخر",
+        "description": "إضاءة متحركة تبرز الخامات والتفاصيل."
+        },
+        "scale_reference_pan": {
+        "title": "إظهار الحجم الحقيقي",
+        "description": "حركة بان لإظهار الحجم باستخدام عناصر مرجعية."
+        }
+    }
 }

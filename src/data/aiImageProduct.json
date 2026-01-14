@@ -1,0 +1,148 @@
+{
+  "perspectives": [
+    {
+      "id": "product_only",
+      "productOnly": true,
+      "label": { "en": "Product Only", "ar": "المنتج فقط" },
+      "image": "/perspectives/product_only.webp",
+      "allowedBagTypes": ["shoulder", "crossbody", "handbag", "clutch", "tote"],
+      "description": {
+        "en": "No human presence. The bag occupies at least 75% of the frame, centered with clean e-commerce framing.",
+        "ar": "بدون وجود بشري. تشغل الحقيبة ما لا يقل عن 75٪ من الإطار مع تموضع مركزي وتصوير نظيف."
+      }
+    },
+    {
+      "id": "flat_lay",
+      "productOnly": true,
+      "label": { "en": "Flat Lay", "ar": "عرض مسطح" },
+      "image": "/perspectives/flat_lay.webp",
+      "allowedBagTypes": ["handbag", "clutch", "tote"],
+      "description": {
+        "en": "Bag laid flat and viewed from directly above with handles neatly arranged. Fully visible within the frame.",
+        "ar": "الحقيبة موضوعة بشكل مسطح وتُعرض من الأعلى مع ترتيب أنيق للمقابض وظهور كامل داخل الإطار."
+      }
+    },
+    {
+      "id": "detail_closeup",
+      "productOnly": true,
+      "label": { "en": "Detail Close-up", "ar": "تفاصيل قريبة" },
+      "image": "/perspectives/detail_closeup.webp",
+      "allowedBagTypes": ["shoulder", "crossbody", "handbag", "clutch", "tote"],
+      "description": {
+        "en": "Tight crop focusing on logo, stitching, zipper, or hardware. No model or hands present.",
+        "ar": "لقطة قريبة تركز على الشعار أو الخياطة أو السحاب أو المعدن بدون وجود نموذج أو يد."
+      }
+    },
+    {
+      "id": "interior",
+      "productOnly": true,
+      "label": { "en": "Interior View", "ar": "الجزء الداخلي" },
+      "image": "/perspectives/interior.webp",
+      "allowedBagTypes": ["shoulder", "crossbody", "handbag", "tote"],
+      "description": {
+        "en": "No model present. Focus on interior structure, compartments, and materials with clean lighting.",
+        "ar": "بدون وجود نموذج، مع التركيز على البنية الداخلية والأقسام والخامات بإضاءة واضحة."
+      }
+    },
+
+    {
+      "id": "front_view",
+      "productOnly": true,
+      "label": { "en": "Front View", "ar": "واجهة أمامية" },
+      "image": "/perspectives/front_view.webp",
+      "allowedBagTypes": ["shoulder", "crossbody", "handbag", "clutch", "tote"],
+      "description": {
+        "en": "Straight-on front-facing view with full product visibility and no perspective distortion.",
+        "ar": "عرض أمامي مباشر للحقيبة مع وضوح كامل بدون تشويه منظور."
+      }
+    },
+    {
+      "id": "back_view",
+      "productOnly": true,
+      "label": { "en": "Back View", "ar": "واجهة خلفية" },
+      "image": "/perspectives/back_view.webp",
+      "allowedBagTypes": ["shoulder", "crossbody", "handbag", "tote"],
+      "description": {
+        "en": "Rear-facing view highlighting back pockets, seams, or branding with even lighting.",
+        "ar": "عرض خلفي يبرز الجيوب أو الخياطة أو العلامة التجارية بإضاءة متوازنة."
+      }
+    },
+    {
+      "id": "side_profile",
+      "productOnly": true,
+      "label": { "en": "Side Profile", "ar": "الجانب" },
+      "image": "/perspectives/side_profile.webp",
+      "allowedBagTypes": ["shoulder", "crossbody", "handbag", "tote"],
+      "description": {
+        "en": "Side-angle view showing depth, structure, and silhouette of the bag.",
+        "ar": "عرض جانبي يوضح عمق الحقيبة وبنيتها وشكلها الخارجي."
+      }
+    },
+    {
+      "id": "open_top_view",
+      "productOnly": true,
+      "label": { "en": "Open Top View", "ar": "عرض علوي مفتوح" },
+      "image": "/perspectives/open_top_view.webp",
+      "allowedBagTypes": ["shoulder", "crossbody", "handbag", "tote"],
+      "description": {
+        "en": "Top-down view with the bag open, clearly showing compartments and interior capacity.",
+        "ar": "عرض علوي للحقيبة وهي مفتوحة لإظهار المساحة الداخلية والأقسام بوضوح."
+      }
+    },
+    {
+      "id": "bottom_view",
+      "productOnly": true,
+      "label": { "en": "Bottom View", "ar": "القاعدة" },
+      "image": "/perspectives/bottom_view.webp",
+      "allowedBagTypes": ["handbag", "tote"],
+      "description": {
+        "en": "View of the bag’s base highlighting structure, reinforcement, or metal feet.",
+        "ar": "عرض قاعدة الحقيبة مع إبراز التدعيم أو الأرجل المعدنية إن وجدت."
+      }
+    },
+    {
+      "id": "strap_detail",
+      "productOnly": true,
+      "label": { "en": "Strap Detail", "ar": "تفاصيل الحزام" },
+      "image": "/perspectives/strap_detail.webp",
+      "allowedBagTypes": ["shoulder", "crossbody"],
+      "description": {
+        "en": "Close-up of the strap showing material, stitching, adjusters, and hardware.",
+        "ar": "لقطة قريبة للحزام توضح الخامة، الخياطة، وآلية التعديل والمعدن."
+      }
+    },
+    {
+      "id": "material_texture",
+      "productOnly": true,
+      "label": { "en": "Material Texture", "ar": "نسيج الخامة" },
+      "image": "/perspectives/material_texture.webp",
+      "allowedBagTypes": ["shoulder", "crossbody", "handbag", "clutch", "tote"],
+      "description": {
+        "en": "Extreme close-up highlighting leather grain or fabric texture in sharp detail.",
+        "ar": "لقطة مقرّبة جداً تُظهر نسيج الجلد أو القماش بدقة عالية."
+      }
+    },
+    {
+      "id": "hardware_detail",
+      "productOnly": true,
+      "label": { "en": "Hardware Detail", "ar": "تفاصيل المعدن" },
+      "image": "/perspectives/hardware_detail.webp",
+      "allowedBagTypes": ["shoulder", "crossbody", "handbag", "clutch", "tote"],
+      "description": {
+        "en": "Focused close-up on metal elements such as zippers, clasps, or logo hardware.",
+        "ar": "لقطة قريبة تركز على العناصر المعدنية مثل السحاب أو المشابك أو الشعار."
+      }
+    },
+    {
+      "id": "scale_reference_object",
+      "productOnly": true,
+      "label": { "en": "Scale Reference", "ar": "مرجع الحجم" },
+      "image": "/perspectives/scale_reference_object.webp",
+      "allowedBagTypes": ["shoulder", "crossbody", "handbag", "tote"],
+      "description": {
+        "en": "Bag shown next to neutral reference objects to indicate size without using a model.",
+        "ar": "الحقيبة مع عناصر مرجعية محايدة لإظهار الحجم بدون استخدام نموذج."
+      }
+    }
+  ]
+}

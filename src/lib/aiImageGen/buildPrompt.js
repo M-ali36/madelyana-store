@@ -82,32 +82,6 @@ const PERSPECTIVE_RULES = {
 - Strap Style: Structured top handle.
 - Hands-Free Carriage: Manual carry.
 - Height: Upper-thigh to hip level.
-`,
-  flat_lay: `
-- Positioning: Bag laid flat and viewed from directly above.
-- Strap Style: Handles arranged neatly around the bag.
-- Hands-Free Carriage: Product-only presentation.
-- Height: Fully visible within frame.
-`,
-  detail_closeup: `
-- Positioning: Tight crop on logo, stitching, zipper, or hardware.
-- Strap Style: Minimal or partially visible.
-- Hands-Free Carriage: No model or hands present.
-- Height: Cropped detail fills the frame.
-`,
-  product_only: `
-Composition rules:
-- No human presence.
-- Bag occupies at least 75% of the frame.
-- Centered composition.
-- Clean e-commerce framing.
-`,
-  interior: `
-Composition rules:
-- No model presence.
-- Focus on interior structure and compartments.
-- Well-lit and sharp.
-- Neutral background.
 `
 };
 

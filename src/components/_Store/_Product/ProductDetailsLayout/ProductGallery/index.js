@@ -85,7 +85,7 @@ export default function ProductGallery({ product }) {
 
   return (
     <>
-      <div className="relative w-full">
+      <div className="relative w-full overflow-hidden max-h-[80vh">
 
         <div className="controls relative z-10">
           <div

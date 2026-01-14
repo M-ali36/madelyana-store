@@ -167,43 +167,6 @@
 
   "perspectives": [
     {
-      "id": "product_only",
-      "label": {
-        "en": "Product Only",
-        "ar": "المنتج فقط"
-      },
-      "image": "/perspectives/product_only.webp",
-      "allowedBagTypes": ["shoulder", "crossbody", "handbag", "clutch", "tote"]
-    },
-    {
-      "id": "flat_lay",
-      "label": {
-        "en": "Flat Lay",
-        "ar": "عرض مسطح"
-      },
-      "image": "/perspectives/flat_lay.webp",
-      "allowedBagTypes": ["handbag", "clutch", "tote"]
-    },
-    {
-      "id": "detail_closeup",
-      "label": {
-        "en": "Detail Close-up",
-        "ar": "تفاصيل قريبة"
-      },
-      "image": "/perspectives/detail_closeup.webp",
-      "allowedBagTypes": ["shoulder", "crossbody", "handbag", "clutch", "tote"]
-    },
-    {
-      "id": "interior",
-      "label": {
-        "en": "Interior View",
-        "ar": "الجزء الداخلي"
-      },
-      "image": "/perspectives/interior.webp",
-      "allowedBagTypes": ["shoulder", "crossbody", "handbag", "tote"]
-    },
-
-    {
       "id": "shoulder_front_left",
       "label": {
         "en": "Shoulder – Front (Left)",
@@ -230,7 +193,6 @@
       "image": "/perspectives/shoulder_back_left.webp",
       "allowedBagTypes": ["shoulder", "tote"]
     },
-
     {
       "id": "crossbody_front_center",
       "label": {
@@ -276,7 +238,6 @@
       "image": "/perspectives/crossbody_back.webp",
       "allowedBagTypes": ["crossbody"]
     },
-
     {
       "id": "hand_held_low_center",
       "label": {

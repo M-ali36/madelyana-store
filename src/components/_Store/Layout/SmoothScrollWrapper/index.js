@@ -8,54 +8,48 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useAppContext } from "@/components/context/AppContext";
 
 export default function SmoothScrollWrapper({ children, locale }) {
-  const { setScrollPosition, setScrollDirection } = useAppContext();
+  const { navState, setScrollPosition, setScrollDirection } = useAppContext();
   const pathname = usePathname();
 
-  // Store previous scroll inside a ref (avoids unnecessary re-renders)
   const prevScrollRef = useRef(0);
+  const savedScrollPosition = useRef(0);
+  const smootherRef = useRef(null);
 
   useEffect(() => {
-    // Always kill old smoother before creating a new one
+    // Kill old smoother before creating a new one
     const old = ScrollSmoother.get();
     if (old) old.kill();
 
-    let smoother = null;
+    gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
 
-    // ⚠️ IMPORTANT:
-    // We must delay initialization until Next.js hydration + layout are complete.
+    // Delay creation for hydration
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
 
-        smoother = ScrollSmoother.create({
+        const smoother = ScrollSmoother.create({
           wrapper: "#smooth-wrapper",
           content: "#smooth-content",
           smooth: 1.2,
           smoothTouch: 0.2,
-          normalizeScroll: true, // helps Sticky/ScrollTrigger consistency
-          effects: true,
+          normalizeScroll: true,
+          effects: true
         });
 
-        // Ensure we start at correct top position (no animation)
-        smoother.scrollTo(0, false);
+        smootherRef.current = smoother;
 
-        // ⚠️ Delay refresh to avoid "cut from top" bug
+        // NO MORE smoother.scrollTo(0) — prevents jumping
+
         setTimeout(() => {
           ScrollTrigger.refresh(true);
-          smoother?.scrollTo(0, false); // force-correct scroll offset after refresh
         }, 50);
 
-        // ---- Scroll Position & Direction Tracking ----
+        // Track scroll position + direction
         const updateScroll = () => {
-          if (!smoother) return;
-
           const current = smoother.scrollTop();
           const prev = prevScrollRef.current;
 
-          // Global scroll position (used by parallax or UI)
           setScrollPosition(current);
 
-          // Scroll direction (with threshold to avoid noise)
           if (current > prev + 1) {
             setScrollDirection("down");
           } else if (current < prev - 1) {
@@ -67,25 +61,50 @@ export default function SmoothScrollWrapper({ children, locale }) {
 
         gsap.ticker.add(updateScroll);
 
-        // Clean up on unmount or route change
         return () => {
           gsap.ticker.remove(updateScroll);
-          if (smoother) smoother.kill();
+          if (smootherRef.current) smootherRef.current.kill();
         };
       });
     });
 
   }, [pathname, locale]);
 
+
+  // ------------------------------------------
+  // 🔒 SCROLL LOCK / UNLOCK WHEN navState OPENS
+  // ------------------------------------------
+  useEffect(() => {
+    const smoother = smootherRef.current;
+    if (!smoother) return;
+
+    if (navState !== "") {
+      // Save current position
+      savedScrollPosition.current = smoother.scrollTop();
+
+      // Freeze smoother (stops all movement)
+      smoother.paused(true);
+
+      // Stop browser native scroll
+      document.body.style.overflow = "hidden";
+    } else {
+      // Unlock
+      smoother.paused(false);
+
+      // Restore exact scroll
+      smoother.scrollTo(savedScrollPosition.current, false);
+
+      document.body.style.overflow = "";
+    }
+  }, [navState]);
+
+
   return (
     <>
       <div id="smooth-wrapper">
-        <div id="smooth-content">
-          {children}
-        </div>
+        <div id="smooth-content">{children}</div>
       </div>
 
-      {/* Optional UI layer */}
       <div id="ui-layer"></div>
     </>
   );

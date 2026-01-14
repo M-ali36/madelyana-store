@@ -15,11 +15,12 @@ import {
   HiOutlineBell,
 } from "react-icons/hi";
 
-import { RiUserLocationLine } from "react-icons/ri";
+import { RiUserLocationLine, RiRobot2Line } from "react-icons/ri";
 
 import { onAuthStateChanged } from "firebase/auth";
 import { auth, db } from "@/lib/firebaseClient";
 import { collection, doc, getDoc, onSnapshot } from "firebase/firestore";
+import { MdOutlinePriceCheck } from "react-icons/md";
 
 import { notifySoundUrl } from "@/app/sounds"; // ✅ SOUND IMPORT
 
@@ -122,6 +123,9 @@ export default function AdminLayoutPage({ children, locale }) {
     { label: t("nav.users"), href: "/admin/users", icon: HiOutlineUsers },
     { label: t("nav.settings"), href: "/admin/settings", icon: HiOutlineCog },
     { label: t("nav.userObserver"), href: "/admin/users-observer", icon: RiUserLocationLine },
+    { label: "Image Gen", href: "/admin/ai-image", icon: RiRobot2Line },
+    { label: "Image Video Gen", href: "/admin/ai-image-video", icon: RiRobot2Line },
+    { label: "Price Cost Settings", href: "/admin/static-data", icon: MdOutlinePriceCheck },
   ];
 
   const handleLogout = async () => {

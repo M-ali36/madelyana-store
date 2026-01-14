@@ -3,17 +3,12 @@
 import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import { auth, db } from "@/lib/firebaseClient";
-import {
-  doc,
-  setDoc,
-  updateDoc,
-  serverTimestamp,
-} from "firebase/firestore";
+import { doc, setDoc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 import useSessionId from "./useSessionId";
 import getClientInfo from "./getClientInfo";
 
-const HEARTBEAT = 30000;
+const HEARTBEAT = 30000; // 30 seconds
 
 export default function usePresenceObserver(locale) {
   const sessionId = useSessionId();
@@ -27,7 +22,9 @@ export default function usePresenceObserver(locale) {
     const ref = doc(db, "sessions", sessionId);
     const info = getClientInfo();
 
-    // INITIAL SESSION
+    // ---------------------------------------------------------
+    // INITIAL SESSION CREATE
+    // ---------------------------------------------------------
     const init = async () => {
       await setDoc(
         ref,
@@ -55,7 +52,9 @@ export default function usePresenceObserver(locale) {
 
     init();
 
-    // AUTH MERGE
+    // ---------------------------------------------------------
+    // AUTH MERGE (if user logs in during the session)
+    // ---------------------------------------------------------
     const unsub = onAuthStateChanged(auth, async (user) => {
       if (!user) return;
 
@@ -68,7 +67,9 @@ export default function usePresenceObserver(locale) {
       });
     });
 
-    // HEARTBEAT
+    // ---------------------------------------------------------
+    // HEARTBEAT: updates session every 30s
+    // ---------------------------------------------------------
     heartbeatRef.current = setInterval(async () => {
       const duration = Math.floor((Date.now() - startedAt.current) / 1000);
 
@@ -80,9 +81,12 @@ export default function usePresenceObserver(locale) {
       });
     }, HEARTBEAT);
 
-    // CLEANUP
+    // ---------------------------------------------------------
+    // CLEANUP ON EXIT
+    // ---------------------------------------------------------
     const onUnload = async () => {
       const duration = Math.floor((Date.now() - startedAt.current) / 1000);
+
       await updateDoc(ref, {
         online: false,
         lastSeen: serverTimestamp(),

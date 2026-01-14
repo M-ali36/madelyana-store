@@ -4,7 +4,9 @@ import useLiveSessions from "@/components/_Admin/UsersObserver/UsersObserverTabl
 import UsersObserverTable from "@/components/_Admin/UsersObserver/UsersObserverTable";
 
 export default function UsersObserverPage() {
-  const { sessions, loading } = useLiveSessions();
+  const { sessions, loading, data } = useLiveSessions();
+
+  console.log(data)
 
   return (
     <div className="space-y-6">

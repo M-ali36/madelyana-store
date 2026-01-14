@@ -2,65 +2,108 @@
 
 import { useState, useEffect } from "react";
 import { db } from "@/lib/firebaseClient";
-import { collection, addDoc, getDocs, serverTimestamp } from "firebase/firestore";
+import {
+  collection,
+  addDoc,
+  getDocs,
+  doc,
+  getDoc,
+  serverTimestamp
+} from "firebase/firestore";
 import { fetchProducts } from "@/lib/contentfulClient";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+
+// ⭐ SHARED COST ENGINE
+import { calculatePricing } from "@/lib/costingEngine";
 
 export default function AddProductPage() {
   const t = useTranslations("admin.addProduct");
   const router = useRouter();
 
+  // Contentful
   const [contentfulProducts, setContentfulProducts] = useState([]);
   const [availableProducts, setAvailableProducts] = useState([]);
-  const [existingDynamicSlugs, setExistingDynamicSlugs] = useState([]);
-
   const [contentfulSlug, setContentfulSlug] = useState("");
   const [productInfo, setProductInfo] = useState(null);
 
+  // Variants
   const [variants, setVariants] = useState([]);
+
+  // Pricing fields
+  const [basePrice, setBasePrice] = useState("");
   const [price, setPrice] = useState("");
 
+  // Ads settings
+  const [useAds, setUseAds] = useState(true);
+  const [adsOverride, setAdsOverride] = useState("");
+  const [unitsOverride, setUnitsOverride] = useState("");
+
+  // Costing config (global)
+  const [costConfig, setCostConfig] = useState(null);
+
+  // Cost results
+  const [totalCost, setTotalCost] = useState(null);
+  const [recommendedPrice, setRecommendedPrice] = useState(null);
+  const [adsCostPerUnit, setAdsCostPerUnit] = useState(null);
+
+  // UI
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  // Fetch Contentful + dynamic products
+  // ---------------------------------------------------------
+  // LOAD CONTENTFUL + dynamic slugs
+  // ---------------------------------------------------------
   useEffect(() => {
-    const loadData = async () => {
+    async function load() {
       try {
-        const list = await fetchProducts();
+        const contentfulList = await fetchProducts();
 
         const snap = await getDocs(collection(db, "products_dynamic"));
-        const dynamic = snap.docs.map((d) => d.data().contentfulSlug);
+        const assignedSlugs = snap.docs.map((d) => d.data().contentfulSlug);
 
-        setContentfulProducts(list);
-        setExistingDynamicSlugs(dynamic);
-
+        setContentfulProducts(contentfulList);
         setAvailableProducts(
-          list.filter((p) => !dynamic.includes(p.slug))
+          contentfulList.filter((p) => !assignedSlugs.includes(p.slug))
         );
       } catch (err) {
         console.error(err);
         setError(t("errors.load"));
       }
-    };
+    }
 
-    loadData();
+    load();
   }, []);
 
-  // Select Contentful product
+  // ---------------------------------------------------------
+  // LOAD GLOBAL STATIC DATA
+  // ---------------------------------------------------------
+  useEffect(() => {
+    async function loadStaticConfig() {
+      const ref = doc(db, "system", "staticData");
+      const snap = await getDoc(ref);
+      if (snap.exists()) setCostConfig(snap.data());
+    }
+    loadStaticConfig();
+  }, []);
+
+  // ---------------------------------------------------------
+  // SELECT PRODUCT INFO FROM CONTENTFUL
+  // ---------------------------------------------------------
   useEffect(() => {
     if (!contentfulSlug) return;
 
-    const selected = contentfulProducts.find(
+    const matched = contentfulProducts.find(
       (p) => p.slug === contentfulSlug
     );
 
-    setProductInfo(selected || null);
+    setProductInfo(matched || null);
   }, [contentfulSlug, contentfulProducts]);
 
-  // Variants
+  // ---------------------------------------------------------
+  // VARIANT HANDLING
+  // ---------------------------------------------------------
   const addVariant = () => {
     setVariants([...variants, { color: "", size: "", quantity: 0 }]);
   };
@@ -75,7 +118,30 @@ export default function AddProductPage() {
     setVariants(variants.filter((_, i) => i !== index));
   };
 
-  // Save
+  // ---------------------------------------------------------
+  // COST CALCULATION USING SHARED ENGINE
+  // ---------------------------------------------------------
+  useEffect(() => {
+    if (!costConfig) return;
+    if (!basePrice || isNaN(Number(basePrice))) return;
+
+    const result = calculatePricing({
+      basePrice,
+      useAds,
+      adsOverride,
+      unitsOverride,
+      costConfig,
+    });
+
+    setTotalCost(result.totalCost);
+    setRecommendedPrice(result.recommendedPrice);
+    setAdsCostPerUnit(result.adsCostPerUnit);
+
+  }, [basePrice, useAds, adsOverride, unitsOverride, costConfig]);
+
+  // ---------------------------------------------------------
+  // SAVE PRODUCT
+  // ---------------------------------------------------------
   const handleSubmit = async () => {
     if (!contentfulSlug || !price || variants.length === 0) {
       setError(t("errors.required"));
@@ -95,13 +161,29 @@ export default function AddProductPage() {
       await addDoc(collection(db, "products_dynamic"), {
         contentfulSlug,
         name: productInfo.title,
+
+        basePrice: Number(basePrice),
         price: Number(price),
+
+        // Ads fields
+        useAds,
+        adsOverride: adsOverride ? Number(adsOverride) : null,
+        unitsOverride: unitsOverride ? Number(unitsOverride) : null,
+
+        // Auto cost results
+        costCalculation: {
+          totalCost,
+          recommendedPrice,
+          adsCostPerUnit,
+        },
+
         variants,
         createdAt: serverTimestamp(),
       });
 
       setSuccess(t("success"));
       setTimeout(() => router.push("/admin/products"), 1200);
+
     } catch (err) {
       console.error(err);
       setError(t("errors.save"));
@@ -110,188 +192,209 @@ export default function AddProductPage() {
     setLoading(false);
   };
 
+  // ---------------------------------------------------------
+  // UI
+  // ---------------------------------------------------------
   return (
     <div className="space-y-6">
-      {/* Header */}
+
+      {/* HEADER */}
       <div>
         <h1 className="text-2xl font-semibold">{t("title")}</h1>
-        <p className="text-gray-600">{t("subtitle")}</p>
       </div>
 
-      <div className="space-y-6 rounded-xl border border-gray-200 bg-white p-6 shadow-card">
-        {/* Error */}
+      <div className="space-y-6 rounded-xl border bg-white p-6 shadow">
+
+        {/* ERRORS */}
         {error && (
-          <div className="rounded-md border border-red-300 bg-red-100 px-4 py-3 text-sm text-red-700">
+          <div className="bg-red-100 border border-red-300 p-3 text-red-700 rounded">
             {error}
           </div>
         )}
 
-        {/* Success */}
         {success && (
-          <div className="rounded-md border border-green-300 bg-green-100 px-4 py-3 text-sm text-green-700">
+          <div className="bg-green-100 border border-green-300 p-3 text-green-700 rounded">
             {success}
           </div>
         )}
 
-        {/* Contentful Select */}
+        {/* CONTENTFUL SELECT */}
         <div>
-          <label className="mb-1 block text-sm font-medium text-gray-700">
-            {t("fields.product")} *
-          </label>
+          <label className="text-sm font-medium">{t("fields.product")}</label>
 
           <select
-            className="w-full rounded-md border border-gray-300 bg-white px-4 py-2 outline-none focus:ring-2 focus:ring-primary"
+            className="w-full border rounded-md p-2 mt-1"
             onChange={(e) => setContentfulSlug(e.target.value)}
           >
             <option value="">{t("select")}</option>
 
-            {availableProducts.map((item) => (
-              <option key={item.slug} value={item.slug}>
-                {item.title} — ({item.slug})
+            {availableProducts.map((p) => (
+              <option value={p.slug} key={p.slug}>
+                {p.title}
               </option>
             ))}
           </select>
-
-          {availableProducts.length === 0 && (
-            <p className="mt-2 text-sm text-gray-500">
-              {t("allAssigned")}
-            </p>
-          )}
         </div>
 
-        {/* Contentful Info */}
+        {/* PRODUCT INFO PREVIEW */}
         {productInfo && (
-          <div className="space-y-1 rounded-lg border border-gray-200 bg-gray-50 p-4">
-            <p className="font-medium">{t("loaded")}</p>
-            <p className="text-sm">
-              <strong>{t("titleLabel")}:</strong> {productInfo.title}
-            </p>
-            <p className="text-sm">
-              <strong>{t("colors")}:</strong>{" "}
-              {productInfo.colors?.join(", ") || t("none")}
-            </p>
-            <p className="text-sm">
-              <strong>{t("sizes")}:</strong>{" "}
-              {productInfo.sizes?.join(", ") || t("none")}
-            </p>
+          <div className="bg-gray-50 border rounded p-4 text-sm">
+            <p><strong>Title:</strong> {productInfo.title}</p>
+            <p><strong>Colors:</strong> {productInfo.colors?.join(", ")}</p>
+            <p><strong>Sizes:</strong> {productInfo.sizes?.join(", ")}</p>
           </div>
         )}
 
-        {/* Price */}
+        {/* BASE PRICE */}
         <div>
-          <label className="mb-1 block text-sm font-medium text-gray-700">
-            {t("price")} *
-          </label>
+          <label className="text-sm font-medium">Base Price *</label>
           <input
             type="number"
-            min="0"
-            className="w-full rounded-md border border-gray-300 px-4 py-2 outline-none focus:ring-2 focus:ring-primary"
-            onChange={(e) => setPrice(e.target.value)}
+            value={basePrice}
+            onChange={(e) => setBasePrice(e.target.value)}
+            className="w-full border rounded p-2 mt-1"
           />
         </div>
 
-        {/* Variants */}
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold">{t("variants")}</h3>
-            <button
-              onClick={addVariant}
-              className="rounded-md bg-neutral-900 px-3 py-2 text-white hover:bg-gray-800"
-            >
-              {t("addVariant")}
-            </button>
-          </div>
+        {/* ADS SECTION */}
+        <div className="space-y-2">
 
-          {variants.length === 0 && (
-            <p className="text-sm text-gray-500">{t("noVariants")}</p>
-          )}
+          <label className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              checked={useAds}
+              onChange={(e) => setUseAds(e.target.checked)}
+            />
+            <span>Include Ads Cost?</span>
+          </label>
 
-          {variants.map((variant, index) => (
-            <div
-              key={index}
-              className="grid grid-cols-1 gap-4 rounded-lg border bg-gray-50 p-4 md:grid-cols-4"
-            >
-              {/* Color */}
+          {useAds && (
+            <div className="grid grid-cols-2 gap-4 mt-2">
+
               <div>
-                <label className="mb-1 block text-sm font-medium text-gray-700">
-                  {t("color")}
-                </label>
-                <select
-                  className="w-full rounded-md border px-3 py-2"
-                  value={variant.color}
-                  onChange={(e) =>
-                    updateVariant(index, "color", e.target.value)
-                  }
-                >
-                  <option value="">{t("selectColor")}</option>
-                  {productInfo?.colors?.map((c) => (
-                    <option key={c} value={c}>
-                      {c}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Size */}
-              <div>
-                <label className="mb-1 block text-sm font-medium text-gray-700">
-                  {t("size")}
-                </label>
-                <select
-                  className="w-full rounded-md border px-3 py-2"
-                  value={variant.size}
-                  onChange={(e) =>
-                    updateVariant(index, "size", e.target.value)
-                  }
-                >
-                  <option value="">{t("selectSize")}</option>
-                  {productInfo?.sizes?.map((s) => (
-                    <option key={s} value={s}>
-                      {s}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Quantity */}
-              <div>
-                <label className="mb-1 block text-sm font-medium text-gray-700">
-                  {t("quantity")}
-                </label>
+                <label className="text-sm font-medium">Ads Override</label>
                 <input
                   type="number"
-                  min="0"
-                  className="w-full rounded-md border px-3 py-2"
-                  value={variant.quantity}
-                  onChange={(e) =>
-                    updateVariant(index, "quantity", e.target.value)
-                  }
+                  value={adsOverride}
+                  onChange={(e) => setAdsOverride(e.target.value)}
+                  className="w-full border rounded p-2"
                 />
               </div>
 
-              {/* Remove */}
-              <div className="flex items-end">
-                <button
-                  onClick={() => removeVariant(index)}
-                  className="w-full rounded-md bg-red-500 px-3 py-2 text-white hover:bg-red-600"
-                >
-                  {t("remove")}
-                </button>
+              <div>
+                <label className="text-sm font-medium">Units Override</label>
+                <input
+                  type="number"
+                  value={unitsOverride}
+                  onChange={(e) => setUnitsOverride(e.target.value)}
+                  className="w-full border rounded p-2"
+                />
               </div>
+
+            </div>
+          )}
+
+        </div>
+
+        {/* PRICE + COST OUTPUT */}
+        <div>
+          <label className="text-sm font-medium">{t("price")}</label>
+          <input
+            type="number"
+            value={price}
+            onChange={(e) => setPrice(e.target.value)}
+            className="w-full border rounded p-2 mt-1"
+          />
+
+          {/* COST SUMMARY */}
+          {totalCost !== null && (
+            <div className="bg-gray-50 border rounded p-3 mt-2 text-sm space-y-1">
+
+              <p>
+                <strong>Ads Cost Per Unit:</strong>{" "}
+                <span className="text-blue-700">
+                  ${adsCostPerUnit}
+                </span>
+              </p>
+
+              <p>
+                <strong>Total Cost After Ads:</strong>{" "}
+                <span className="text-red-600 font-medium">
+                  ${totalCost}
+                </span>
+              </p>
+
+              <p>
+                <strong>Recommended Selling Price:</strong>{" "}
+                <span className="text-green-700 font-bold">
+                  ${recommendedPrice}
+                </span>
+              </p>
+
+            </div>
+          )}
+        </div>
+
+        {/* VARIANTS */}
+        <div className="space-y-2">
+          <div className="flex justify-between items-center">
+            <h3 className="text-lg font-semibold">{t("variants")}</h3>
+            <button
+              onClick={addVariant}
+              className="px-3 py-2 bg-black text-white rounded"
+            >
+              Add Variant
+            </button>
+          </div>
+
+          {variants.map((v, index) => (
+            <div
+              key={index}
+              className="grid grid-cols-1 md:grid-cols-4 gap-4 border bg-gray-50 p-4 rounded"
+            >
+              <input
+                placeholder="Color"
+                value={v.color}
+                onChange={(e) => updateVariant(index, "color", e.target.value)}
+                className="border rounded p-2"
+              />
+
+              <input
+                placeholder="Size"
+                value={v.size}
+                onChange={(e) => updateVariant(index, "size", e.target.value)}
+                className="border rounded p-2"
+              />
+
+              <input
+                type="number"
+                placeholder="Quantity"
+                value={v.quantity}
+                onChange={(e) => updateVariant(index, "quantity", e.target.value)}
+                className="border rounded p-2"
+              />
+
+              <button
+                onClick={() => removeVariant(index)}
+                className="bg-red-500 text-white rounded p-2"
+              >
+                Remove
+              </button>
             </div>
           ))}
         </div>
 
-        {/* Submit */}
+        {/* SUBMIT */}
         <button
           onClick={handleSubmit}
           disabled={loading}
-          className={`w-full rounded-md py-2 font-medium text-white ${
-            loading ? "bg-gray-400" : "bg-neutral-900 hover:bg-gray-800"
+          className={`w-full py-3 text-white rounded ${
+            loading ? "bg-gray-400" : "bg-black hover:bg-gray-800"
           }`}
         >
           {loading ? t("saving") : t("create")}
         </button>
+
       </div>
     </div>
   );

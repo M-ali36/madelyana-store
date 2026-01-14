@@ -844,5 +844,46 @@
     "canvas": "Canvas",
 
     "padded_laptop_sleeve": "Padded Laptop Sleeve",
-    "dedicated_tablet_sleeve": "Dedicated Tablet Sleeve"
+    "dedicated_tablet_sleeve": "Dedicated Tablet Sleeve",
+    "ProductVideoGen": {
+        "title": "AI Product Video Generator",
+        "step": "Review",
+        "selectScenes": "Select video scenes to generate reference images",
+        "back": "Back",
+        "next": "Next"
+    },
+    "VideoScenes": {
+        "orbit_360_tabletop": {
+        "title": "360° Orbit – Tabletop",
+        "description": "Smooth cinematic orbit around the bag on a luxury surface."
+        },
+        "slow_push_in_front": {
+        "title": "Slow Push-In – Front",
+        "description": "Cinematic push-in toward the logo and front details."
+        },
+        "side_to_side_parallax": {
+        "title": "Side-to-Side Parallax",
+        "description": "Horizontal camera movement emphasizing depth."
+        },
+        "top_down_rotation": {
+        "title": "Top-Down Rotation",
+        "description": "Top-down view with subtle rotational motion."
+        },
+        "detail_macro_reveal": {
+        "title": "Macro Detail Reveal",
+        "description": "Extreme close-up revealing texture or hardware."
+        },
+        "interior_opening_motion": {
+        "title": "Interior Reveal",
+        "description": "Gentle opening motion showing interior compartments."
+        },
+        "luxury_light_sweep": {
+        "title": "Luxury Light Sweep",
+        "description": "Light glides across the bag highlighting materials."
+        },
+        "scale_reference_pan": {
+        "title": "Scale Reference Pan",
+        "description": "Pan shot showing real-world scale using reference objects."
+        }
+    }
 }

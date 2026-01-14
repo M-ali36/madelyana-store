@@ -19,7 +19,7 @@ export default async function AdminLayout({ children, params }) {
     <html
       lang={locale}
       dir={isArabic ? "rtl" : "ltr"}
-      suppressHydrationWarning
+      
     >
       <body>
         <NextIntlClientProvider locale={locale} messages={messages}>

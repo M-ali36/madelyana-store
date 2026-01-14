@@ -1,7 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { collection, onSnapshot, query, where } from "firebase/firestore";
+import {
+  collection,
+  onSnapshot,
+  query,
+  where,
+  Timestamp,
+} from "firebase/firestore";
 import { db } from "@/lib/firebaseClient";
 
 export default function useLiveSessions() {
@@ -9,22 +15,46 @@ export default function useLiveSessions() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const q = query(
-      collection(db, "sessions"),
-      where("online", "==", true)
+
+    // ---------------------------------------------------------
+    // Start of TODAY in LOCAL TIME (NOT UTC!)  ⭐ FIXED
+    // ---------------------------------------------------------
+    const now = new Date();
+    const startOfTodayLocal = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate() // midnight local time
     );
 
-    const unsub = onSnapshot(q, (snap) => {
-      const list = snap.docs.map((d) => ({
-        id: d.id,
-        ...d.data(),
-      }));
+    const startTS = Timestamp.fromDate(startOfTodayLocal);
 
-      setSessions(list);
-      setLoading(false);
-    });
+    // ---------------------------------------------------------
+    // Live query for today's online sessions
+    // ---------------------------------------------------------
+    const q = query(
+      collection(db, "sessions"),
+      where("online", "==", true),
+      where("createdAt", ">=", startTS)
+    );
 
-    return () => unsub();
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        const list = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+
+        setSessions(list);
+        setLoading(false);
+      },
+      (err) => {
+        console.error("useLiveSessions Firestore error:", err);
+        setLoading(false);
+      }
+    );
+
+    return () => unsubscribe();
   }, []);
 
   return { sessions, loading };

@@ -1,0 +1,157 @@
+{
+  "videoSceneImageRecords": [
+    {
+      "sceneId": "orbit_360_tabletop",
+      "sourceProductImage": "uploaded_product_image",
+      "image": "/perspectives/orbit_360_tabletop.webp",
+      "imageGoal": "Create a clean hero image suitable for a smooth 360-degree camera orbit.",
+      "compositionRules": {
+        "cameraAngle": "eye_level",
+        "framing": "centered",
+        "surface": "luxury marble table",
+        "background": "soft neutral studio background",
+        "bagVisibility": "100% visible",
+        "orientation": "front-facing, slight three-quarter angle"
+      },
+      "generationNotes": [
+        "No human presence",
+        "Bag must be fully separated from background",
+        "No motion blur",
+        "Lighting must be even and soft to support rotation",
+        "Preserve exact product proportions and materials"
+      ]
+    },
+
+    {
+      "sceneId": "slow_push_in_front",
+      "sourceProductImage": "uploaded_product_image",
+      "image": "/perspectives/slow_push_in_front.webp",
+      "imageGoal": "Generate a front-facing image that supports a cinematic push-in toward the logo.",
+      "compositionRules": {
+        "cameraAngle": "front",
+        "framing": "medium shot",
+        "background": "clean neutral gradient",
+        "focusArea": "front logo and stitching",
+        "bagVisibility": "full bag with extra headroom"
+      },
+      "generationNotes": [
+        "Extra negative space around the bag for zoom-in",
+        "Sharp focus across the entire product",
+        "No perspective distortion",
+        "Do not crop logo or handles"
+      ]
+    },
+
+    {
+      "sceneId": "side_to_side_parallax",
+      "sourceProductImage": "uploaded_product_image",
+      "image": "/perspectives/side_to_side_parallax.webp",
+      "imageGoal": "Prepare an image that supports horizontal camera movement with depth perception.",
+      "compositionRules": {
+        "cameraAngle": "three_quarter_side",
+        "framing": "off-center composition",
+        "background": "soft depth gradient",
+        "bagOrientation": "angled to show depth"
+      },
+      "generationNotes": [
+        "Leave horizontal breathing room on both sides",
+        "Strong edge definition for parallax effect",
+        "Avoid flat front-on angles"
+      ]
+    },
+
+    {
+      "sceneId": "top_down_rotation",
+      "sourceProductImage": "uploaded_product_image",
+      "image": "/perspectives/top_down_rotation.webp",
+      "imageGoal": "Create a top-down reference image suitable for subtle rotational motion.",
+      "compositionRules": {
+        "cameraAngle": "top_down",
+        "framing": "centered symmetrical",
+        "surface": "neutral matte surface",
+        "bagVisibility": "entire silhouette visible"
+      },
+      "generationNotes": [
+        "Perfect symmetry preferred",
+        "No strong shadows",
+        "Handles and straps neatly arranged",
+        "Avoid perspective skew"
+      ]
+    },
+
+    {
+      "sceneId": "detail_macro_reveal",
+      "sourceProductImage": "uploaded_product_image",
+      "image": "/perspectives/detail_macro_reveal.webp",
+      "imageGoal": "Generate a macro-style image focusing on material or hardware details.",
+      "compositionRules": {
+        "cameraAngle": "macro",
+        "framing": "tight crop",
+        "focusArea": "leather texture or metal hardware",
+        "background": "fully blurred or neutral"
+      },
+      "generationNotes": [
+        "Extreme sharpness required",
+        "No artificial texture enhancement",
+        "Maintain realistic material scale",
+        "No over-smoothing"
+      ]
+    },
+
+    {
+      "sceneId": "interior_opening_motion",
+      "sourceProductImage": "uploaded_product_image",
+      "image": "/perspectives/interior_opening_motion.webp",
+      "imageGoal": "Prepare an image that supports a gentle interior reveal motion.",
+      "compositionRules": {
+        "cameraAngle": "front_slightly_top",
+        "framing": "medium close-up",
+        "bagState": "partially open",
+        "focusArea": "interior compartments"
+      },
+      "generationNotes": [
+        "Interior must be clearly visible",
+        "Avoid fully closed or fully flat open states",
+        "Even lighting inside the bag",
+        "No hands or human interaction"
+      ]
+    },
+
+    {
+      "sceneId": "luxury_light_sweep",
+      "sourceProductImage": "uploaded_product_image",
+      "image": "/perspectives/luxury_light_sweep.webp",
+      "imageGoal": "Create an image that allows light movement across the surface.",
+      "compositionRules": {
+        "cameraAngle": "front_three_quarter",
+        "framing": "centered",
+        "background": "dark neutral luxury tone",
+        "surface": "subtle reflective base"
+      },
+      "generationNotes": [
+        "Clear surface definition for light sweep",
+        "Avoid harsh reflections",
+        "Leather grain must remain visible",
+        "No directional shadows baked in"
+      ]
+    },
+
+    {
+      "sceneId": "scale_reference_pan",
+      "sourceProductImage": "uploaded_product_image",
+      "image": "/perspectives/scale_reference_pan.webp",
+      "imageGoal": "Generate an image that clearly communicates real-world scale.",
+      "compositionRules": {
+        "cameraAngle": "eye_level",
+        "framing": "wide composition",
+        "referenceObjects": ["smartphone", "perfume bottle"],
+        "bagPosition": "center-left"
+      },
+      "generationNotes": [
+        "Reference objects must be neutral and non-distracting",
+        "Bag remains the dominant subject",
+        "Consistent surface and lighting across objects"
+      ]
+    }
+  ]
+}
