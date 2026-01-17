@@ -38,7 +38,7 @@ export default function OrderSuccessPage() {
     load();
   }, [orderId]);
 
-  // Loading
+  // Loading state
   if (loading) {
     return (
       <div className="max-w-3xl mx-auto py-20 text-center text-gray-600">
@@ -47,7 +47,7 @@ export default function OrderSuccessPage() {
     );
   }
 
-  // Not found
+  // Order not found
   if (!order) {
     return (
       <div className="max-w-3xl mx-auto py-20 text-center">
@@ -67,7 +67,7 @@ export default function OrderSuccessPage() {
     );
   }
 
-  const { items, subtotal, shipping, total, address } = order;
+  const { items, subtotal, shipping, total, address, userId, guest } = order;
 
   return (
     <div className="max-w-3xl mx-auto py-16">
@@ -79,6 +79,11 @@ export default function OrderSuccessPage() {
         <p className="mt-1 text-sm">
           {t("orderId")}: <strong>{orderId}</strong>
         </p>
+
+        {/* Guest message */}
+        {!userId && (
+          <p className="mt-3 text-sm text-green-700">{t("guestNote")}</p>
+        )}
       </div>
 
       {/* Order Summary */}
@@ -87,12 +92,16 @@ export default function OrderSuccessPage() {
 
         <div className="space-y-3 border-b pb-4 mb-4">
           {items.map((item) => (
-            <div key={item.variantId} className="flex justify-between text-gray-700">
+            <div
+              key={item.variantId}
+              className="flex justify-between text-gray-700"
+            >
               <span>
                 {item.title}
                 {item.variant?.color && <> — {item.variant.color}</>}
                 {item.variant?.size && <> / {item.variant.size}</>}
-                {" "}× {item.qty}
+                {" × "}
+                {item.qty}
               </span>
               <span className="font-medium">
                 {format(item.price * item.qty)}
@@ -121,23 +130,29 @@ export default function OrderSuccessPage() {
       <div className="bg-white p-6 rounded-md shadow border mb-10">
         <h2 className="text-xl font-semibold mb-4">{t("shippingAddress")}</h2>
 
-        <p className="text-gray-700">
-          {address.fullName}<br />
-          {address.phone}<br />
-          {address.street}<br />
+        <p className="text-gray-700 leading-relaxed">
+          {address.fullName} <br />
+          {address.phone} <br />
+          {address.street} <br />
           {address.city}, {address.country}
         </p>
       </div>
 
-      {/* Navigation Buttons */}
+      {/* Navigation */}
       <div className="flex justify-between">
-        <Link
-          locale={locale}
-          href="/customer/orders"
-          className="px-4 py-2 bg-gray-100 border border-gray-300 text-gray-800 rounded-md hover:bg-gray-200 transition"
-        >
-          {t("viewMyOrders")}
-        </Link>
+        {userId ? (
+          <Link
+            locale={locale}
+            href="/customer/orders"
+            className="px-4 py-2 bg-gray-100 border border-gray-300 text-gray-800 rounded-md hover:bg-gray-200 transition"
+          >
+            {t("viewMyOrders")}
+          </Link>
+        ) : (
+          <span className="text-sm text-gray-600 self-center">
+            {t("guestNoteShort")}
+          </span>
+        )}
 
         <Link
           locale={locale}

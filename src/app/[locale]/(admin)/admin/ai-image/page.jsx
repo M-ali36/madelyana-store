@@ -32,8 +32,6 @@ export default function ProductImageGenPage() {
             steps={[
               <StepBagType key="bag" />,
               <StepOccasion key="occasion" />,
-              <StepModel key="model" />,
-              <StepUpload key="upload" />,
               <StepProductDetails key="details" />,
               <StepPerspectives key="perspectives" />,
               <StepReview key="review" />

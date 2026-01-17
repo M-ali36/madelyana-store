@@ -147,5 +147,7 @@ Environment: ${environment}.
 Lighting: ${lighting}.
 
 The product must remain the CLEAR and DOMINANT subject in every image.
+
+* excpected result a grid with 2 cols and rows 2 of images
   `.trim();
 }

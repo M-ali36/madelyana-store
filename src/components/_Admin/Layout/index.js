@@ -16,6 +16,7 @@ import {
 } from "react-icons/hi";
 
 import { RiUserLocationLine, RiRobot2Line } from "react-icons/ri";
+import { PiChartLineUp } from "react-icons/pi";
 
 import { onAuthStateChanged } from "firebase/auth";
 import { auth, db } from "@/lib/firebaseClient";
@@ -127,7 +128,7 @@ export default function AdminLayoutPage({ children, locale }) {
     { label: "Image Gen", href: "/admin/ai-image", icon: RiRobot2Line },
     { label: "Image Video Gen", href: "/admin/ai-image-video", icon: RiRobot2Line },
     { label: "Price Cost Settings", href: "/admin/static-data", icon: MdOutlinePriceCheck },
-    { label: "Analytics", href: "/admin/analytics", icon: MdOutlinePriceCheck },
+    { label: "Analytics", href: "/admin/analytics", icon: PiChartLineUp },
   ];
 
   const handleLogout = async () => {

@@ -171,17 +171,26 @@
         "errCity": "City is required.",
         "errStreet": "Street address is required.",
         "errState": "State / Region is required.",
-        "orderError": "Could not place order. Please try again."
+        "orderError": "Could not place order. Please try again.",
+        "email": "Email",
+        "checkingEmail": "Checking email...",
+        "emailAlreadyHasAccount": "This email is already registered. Please log in to continue.",
+        "continueAsGuestAnyway": "Continue as guest anyway",
+        "errEmail": "Please enter your email address.",
+        "emailExists": "This email belongs to an existing account. Please log in to continue."
     },
     "orderSuccess": {
-        "loading": "Loading your order…",
-        "orderNotFound": "Order Not Found",
-        "orderNotFoundMessage": "We could not find this order.",
-        "backToHome": "Back to Home",
+        "loading": "Loading order...",
+        "orderNotFound": "Order not found",
+        "orderNotFoundMessage": "We could not find an order with that ID.",
+        "backToHome": "Back to home",
 
-        "thankYou": "Thank you! 🎉",
+        "thankYou": "Thank you for your purchase!",
         "orderPlaced": "Your order has been placed successfully.",
         "orderId": "Order ID",
+
+        "guestNote": "You placed this order as a guest. Please keep your Order ID for tracking or customer support.",
+        "guestNoteShort": "Guest order — keep your Order ID.",
 
         "orderSummary": "Order Summary",
         "subtotal": "Subtotal",

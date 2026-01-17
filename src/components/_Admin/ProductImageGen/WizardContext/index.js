@@ -11,8 +11,6 @@ export function WizardProvider({ children }) {
   const [state, setState] = useState({
     bagType: null,
     occasion: null,
-    model: null,
-    productImage: null,
     dimensions: {
       width: null,
       height: null,
@@ -54,8 +52,6 @@ export function WizardProvider({ children }) {
     setState({
       bagType: null,
       occasion: null,
-      model: null,
-      productImage: null,
       dimensions: { width: null, height: null, depth: null },
       perspectives: []
     });

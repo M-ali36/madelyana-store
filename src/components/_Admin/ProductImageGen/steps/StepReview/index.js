@@ -35,16 +35,6 @@ export default function StepReview() {
       return;
     }
 
-    if (!state.productImage?.base64) {
-      setError("Product image is missing.");
-      return;
-    }
-
-    if (!state.model) {
-      setError("No model selected.");
-      return;
-    }
-
     setLoading(true);
     setImages([]);
 
@@ -57,8 +47,6 @@ export default function StepReview() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           prompt,
-          productImageBase64,
-          model: state.model,
         }),
       });
 

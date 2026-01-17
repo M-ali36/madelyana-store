@@ -10,6 +10,8 @@ import MobileNav from "@/components/_Store/Layout/Header/MobileNav";
 import MiniCartDrawer from "@/components/_Store/Layout/Header/MiniCart/MiniCartDrawer";
 import MiniWishlistDrawer from "@/components/_Store/Layout/Header/MiniWishlist/MiniWishlistDrawer";
 import NavigationMobile from "@/components/_Store/Layout/Header/Navigation/NavigationMobile";
+import FullScreenLoader from "@/components/_Store/Layout/Loading";
+import { LoaderProvider } from "@/components/context/LoadingContext";
 
 export default async function RootLocaleLayout({ children, params }) {
   const locale = (await params).locale;
@@ -30,21 +32,23 @@ export default async function RootLocaleLayout({ children, params }) {
     >
       <body>
         <NextIntlClientProvider locale={locale} messages={messages}>
+          <LoaderProvider>
+            <Header locale={locale} pathname={pathname} />
+
+            <SmoothScrollWrapper locale={locale}>
+              <main className="pt-[60px]">
+                {children}
+              </main>
+
+              <Footer locale={locale} footer={footer} />
+            </SmoothScrollWrapper>
+            <FullScreenLoader />
+            <MobileNav locale={locale} pathname={pathname}/>
+            <MiniCartDrawer />
+            <MiniWishlistDrawer />
+            <NavigationMobile />
+          </LoaderProvider>
           
-
-          <Header locale={locale} pathname={pathname} />
-
-          <SmoothScrollWrapper locale={locale}>
-            <main className="pt-[60px]">
-              {children}
-            </main>
-
-            <Footer locale={locale} footer={footer} />
-          </SmoothScrollWrapper>
-          <MobileNav locale={locale} pathname={pathname}/>
-          <MiniCartDrawer />
-          <MiniWishlistDrawer />
-          <NavigationMobile />
         </NextIntlClientProvider>
         <PresenceClient locale={locale}/>
 

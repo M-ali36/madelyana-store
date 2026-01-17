@@ -17,6 +17,7 @@ export default async function AdminLayout({ children, params }) {
 
   return (
     <html
+      suppressHydrationWarning
       lang={locale}
       dir={isArabic ? "rtl" : "ltr"}
       
